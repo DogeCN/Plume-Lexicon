@@ -35,6 +35,7 @@ class LMainWindow(QMainWindow):
         self.retrans()
         self.ui.setShotcuts()
         self.ui.load_lexis()
+        self.ui.restore_states()
         Set_Acrylic(self)
         #Threading
         self.argv = file

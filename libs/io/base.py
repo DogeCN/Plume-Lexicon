@@ -1,4 +1,5 @@
 import os, pickle, info
+from libs.debris import Get_New_File_Name
 from zlib import compress, decompress
 from hashlib import md5
 
@@ -17,6 +18,5 @@ def _dump(file, obj):
     pickle.dump(obj, open(file, 'wb'))
 
 def dump(file, obj):
-    if not os.path.exists(hash := _hash(bytes(obj))):
-        _dump(hash, obj)
-    open(file, 'wb').write(compress(open(hash, 'rb').read()))
+    _dump(temp := Get_New_File_Name(info.temp), obj)
+    open(file, 'wb').write(compress(open(temp, 'rb').read()))

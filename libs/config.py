@@ -57,6 +57,6 @@ class Settings:
     def dump(file=data):
         try:
             dump(file, Setting)
-        except: ...
+        except Exception as e: print(e, 'Red')
 
 Settings._load()

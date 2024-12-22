@@ -19,11 +19,11 @@ ext_lexi = '.plf'
 ext_disabled = '.disabled'
 ext_voca = '.pvf'
 ext_settings = '.psf'
-ext_public = '.ppd'
 ext_all_voca = '*' + ext_voca
 ext_self_exe = '.exe'
 debug_file = data_dir + '.DEBUG'
 debug = os.path.exists(debug_file)
+temp = temp_dir + 'temp'
 timeout = 3
 running = data_dir + '.running'
 running_sign = ' '
@@ -38,7 +38,7 @@ htip_hint = '<html><body><p><span style=" font-size:11pt; font-weight:600;">%s</
 speech_hint = '<html><body style=" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; "><p>%s</p></body></html>'
 log = data_dir + 'latest.log'
 settings = data_dir + 'settings' + ext_settings
-public = data_dir + 'public' + ext_public
+public = data_dir + 'public.json'
 nontr = ('暂无翻译', 'None Translations')
 lurl = f'https://raw.githubusercontent.com/{author}/{repo_name}/refs/heads/main/{lexis_dir_name}/%s'
 lurl_cn = 'https://ghproxy.cn/' + lurl

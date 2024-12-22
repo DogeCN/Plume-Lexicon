@@ -6,6 +6,7 @@ from libs.ui.main.base import FItem
 from libs.debris import Clipboard, Ticker
 from libs.translate import Result
 from libs.config import Setting
+from libs.public import Publics
 from libs.io import dialog
 from win32com.client import Dispatch
 from threading import Thread
@@ -49,6 +50,7 @@ class LMain(Ui_MainWindow):
         self.signal.show_lexis_singal.emit()
     def save_all(self, silent=True):
         for item in self.Files.items: item.save(silent)
+        self.store_states()
     def check(self): self.set_add_locked(not len(self.Files.items))
     def append(self, result): self.Bank.append(result); self.Files.keep()
     def close(self): info.prog_running = False; self.parent.close()
@@ -182,11 +184,31 @@ class LMain(Ui_MainWindow):
         self.set_add_enabled(False)
         self.Files.keep()
 
-    def load(self, file:str|list[str]=None):
-        if not file:
-            file = Setting.Vocabulary
-        self.Files.load(file)
+    def load(self, files:str|list[str]=None):
+        states = Publics['ui_states']
+        if not files: files = states['files'] if 'files' in states else info.default_voca
+        if 'current' in states and (current := states['current']):
+            for f in files:
+                item = self.Files.load(f)
+                if f == current:
+                    self.Files.current = item
         self.display_file()
+
+    def store_states(self):
+        states = Publics['ui_states']
+        states['geometry'] = tuple(self.parent.geometry().getRect()) if not self.parent.isMaximized() else None
+        states['text'] = self.Word_Entry.text()
+        states['files'] = self.Files.files
+        current = self.Files.current
+        states['current'] = current.file if current else None
+        Publics.dump()
+
+    def restore_states(self):
+        states = Publics['ui_states']
+        if 'geometry' in states and (geometry := states['geometry']):
+            self.parent.setGeometry(*geometry)
+        if 'text' in states and (text := states['text']):
+            self.Word_Entry.setText(text)
 
     def display_selection(self):
         items = self.Bank.selections
