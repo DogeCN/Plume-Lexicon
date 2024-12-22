@@ -11,6 +11,8 @@ author = 'DogeCN'
 version = 'v1.14.9'
 prog_running = True
 data_dir = check_dir(os.getenv('AppData') + os.sep + prog_name + os.sep)
+temp_dir = check_dir(os.getenv('Temp') + os.sep + prog_name + os.sep)
+cache_dir = check_dir(temp_dir + 'cache' + os.sep)
 lexis_dir_name = 'lexicons'
 lexis_dir = check_dir(data_dir + lexis_dir_name  + os.sep)
 ext_lexi = '.plf'
@@ -37,7 +39,6 @@ speech_hint = '<html><body style=" font-family:\'Microsoft YaHei UI\'; font-size
 log = data_dir + 'latest.log'
 settings = data_dir + 'settings' + ext_settings
 public = data_dir + 'public' + ext_public
-temp = data_dir + 'temp'
 nontr = ('暂无翻译', 'None Translations')
 lurl = f'https://raw.githubusercontent.com/{author}/{repo_name}/refs/heads/main/{lexis_dir_name}/%s'
 lurl_cn = 'https://ghproxy.cn/' + lurl

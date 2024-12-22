@@ -9,7 +9,6 @@ print(f'{info.prog_name} {info.version} By {info.author}', 'Yellow', 'Bold')
 print('Starting...\n', 'Green', 'Bold')
 
 def main():
-    global app
     argv = sys.argv[1] if len(sys.argv) > 1 else None
     fr = info.running
     try: difftime = time.time() - info.os.path.getatime(fr)

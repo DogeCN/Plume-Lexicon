@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
 from concurrent.futures import ThreadPoolExecutor
 from requests import get
-from libs.io.base import load
+from libs.io.base import _dump, _load, load, _hash
 from libs.config import Setting
 from libs.stdout import print
 import info
@@ -38,15 +38,16 @@ class CSignal(QObject):
 csignal = CSignal()
 
 class Lexicon(dict[str, list[str, list[str]]]):
-    enabled = False
-    loaded = False
-    failed = False
-    box = None
     
-    def __init__(self, fn:str):
+    def __init__(self, fn:str=None):
         self.fn = fn
-        self.name = self.name_zh = fn.split('\\')[-1].strip(info.ext_disabled)
-        self.signal = LSignal()
+        if fn:
+            self.enabled = \
+            self.loaded = \
+            self.failed = False
+            self.signal = LSignal()
+            if self.hash_exists: self._update(_load(self.hash_file))
+            else: self.name = self.name_zh = fn.split('\\')[-1].strip(info.ext_disabled)
     
     @property
     def text(self):
@@ -55,7 +56,15 @@ class Lexicon(dict[str, list[str, list[str]]]):
         elif self.failed: hint = Setting.getTr('loadfailed')
         else: hint = Setting.getTr('unload')
         return f"{name} ({hint})"
+
+    @property
+    def hash_file(self):
+        return _hash(self.fn.encode())
     
+    @property
+    def hash_exists(self):
+        return info.os.path.exists(self.hash_file)
+
     def setEnabled(self, enable):
         pool.submit(self._setEnabled, enable)
 
@@ -63,10 +72,12 @@ class Lexicon(dict[str, list[str, list[str]]]):
         csignal.add()
         if enable and not self.loaded:
             try:
-                l = load(self.fn)
-                self.name = getattr(l, 'name')
-                self.name_zh = getattr(l, 'name_zh')
-                self.update(l)
+                self._update(load(self.fn))
+                if not self.hash_exists:
+                    header = Lexicon()
+                    header.name = self.name
+                    header.name_zh = self.name_zh
+                    _dump(self.hash_file, header)
                 self.loaded = self.enabled = True
                 self.failed = False
                 self.signal.update.emit()
@@ -83,6 +94,11 @@ class Lexicon(dict[str, list[str, list[str]]]):
             info.os.rename(self.fn, fn)
             self.fn = fn
         csignal.sub()
+
+    def _update(self, l):
+        self.name = getattr(l, 'name')
+        self.name_zh = getattr(l, 'name_zh')
+        self.update(l)
 
 class LexiBox(QCheckBox):
     def __init__(self, lexicon:Lexicon, parent):
