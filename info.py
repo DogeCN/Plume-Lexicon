@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 def check_dir(dir):
     if not os.path.exists(dir):
@@ -9,6 +9,8 @@ prog_name = 'Plume Lexicon'
 prog_name_cn = '羽词'
 author = 'DogeCN'
 version = 'v1.14.9'
+argv0 = sys.argv[0]
+argv1 = sys.argv[1] if len(sys.argv) > 1 else None
 prog_running = True
 data_dir = check_dir(os.getenv('AppData') + os.sep + prog_name + os.sep)
 temp_dir = check_dir(os.getenv('Temp') + os.sep + prog_name + os.sep)

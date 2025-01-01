@@ -1,7 +1,6 @@
-import sys, time
-import info
+import time, info
 
-stdout = sys.stdout
+stdout = info.sys.stdout
 log = info.log
 
 def log_init():
