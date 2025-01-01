@@ -78,6 +78,12 @@ class Bank(BaseListWidget):
                     self.scrollToItem(i, TOP)
                     return
         self.scrollToItem(self.current, TOP)
+        
+    def remove(self):
+        for item in self.selections:
+            row = self.row(item)
+            self.takeItem(row)
+        self.update()
 
     def clear(self):
         super().clear()

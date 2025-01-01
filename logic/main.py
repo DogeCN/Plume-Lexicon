@@ -84,7 +84,7 @@ class LMain(Ui_MainWindow):
         self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.raw))
         #Button Actions
         self.Add.clicked.connect(self.command_add)
-        self.Delete.clicked.connect(self.clear)
+        self.Delete.clicked.connect(self.Bank.remove)
         self.Top.clicked.connect(self.top)
         #Text
         self.Word_Entry.textChanged.connect(self.text_change)
@@ -238,7 +238,7 @@ class LMain(Ui_MainWindow):
 
     def display_file(self):
         item = self.Files.current
-        if not item.on_display:
+        if item and not item.on_display:
             self._display_file(item)
 
     def _display_file(self, item:FItem):
