@@ -19,7 +19,7 @@ def main():
             return
     log_init()
     app = QApplication()
-    LMainWindow(info.argv1)
+    LMainWindow()
     app.exec()
 
 def register(): #For PyInstaller Exe

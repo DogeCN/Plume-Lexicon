@@ -14,7 +14,7 @@ from time import sleep
 import info
 
 class LMainWindow(QMainWindow):
-    def __init__(self, file=None):
+    def __init__(self):
         super().__init__()
         #Window Build
         self.ui = LMain(self)
@@ -38,8 +38,7 @@ class LMainWindow(QMainWindow):
         self.ui.restore_states()
         Set_Acrylic(self)
         #Threading
-        self.argv = file
-        Thread(target=lambda:self.ui.load(file)).start()
+        Thread(target=lambda:self.ui.load(info.argv1)).start()
         Thread(target=self.auto_translate).start()
         self.auto_save_timer = self.ticker(lambda:self.ui.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
         self.ticker(self.check_running, 500)
