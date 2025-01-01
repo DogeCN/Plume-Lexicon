@@ -12,8 +12,8 @@ version = 'v1.14.9'
 argv0 = sys.argv[0]
 argv1 = sys.argv[1] if len(sys.argv) > 1 else None
 prog_running = True
-data_dir = check_dir(os.getenv('AppData') + os.sep + prog_name + os.sep) # %AppData%\Plume Lexicon
-temp_dir = check_dir(os.getenv('Temp') + os.sep + prog_name + os.sep) # %Temp%\Plume Lexicon
+data_dir = check_dir(os.getenv('AppData') + os.sep + prog_name + os.sep)
+temp_dir = check_dir(os.getenv('Temp') + os.sep + prog_name + os.sep)
 cache_dir = check_dir(temp_dir + 'cache' + os.sep)
 lexis_dir_name = 'lexicons'
 lexis_dir = check_dir(data_dir + lexis_dir_name  + os.sep)
@@ -35,6 +35,7 @@ reg_ext = 'Software\\Classes\\' + ext_voca
 reg_cmd = 'shell\\open\\command'
 repo_name = 'Plume-Lexicon'
 repo_url = f'github.com/{author}/{repo_name}'
+release_api = f'https://api.github.com/repos/{author}/{repo_name}/releases/latest'
 url_trans = 'https://trans-api.dogecn.workers.dev/translate_a/single?client=gtx&dt=t&sl=auto&tl=%s&q=%s'
 htip_hint = '<html><body><p><span style=" font-size:11pt; font-weight:600;">%s</span style=" font-size:10pt"></p><p>%s</p></body></html>'
 speech_hint = '<html><body style=" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; "><p>%s</p></body></html>'
@@ -52,6 +53,7 @@ Tr = {
     'title' : (prog_name_cn, prog_name),
     'load' : ('载入单词表', 'Load Vocubulary File'),
     'save_as' : ('保存单词表', 'Save Vocubulary File'),
+    'info' : ('信息', 'Information'),
     'warning' : ('警告', 'Warning'),
     'unload' : ('未加载', 'Unload'),
     'loadfailed' : ('加载失败', 'Failed to Load'),
@@ -67,8 +69,11 @@ you can read existed vocabularies.
         ),
     'correct_hint' : ('双击更正', 'Double Click to Correct'),
     'speech_hint' : ('双击朗读', 'Double Click to Speech Out'),
-    'default_file' : ('选择默认单词表', 'Choose The Default Vocabulary File'),
+    'update_tip' : ('发现新版本 %s, 是否查看?', 'New Version %s Found, Have a Look?'),
+    'update_latest' : ('已是最新版本', 'Already the Latest Version'),
+    'update_failed' : ('检查更新失败', 'Failed to Check Update'),
     'htip' : ('你是否在找 %s: ', 'Do you mean %s: '),
+    'cache_cleared' : ('已清除 %s 缓存', 'A total of %s caches cleared'),
 }
 
 StlSheets = {
@@ -84,6 +89,7 @@ UITr = {
     'Auto Save' : '自动保存',
     'Top' : '置顶',
     'Files' : '文件',
+    'Cache' : '缓存',
     'Delete' : '删除',
     'Vocabulary' : '词汇表',
     'Secs' : '秒',
@@ -127,5 +133,7 @@ UITr = {
     'Create a New File' : '新建文件',
     'Save All' : '全部保存',
     'Save All Files' : '保存所有文件',
-    'Online' : '在线'
+    'Online' : '在线',
+    'Check Update' : '检查更新',
+    'Check the Latest Version' : '检查最新版本'
 }

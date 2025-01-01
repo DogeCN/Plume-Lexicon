@@ -2,12 +2,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from libs.config import Setting
-from . import res
 
-icon = QIcon()
-
-def icoinit():
-    icon.addFile(u":/icon/x-office-document.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+icon = QIcon(QIcon.fromTheme('emblem-synchronized'))
 
 def setupUi(Dialog:QDialog, Tr):
     global Columns, Font, Font_Size, Stamp, Stamp_Format, Word_Count, Word, Informations, Translations

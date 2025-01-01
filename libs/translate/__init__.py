@@ -101,30 +101,31 @@ def online_translate(word: str) -> Result:
 
 @fast
 def translate(word: str) -> Result:
-    max = 0.3
-    s = SequenceMatcher()
-    s.set_seq2(word)
-    result = None
-    for lexicon in lexicons:
-        if not lexicon.enabled: continue
-        for wp in [word, word.lower(), word.capitalize()]:
-            if wp in lexicon:
-                return Result(word, lexicon[wp])
+    if word:
+        max = 0.3
+        s = SequenceMatcher()
+        s.set_seq2(word)
+        result = None
+        for lexicon in lexicons:
+            if not lexicon.enabled: continue
+            for wp in [word, word.lower(), word.capitalize()]:
+                if wp in lexicon:
+                    return Result(word, lexicon[wp])
 
-        for wm in lexicon:
-            if wm[0] == word[0]:
-                s.set_seq1(wm)
-                if s.real_quick_ratio() > max and s.quick_ratio() > max:
-                    ratio = s.ratio()
-                    if ratio > max:
-                        result = Result(wm, lexicon[wm])
-                        max = ratio
+            for wm in lexicon:
+                if wm[0] == word[0]:
+                    s.set_seq1(wm)
+                    if s.real_quick_ratio() > max and s.quick_ratio() > max:
+                        ratio = s.ratio()
+                        if ratio > max:
+                            result = Result(wm, lexicon[wm])
+                            max = ratio
 
-    if result is not None:
-        result.match = True
-        return result
-    else:
-        return Result(word)
+        if result is not None:
+            result.match = True
+            return result
+        
+    return Result(word)
 
 def trans(word: str, *res_lists):
     if Setting.Online:

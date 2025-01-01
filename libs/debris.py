@@ -4,11 +4,8 @@ import win32clipboard, platform, ctypes, os
 
 def Set_Acrylic(window:QMainWindow):
     try:
-        apply_style(window, 'dark')
-        window.setStyleSheet('color: white; background-color: rgb(30, 30, 30);')
         assert int(platform.release()) > 10
         apply_style(window, 'acrylic')
-        window.setStyleSheet('color: white; background-color: transparent;')
     except: ...
 
 def Get_Language():
@@ -31,6 +28,31 @@ def Get_New_File_Name(fn:str, ext:str='', exclusions:list[str]=[]):
         fn = fn%f'({i})'
     else: fn = fn%''
     return fn
+
+def Convert_Size(byte:int):
+    units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    size = 1024
+    for u in units:
+        _ = byte // size
+        if _ < 1:
+            return f'{byte}{u}'
+        byte = _
+    return f'{byte}{units[-1]}'
+
+def Clean_Dir(path:str):
+    total = 0
+    for root, dir, files in os.walk(path, topdown=False):
+        for name in files:
+            try:
+                fn = os.path.join(root, name)
+                size = os.path.getsize(fn)
+                os.remove(fn)
+                total += size
+            except: ...
+        for name in dir:
+            try: os.rmdir(os.path.join(root, name))
+            except: ...
+    return total
 
 class Clipboard:
     

@@ -1,6 +1,5 @@
 from ..base import *
 from libs.translate import translate
-from os import remove
 
 tr = {
     'tip' : ('[请在此处输入单词]', '[Entry Your Words There]'),
@@ -13,6 +12,7 @@ def main():
     try:
         files = tool.dialog.OpenFiles(type='*.txt')
         if files:
+            results = []
             correct = {}
             for file in files:
                 with open(file, 'r', encoding='utf-8') as t:
@@ -26,7 +26,10 @@ def main():
                                 correct[word] = result.word
                                 result.match = False
                                 result.top = True
-                            tool.mw.ui.append(result)
+                            results.append(result)
+            tool.mw.ui.Files.new()
+            tool.mw.ui.Bank.append(results)
+            tool.mw.ui.Files.keep()
             finfo = ', '.join(files)
             tool.message.Show(tool.tr('imported') % finfo)
             if correct:

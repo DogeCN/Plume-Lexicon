@@ -3,7 +3,9 @@ import time, winreg, traceback
 from logic import LMainWindow
 from libs.stdout import print, log_init
 from libs.debris import Refresh_Icons
-import info
+import info, warnings
+
+warnings.filterwarnings('ignore')
 
 print(f'{info.prog_name} {info.version} By {info.author}', 'Yellow', 'Bold')
 print('Starting...\n', 'Green', 'Bold')

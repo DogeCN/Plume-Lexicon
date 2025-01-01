@@ -222,8 +222,7 @@ class Files(BaseListWidget):
             return item
 
     def remove(self):
-        for i in self.selectedItems():
-            self.takeItem(self.row(i))
+        self.takeItem(self.row(self.current))
         if not self.current:
             self.bank.clear()
         self.update()
@@ -238,6 +237,7 @@ class Files(BaseListWidget):
         item = FItem(fn)
         self.addItem(item)
         self.current = item
+        return item
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
@@ -276,10 +276,6 @@ class Files(BaseListWidget):
     @property
     def names(self):
         return [i.name for i in self.items]
-
-    @property
-    def selections(self) -> list[FItem]:
-        return self.selectedItems()
 
     @property
     def current(self) -> FItem:

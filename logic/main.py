@@ -10,6 +10,7 @@ from libs.public import Publics
 from libs.io import dialog
 from win32com.client import Dispatch
 from threading import Thread
+from requests import get
 from time import sleep
 import webbrowser, info
 
@@ -17,6 +18,7 @@ class LSignal(QObject):
     set_result_singal = Signal()
     callback_singal = Signal()
     show_lexis_singal = Signal()
+    show_update_singal = Signal(dict)
     exchange_singal = Signal(Result)
     expand_singal = Signal(Result)
     def __init__(self):
@@ -50,7 +52,6 @@ class LMain(Ui_MainWindow):
         self.signal.show_lexis_singal.emit()
     def save_all(self, silent=True):
         for item in self.Files.items: item.save(silent)
-        self.store_states()
     def check(self): self.set_add_locked(not len(self.Files.items))
     def append(self, result): self.Bank.append(result); self.Files.keep()
     def close(self): info.prog_running = False; self.parent.close()
@@ -65,14 +66,15 @@ class LMain(Ui_MainWindow):
         self.parent = MainWindow
         self.raw = QMainWindow(MainWindow)
         self.raw.setStyleSheet(info.StlSheets['raw'])
+        if not info.debug:
+            Thread(target=self.check_update).start()
         Thread(target=self.handle).start()
         self.connect_actions()
     
     def connect_actions(self):
         #Menu Actions
-        self.actionNew.triggered.connect(lambda:self.Files.new() or self.check())
+        self.actionNew.triggered.connect(lambda:self.Files.new() and self.check())
         self.actionReload.triggered.connect(lambda:(lambda item:item.load() or self._display_file(item) if item else self.load())(self.Files.current) or self.check())
-        self.actionDict_Reload.triggered.connect(self.load_lexis)
         self.actionLoad.triggered.connect(lambda:(lambda f:self._display_file(self.Files.load(f)[0]) if f else ...)(dialog.OpenFiles(self.parent, Setting.getTr('load'), info.ext_all_voca)) or self.check())
         self.actionSave.triggered.connect(lambda:self.Files.current.save())
         self.actionSave_All.triggered.connect(lambda:self.save_all(False))
@@ -80,6 +82,7 @@ class LMain(Ui_MainWindow):
         self.actionRemove.triggered.connect(lambda:self.Files.remove() or self.check())
         self.actionClear.triggered.connect(lambda:self.Files.clear() or self.check())
         self.actionExit.triggered.connect(self.close)
+        self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
         self.actionAbout.triggered.connect(lambda:webbrowser.open(info.repo_url))
         self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.raw))
         #Button Actions
@@ -97,6 +100,7 @@ class LMain(Ui_MainWindow):
         self.Expand.itemSelectionChanged.connect(self.display_phrases)
         #Signal
         self.signal.set_result_singal.connect(self.set_result)
+        self.signal.show_update_singal.connect(self.show_update)
         self.signal.callback_singal.connect(lambda:QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('translate_function_unavailable')))
         self.signal.exchange_singal.connect(lambda r: self.set_exchanges(r) if not self.tc else ...)
         self.signal.expand_singal.connect(lambda r: self.set_expand(r) if not self.tc else ...)
@@ -209,6 +213,22 @@ class LMain(Ui_MainWindow):
             self.parent.setGeometry(*geometry)
         if 'text' in states and (text := states['text']):
             self.Word_Entry.setText(text)
+
+    def check_update(self):
+        try: latest = get(info.release_api, timeout=info.timeout, verify=False).json()
+        except: latest = None
+        self.signal.show_update_singal.emit(latest)
+
+    def show_update(self, latest):
+        try:
+            ver = latest['tag_name']
+            if ver != info.version:
+                if QMessageBox.question(self.raw, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
+                    == QMessageBox.StandardButton.Yes:
+                    webbrowser.open(latest['html_url'])
+            else:
+                QMessageBox.information(self.raw, Setting.getTr('info'), Setting.getTr('update_latest'))
+        except: QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('update_failed'))
 
     def display_selection(self):
         items = self.Bank.selections

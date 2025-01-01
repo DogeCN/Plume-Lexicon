@@ -35,7 +35,7 @@ class Ui_Settings(object):
         self.buttonBox.setOrientation(Qt.Orientation.Vertical)
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
 
-        self.gridLayout.addWidget(self.buttonBox, 0, 2, 3, 1)
+        self.gridLayout.addWidget(self.buttonBox, 0, 2, 2, 1)
 
         self.lFile = QLabel(Settings)
         self.lFile.setObjectName(u"lFile")
@@ -44,46 +44,21 @@ class Ui_Settings(object):
 
         self.gridLayout.addWidget(self.lFile, 1, 0, 1, 2)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.lVoc = QLabel(Settings)
-        self.lVoc.setObjectName(u"lVoc")
-        self.lVoc.setMaximumSize(QSize(65, 16777215))
-
-        self.horizontalLayout_4.addWidget(self.lVoc)
-
-        self.Vocabulary = QLineEdit(Settings)
-        self.Vocabulary.setObjectName(u"Vocabulary")
-        self.Vocabulary.setReadOnly(True)
-
-        self.horizontalLayout_4.addWidget(self.Vocabulary)
-
-        self.viewVocabulary = QToolButton(Settings)
-        self.viewVocabulary.setObjectName(u"viewVocabulary")
-        icon1 = QIcon(QIcon.fromTheme(u"folder-open"))
-        self.viewVocabulary.setIcon(icon1)
-        self.viewVocabulary.setIconSize(QSize(30, 16))
-
-        self.horizontalLayout_4.addWidget(self.viewVocabulary)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout_4, 2, 0, 1, 2)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.lAuto = QLabel(Settings)
         self.lAuto.setObjectName(u"lAuto")
         self.lAuto.setMaximumSize(QSize(58, 16777215))
 
-        self.horizontalLayout_3.addWidget(self.lAuto)
+        self.horizontalLayout_2.addWidget(self.lAuto)
 
         self.Auto_Save = QCheckBox(Settings)
         self.Auto_Save.setObjectName(u"Auto_Save")
         self.Auto_Save.setMaximumSize(QSize(40, 20))
-        icon2 = QIcon(QIcon.fromTheme(u"document-save"))
-        self.Auto_Save.setIcon(icon2)
+        icon1 = QIcon(QIcon.fromTheme(u"document-save"))
+        self.Auto_Save.setIcon(icon1)
 
-        self.horizontalLayout_3.addWidget(self.Auto_Save)
+        self.horizontalLayout_2.addWidget(self.Auto_Save)
 
         self.Interval = QSpinBox(Settings)
         self.Interval.setObjectName(u"Interval")
@@ -91,7 +66,33 @@ class Ui_Settings(object):
         self.Interval.setMinimum(10)
         self.Interval.setMaximum(99)
 
-        self.horizontalLayout_3.addWidget(self.Interval)
+        self.horizontalLayout_2.addWidget(self.Interval)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_2, 2, 0, 1, 2)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.lCache = QLabel(Settings)
+        self.lCache.setObjectName(u"lCache")
+        self.lCache.setMaximumSize(QSize(58, 16777215))
+
+        self.horizontalLayout_3.addWidget(self.lCache)
+
+        self.CClear = QPushButton(Settings)
+        self.CClear.setObjectName(u"CClear")
+        icon2 = QIcon(QIcon.fromTheme(u"user-trash"))
+        self.CClear.setIcon(icon2)
+
+        self.horizontalLayout_3.addWidget(self.CClear)
+
+        self.viewCache = QToolButton(Settings)
+        self.viewCache.setObjectName(u"viewCache")
+        icon3 = QIcon(QIcon.fromTheme(u"folder-open"))
+        self.viewCache.setIcon(icon3)
+        self.viewCache.setIconSize(QSize(30, 16))
+
+        self.horizontalLayout_3.addWidget(self.viewCache)
 
 
         self.gridLayout.addLayout(self.horizontalLayout_3, 3, 0, 1, 2)
@@ -147,21 +148,21 @@ class Ui_Settings(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.Online = QCheckBox(Settings)
         self.Online.setObjectName(u"Online")
-        icon3 = QIcon(QIcon.fromTheme(u"applications-internet"))
-        self.Online.setIcon(icon3)
+        icon4 = QIcon(QIcon.fromTheme(u"applications-internet"))
+        self.Online.setIcon(icon4)
 
         self.horizontalLayout.addWidget(self.Online)
 
         self.LReload = QPushButton(Settings)
         self.LReload.setObjectName(u"LReload")
-        icon4 = QIcon(QIcon.fromTheme(u"view-refresh"))
-        self.LReload.setIcon(icon4)
+        icon5 = QIcon(QIcon.fromTheme(u"view-refresh"))
+        self.LReload.setIcon(icon5)
 
         self.horizontalLayout.addWidget(self.LReload)
 
         self.viewLexicons = QToolButton(Settings)
         self.viewLexicons.setObjectName(u"viewLexicons")
-        self.viewLexicons.setIcon(icon1)
+        self.viewLexicons.setIcon(icon3)
         self.viewLexicons.setIconSize(QSize(30, 16))
 
         self.horizontalLayout.addWidget(self.viewLexicons)
@@ -182,7 +183,7 @@ class Ui_Settings(object):
         self.Lexicons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 401, 122))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 401, 112))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.Lexicons.setWidget(self.scrollAreaWidgetContents)
@@ -201,7 +202,6 @@ class Ui_Settings(object):
         Settings.setWindowTitle(Setting.translateUI('Settings'))
         self.lLang.setText(Setting.translateUI('Language'))
         self.lFile.setText(Setting.translateUI('Files'))
-        self.lVoc.setText(Setting.translateUI('Vocabulary'))
         self.lAuto.setText(Setting.translateUI('Auto Save'))
         self.Interval.setSuffix(Setting.translateUI(' Secs'))
         self.lAdd.setText(Setting.translateUI('Add'))
@@ -212,4 +212,7 @@ class Ui_Settings(object):
         self.LexiconBox.setTitle(Setting.translateUI('Lexicons'))
         self.lHot.setText(Setting.translateUI('Hotkeys'))
         self.lTranslate.setText(Setting.translateUI('Translate'))
+        self.CClear.setText(Setting.translateUI('Clear'))
+        self.lCache.setText(Setting.translateUI('Cache'))
+
 

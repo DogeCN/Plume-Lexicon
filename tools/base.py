@@ -8,45 +8,45 @@ from ._base._logic import LMainWindow
 from subprocess import Popen
 import info
 
-class Action:
+class _Action:
     tool = ... #type: Tool
     icon = None #type: QIcon
     visible = True
     enabled = True
+    
+    def _apply(self, action:QAction|QMenu):
+        action.setVisible(self.visible)
+        action.setEnabled(self.enabled)
+
+class Action(_Action):
     shortcut = ''
     _action = None
     def __call__(self):
         if not self._action:
             self._action = QAction(self.tool.mw.ui.menuTools)
-            self._action.setVisible(self.visible)
-            self._action.setEnabled(self.enabled)
-            self._action.setShortcut(self.shortcut)
-            if self.icon:
-                self._action.setIcon(self.icon)
+            self._apply(self._action)
+            if self.shortcut: self._action.setShortcut(self.shortcut)
             self._action.triggered.connect(lambda *x,_t=self.tool:_t())
+            if self.icon:
+                if isinstance(self.icon, str):
+                    self.icon = QIcon(QIcon.fromTheme(self.icon))
+                self._action.setIcon(self.icon)
             self.tool.init()
         self._action.setText(self.tool.get_name())
         self._action.setStatusTip(self.tool.get_doc())
         return self._action
 
-class Menu:
-    tool = ... #type: Tool
+class Menu(_Action):
     tools = [] #type: list[Tool]
-    icon = None #type: QIcon
-    visible = True
-    enabled = True
     _menu = None
     def __call__(self):
         if not self._menu:
             for tool in self.tools:
                 tool.mw = self.tool.mw
             self._menu = QMenu(self.tool.mw.ui.menuTools)
-            self._menu.setVisible(self.visible)
-            self._menu.setEnabled(self.enabled)
-            if self.icon:
-                self._menu.setIcon(self.icon)
             self._menu.hide()
         for tool in self.tools:
+            tool.action.icon = self.icon
             action = tool.action()
             action.setParent(self._menu)
             if tool.type: action.setMenu(action)

@@ -42,3 +42,4 @@ tool = Tool(1)
 tool.name = 'Random'
 tool.name_zh = '随机'
 tool.action.tools = [tool1, tool2]
+tool.action.icon = 'help-browser'

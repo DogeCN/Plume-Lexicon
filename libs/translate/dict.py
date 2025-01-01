@@ -59,7 +59,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
 
     @property
     def hash_file(self):
-        return _hash(self.fn.encode())
+        return _hash(self.fn.strip(info.ext_disabled).encode())
     
     @property
     def hash_exists(self):

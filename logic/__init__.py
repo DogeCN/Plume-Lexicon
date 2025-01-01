@@ -1,12 +1,11 @@
-from PySide6.QtWidgets import QApplication, QDialog, QMenu, QMainWindow, QSystemTrayIcon
+from PySide6.QtWidgets import QApplication, QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QTimer, QEvent
 from libs.translate import trans
 from libs.translate.dict import LexiBox, csignal
 from libs.config import Setting
 from libs.tool import load
-from libs.io import dialog
 from libs.ui.setting import Ui_Settings
-from libs.debris import Ticker, Set_Acrylic
+from libs.debris import Ticker, Set_Acrylic, Clean_Dir, Convert_Size
 from .main import LMain
 from threading import Thread
 from subprocess import Popen
@@ -54,7 +53,8 @@ class LMainWindow(QMainWindow):
         self.setting_ui.Online.toggled.connect(self.set_online)
         self.setting_ui.LReload.clicked.connect(self.reload_lexis)
         self.setting_ui.viewLexicons.clicked.connect(lambda:Popen(f'explorer "{info.lexis_dir}"'))
-        self.setting_ui.viewVocabulary.clicked.connect(lambda:(lambda f:self.setting_ui.Vocabulary.setText(f) if f else ...)(dialog.OpenFile(self.setting, Setting.getTr('default_file'), info.ext_all_voca, self.setting_ui.Vocabulary.text())))
+        self.setting_ui.viewCache.clicked.connect(lambda:Popen(f'explorer "{info.cache_dir}"'))
+        self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
@@ -82,7 +82,6 @@ class LMainWindow(QMainWindow):
         Setting.Auto_save = self.setting_ui.Auto_Save.isChecked()
         Setting.Auto_save_interval = self.setting_ui.Interval.value()
         self.auto_save_timer.setInterval(Setting.Auto_save_interval*1000)
-        Setting.Vocabulary = self.setting_ui.Vocabulary.text()
         Setting.Key_Add = self.setting_ui.Key_Add.keySequence().toString()
         Setting.Key_Del = self.setting_ui.Key_Delete.keySequence().toString()
         Setting.Key_Top = self.setting_ui.Key_Top.keySequence().toString()
@@ -95,7 +94,6 @@ class LMainWindow(QMainWindow):
         self.setting_ui.Auto_Save.setChecked(Setting.Auto_save)
         self.setting_ui.Interval.setEnabled(Setting.Auto_save)
         self.setting_ui.Interval.setValue(Setting.Auto_save_interval)
-        self.setting_ui.Vocabulary.setText(Setting.Vocabulary)
         self.setting_ui.Key_Add.setKeySequence(Setting.Key_Add)
         self.setting_ui.Key_Delete.setKeySequence(Setting.Key_Del)
         self.setting_ui.Key_Top.setKeySequence(Setting.Key_Top)

@@ -61,10 +61,6 @@ def uimain():
     load_settings()
     dialog.exec()
 
-def icoinit():
-    ui.icoinit()
-    tool.action().setIcon(ui.icon)
-
 def main():
     try:
         save_settings()
@@ -113,4 +109,4 @@ tool.doc = 'Convert vocabulary file to docx'
 tool.doc_zh = '转换单词表为文档'
 tool.tr.Tr = tr
 tool.entrance = uimain
-tool.init = icoinit
+tool.action.icon = ui.icon

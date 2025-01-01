@@ -11,7 +11,6 @@ class Settings:
             self.__dict__ = load(file).__dict__
         except:
             self.Language = Get_Language() #0:zh, 1:en
-            self.Vocabulary = info.default_voca
             self.Online = False
             self.Auto_save = True
             self.Auto_save_interval = 60
