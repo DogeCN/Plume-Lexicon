@@ -18,7 +18,7 @@ class LSignal(QObject):
     set_result_singal = Signal()
     callback_singal = Signal()
     show_lexis_singal = Signal()
-    show_update_singal = Signal(dict)
+    show_update_singal = Signal(dict, bool)
     exchange_singal = Signal(Result)
     expand_singal = Signal(Result)
     def __init__(self):
@@ -66,8 +66,7 @@ class LMain(Ui_MainWindow):
         self.parent = MainWindow
         self.raw = QMainWindow(MainWindow)
         self.raw.setStyleSheet(info.StlSheets['raw'])
-        if not info.debug:
-            Thread(target=self.check_update).start()
+        Thread(target=self.check_update, args=(True,)).start()
         Thread(target=self.handle).start()
         self.connect_actions()
     
@@ -214,21 +213,20 @@ class LMain(Ui_MainWindow):
         if 'text' in states and (text := states['text']):
             self.Word_Entry.setText(text)
 
-    def check_update(self):
+    def check_update(self, silent=False):
         try: latest = get(info.release_api, timeout=info.timeout, verify=False).json()
         except: latest = None
-        self.signal.show_update_singal.emit(latest)
+        self.signal.show_update_singal.emit(latest, silent)
 
-    def show_update(self, latest):
+    def show_update(self, latest, silent):
         try:
             ver = latest['tag_name']
             if ver != info.version:
                 if QMessageBox.question(self.raw, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
-                    == QMessageBox.StandardButton.Yes:
-                    webbrowser.open(latest['html_url'])
-            else:
-                QMessageBox.information(self.raw, Setting.getTr('info'), Setting.getTr('update_latest'))
-        except: QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('update_failed'))
+                    == QMessageBox.StandardButton.Yes: webbrowser.open(latest['html_url'])
+            elif not silent: QMessageBox.information(self.raw, Setting.getTr('info'), Setting.getTr('update_latest'))
+        except:
+            if not silent: QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('update_failed'))
 
     def display_selection(self):
         items = self.Bank.selections

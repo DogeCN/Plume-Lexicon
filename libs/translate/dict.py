@@ -5,6 +5,7 @@ from requests import get
 from libs.io.base import _dump, _load, load, _hash
 from libs.configs.settings import Setting
 from libs.stdout import print
+from ._pickle import Lexicon
 import info
 
 pool = ThreadPoolExecutor(3)
@@ -37,7 +38,7 @@ class CSignal(QObject):
 
 csignal = CSignal()
 
-class Lexicon(dict[str, list[str, list[str]]]):
+class Lexicon(Lexicon):
     
     def __init__(self, fn:str=None):
         self.fn = fn
@@ -81,7 +82,8 @@ class Lexicon(dict[str, list[str, list[str]]]):
                 self.loaded = self.enabled = True
                 self.failed = False
                 self.signal.update.emit()
-            except:
+            except Exception as e:
+                print(f'Failed to load {self.fn}: {e}', 'Red')
                 self.failed = True
                 self.signal.update.emit()
                 csignal.sub()
