@@ -1,8 +1,9 @@
+from __future__ import annotations
 from PySide6.QtWidgets import QApplication, QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QTimer, QEvent
 from libs.translate import trans
 from libs.translate.dict import LexiBox, csignal
-from libs.config import Setting
+from libs.configs.settings import Setting
 from libs.tool import load
 from libs.ui.setting import Ui_Settings
 from libs.debris import Ticker, Set_Acrylic, Clean_Dir, Convert_Size
@@ -170,4 +171,5 @@ class LMainWindow(QMainWindow):
         else:
             if Setting.Auto_save:
                 self.ui.save_all(False)
+            self.ui.store_states()
             QApplication.exit()

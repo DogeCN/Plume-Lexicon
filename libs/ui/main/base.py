@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from libs.debris import Get_New_File_Name
 from libs.translate import Result
-from libs.config import Setting
+from libs.configs.settings import Setting
 from libs.io import io, dialog
 from math import log10
 import info

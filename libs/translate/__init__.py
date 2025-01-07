@@ -1,7 +1,7 @@
 from difflib import SequenceMatcher
 from .api import api_translate
 from .dict import lexicons
-from ..config import Setting
+from libs.configs.settings import Setting
 import info, time
 
 class Result:

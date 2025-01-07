@@ -3,7 +3,7 @@ from PySide6.QtCore import Signal, QObject
 from concurrent.futures import ThreadPoolExecutor
 from requests import get
 from libs.io.base import _dump, _load, load, _hash
-from libs.config import Setting
+from libs.configs.settings import Setting
 from libs.stdout import print
 import info
 

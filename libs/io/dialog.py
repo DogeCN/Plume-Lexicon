@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QFileDialog as QFile
-from libs.public import Publics
+from libs.configs.public import Publics
 
 def rdir(f):
     if f:

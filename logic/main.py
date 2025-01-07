@@ -5,8 +5,8 @@ from libs.ui.main import Ui_MainWindow
 from libs.ui.main.base import FItem
 from libs.debris import Clipboard, Ticker
 from libs.translate import Result
-from libs.config import Setting
-from libs.public import Publics
+from libs.configs.settings import Setting
+from libs.configs.public import Publics
 from libs.io import dialog
 from win32com.client import Dispatch
 from threading import Thread

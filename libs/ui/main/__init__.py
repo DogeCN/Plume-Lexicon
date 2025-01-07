@@ -1,7 +1,7 @@
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from libs.config import Setting
+from libs.configs.settings import Setting
 from .base import Bank, Files
 from . import res
 

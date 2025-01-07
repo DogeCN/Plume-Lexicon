@@ -1,4 +1,4 @@
-from libs.config import Setting
+from libs.configs.settings import Setting
 from libs.translate import Result
 from libs.stdout import print
 from .base import load, dump

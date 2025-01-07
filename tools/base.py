@@ -1,12 +1,11 @@
 from PySide6.QtWidgets import QMessageBox, QMenu
 from PySide6.QtGui import QAction, QIcon
 from libs.stdout import print
-from libs.public import Publics
-from libs.config import Setting
+from libs.configs.public import Publics
+from libs.configs.settings import Setting
 from libs.io import io, dialog
-from ._base._logic import LMainWindow
 from subprocess import Popen
-import info
+import info, logic
 
 class _Action:
     tool = ... #type: Tool
@@ -120,7 +119,7 @@ class Tr:
         return self.Tr[key][Setting.Language]
 
 class Tool:
-    mw = ... #type: LMainWindow
+    mw = ... #type: logic.LMainWindow
     #Basic Infos
     name = 'New Tool'
     name_zh = '新工具'

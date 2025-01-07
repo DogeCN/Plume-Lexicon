@@ -1,5 +1,5 @@
-from .io.base import load, dump
-from .debris import Get_Language
+from ..io.base import load, dump
+from ..debris import Get_Language
 from libs.stdout import print
 import info
 
@@ -54,8 +54,7 @@ class Settings:
 
     @staticmethod
     def dump(file=data):
-        try:
-            dump(file, Setting)
-        except Exception as e: print(e, 'Red')
+        try: dump(file, Setting)
+        except: ...
 
 Settings._load()
