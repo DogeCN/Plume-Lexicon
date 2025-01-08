@@ -5,7 +5,6 @@ from requests import get
 from libs.io.base import _dump, _load, load, _hash
 from libs.configs.settings import Setting
 from libs.stdout import print
-from ._pickle import Lexicon
 import info
 
 pool = ThreadPoolExecutor(3)
@@ -38,17 +37,19 @@ class CSignal(QObject):
 
 csignal = CSignal()
 
-class Lexicon(Lexicon):
-    
-    def __init__(self, fn:str=None):
-        self.fn = fn
-        if fn:
+class Lexicon(dict[str, list[str, list[str]]]):
+    name = ''
+    name_zh = ''
+
+    def __init__(self, fp:str=None):
+        if fp:
+            self.fp = fp
             self.enabled = \
             self.loaded = \
             self.failed = False
             self.signal = LSignal()
             if self.hash_exists: self._update(_load(self.hash_file))
-            else: self.name = self.name_zh = fn.split('\\')[-1].strip(info.ext_disabled)
+            else: self.name = self.name_zh = fp.split('\\')[-1].strip(info.ext_disabled)
     
     @property
     def text(self):
@@ -60,7 +61,7 @@ class Lexicon(Lexicon):
 
     @property
     def hash_file(self):
-        return _hash(self.fn.strip(info.ext_disabled).encode())
+        return _hash(self.fp.strip(info.ext_disabled).encode())
     
     @property
     def hash_exists(self):
@@ -73,7 +74,7 @@ class Lexicon(Lexicon):
         csignal.add()
         if enable and not self.loaded:
             try:
-                self._update(load(self.fn))
+                self._update(load(self.fp))
                 if not self.hash_exists:
                     header = Lexicon()
                     header.name = self.name
@@ -83,18 +84,18 @@ class Lexicon(Lexicon):
                 self.failed = False
                 self.signal.update.emit()
             except Exception as e:
-                print(f'Failed to load {self.fn}: {e}', 'Red')
+                print(f'Failed to load {self.fp}: {e}', 'Red')
                 self.failed = True
                 self.signal.update.emit()
                 csignal.sub()
                 return
-        fn = self.fn.strip(info.ext_disabled)
+        fp = self.fp.strip(info.ext_disabled)
         if not enable:
-            fn = fn + info.ext_disabled
+            fp = fp + info.ext_disabled
             self.enabled = False
-        if self.fn != fn:
-            info.os.rename(self.fn, fn)
-            self.fn = fn
+        if self.fp != fp:
+            info.os.rename(self.fp, fp)
+            self.fp = fp
         csignal.sub()
 
     def _update(self, l):
@@ -134,8 +135,8 @@ def _load_lexis():
         enabled = f.endswith(info.ext_lexi)
         disabled = f.endswith(info.ext_lexi + info.ext_disabled)
         if enabled or disabled:
-            fn = info.lexis_dir + f
-            lexicon = Lexicon(fn)
+            fp = info.lexis_dir + f
+            lexicon = Lexicon(fp)
             lexicon.setEnabled(enabled)
             lexicons.append(lexicon)
     if not lexicons: return True

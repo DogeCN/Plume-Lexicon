@@ -41,7 +41,7 @@ class LMainWindow(QMainWindow):
         Thread(target=lambda:self.ui.load(info.argv1)).start()
         Thread(target=self.auto_translate).start()
         self.auto_save_timer = self.ticker(lambda:self.ui.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
-        self.ticker(self.check_running, 500)
+        self.ticker(self.check, 500)
 
     def connect_actions(self):
         self.tray.activated.connect(self.tray_activated)
@@ -65,7 +65,7 @@ class LMainWindow(QMainWindow):
         timer.start(interval)
         return timer
 
-    def check_running(self):
+    def check(self):
         action = open(info.running).readline().strip('\n')
         if action:
             if action != info.running_sign and info.os.path.exists(action):
@@ -73,6 +73,8 @@ class LMainWindow(QMainWindow):
             self.activateWindow()
             self.showNormal()
         open(info.running, 'w').write('')
+        self.ui.Files.keep()
+        self.ui.check()
 
     def tray_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:

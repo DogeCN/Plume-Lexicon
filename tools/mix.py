@@ -6,8 +6,6 @@ def main():
     for item in ui.Files.items:
         if item != ui.Files.current:
             ui.Bank.append(item.results)
-    if results != ui.Bank.results:
-        ui.Files.keep()
 
 tool = Tool()
 tool.name = 'Mix'

@@ -228,8 +228,10 @@ class Files(BaseListWidget):
         self.update()
 
     def keep(self):
-        self.current.results = self.bank.results
-        self.current.saved = False
+        results = self.bank.results
+        if self.current and self.current.results != results:
+            self.current.results = results
+            self.current.saved = False
 
     def new(self, fn=None):
         if not fn:

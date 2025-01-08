@@ -1,4 +1,3 @@
-from libs.translate._pickle import Lexicon
 from PySide6.QtWidgets import QApplication
 import time, winreg, traceback
 from logic import LMainWindow

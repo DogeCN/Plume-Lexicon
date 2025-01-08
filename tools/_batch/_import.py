@@ -29,7 +29,6 @@ def main():
                             results.append(result)
             tool.mw.ui.Files.new()
             tool.mw.ui.Bank.append(results)
-            tool.mw.ui.Files.keep()
             finfo = ', '.join(files)
             tool.message.Show(tool.tr('imported') % finfo)
             if correct:

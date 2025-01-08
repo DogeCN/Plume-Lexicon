@@ -53,10 +53,7 @@ class LMain(Ui_MainWindow):
     def save_all(self, silent=True):
         for item in self.Files.items: item.save(silent)
     def check(self): self.set_add_locked(not len(self.Files.items))
-    def append(self, result): self.Bank.append(result); self.Files.keep()
     def close(self): info.prog_running = False; self.parent.close()
-    def clear(self): self.Bank.clear(); self.Files.keep()
-    def top(self): self.Bank.top(); self.Files.keep()
     def set_expand(self, results): self.Expand.results = results
     def set_exchanges(self, results): self.Exchanges.results = results
 
@@ -66,20 +63,21 @@ class LMain(Ui_MainWindow):
         self.parent = MainWindow
         self.raw = QMainWindow(MainWindow)
         self.raw.setStyleSheet(info.StlSheets['raw'])
-        Thread(target=self.check_update, args=(True,)).start()
+        if not info.debug:
+            Thread(target=self.check_update, args=(True,)).start()
         Thread(target=self.handle).start()
         self.connect_actions()
     
     def connect_actions(self):
         #Menu Actions
-        self.actionNew.triggered.connect(lambda:self.Files.new() and self.check())
-        self.actionReload.triggered.connect(lambda:(lambda item:item.load() or self._display_file(item) if item else self.load())(self.Files.current) or self.check())
-        self.actionLoad.triggered.connect(lambda:(lambda f:self._display_file(self.Files.load(f)[0]) if f else ...)(dialog.OpenFiles(self.parent, Setting.getTr('load'), info.ext_all_voca)) or self.check())
+        self.actionNew.triggered.connect(self.Files.new)
+        self.actionReload.triggered.connect(lambda:(lambda item:item.load() or self._display_file(item) if item else self.load())(self.Files.current))
+        self.actionLoad.triggered.connect(lambda:(lambda f:self._display_file(self.Files.load(f)[0]) if f else ...)(dialog.OpenFiles(self.parent, Setting.getTr('load'), info.ext_all_voca)))
         self.actionSave.triggered.connect(lambda:self.Files.current.save())
         self.actionSave_All.triggered.connect(lambda:self.save_all(False))
         self.actionSave_As.triggered.connect(lambda:self.Files.current.save_as())
-        self.actionRemove.triggered.connect(lambda:self.Files.remove() or self.check())
-        self.actionClear.triggered.connect(lambda:self.Files.clear() or self.check())
+        self.actionRemove.triggered.connect(self.Files.remove)
+        self.actionClear.triggered.connect(self.Files.clear)
         self.actionExit.triggered.connect(self.close)
         self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
         self.actionAbout.triggered.connect(lambda:webbrowser.open(info.repo_url))
@@ -87,7 +85,7 @@ class LMain(Ui_MainWindow):
         #Button Actions
         self.Add.clicked.connect(self.command_add)
         self.Delete.clicked.connect(self.Bank.remove)
-        self.Top.clicked.connect(self.top)
+        self.Top.clicked.connect(self.Bank.top)
         #Text
         self.Word_Entry.textChanged.connect(self.text_change)
         self.Translated_text.mouseDoubleClickEvent = self.correct
@@ -182,10 +180,9 @@ class LMain(Ui_MainWindow):
         self.exchanges = self.expands = None
 
     def command_add(self):
-        self.append(self.result)
+        self.Bank.append(self.result)
         self.Word_Entry.setText('')
         self.set_add_enabled(False)
-        self.Files.keep()
 
     def load(self, files:str|list[str]=None):
         states = Publics['ui_states']
@@ -233,8 +230,10 @@ class LMain(Ui_MainWindow):
         if items:
             self.Delete.setEnabled(True)
             self.Top.setEnabled(True)
-            item = self.Bank.current
-            item = item if item else items[-1]
+            cur_i = self.Bank.currentRow()
+            if abs(cur_i-self.Bank.row(items[-1])) == 1: item = items[-1]
+            elif abs(cur_i-self.Bank.row(items[0])) == 1: item = items[0]
+            else: item = self.Bank.current
             self.Word_Entry.setText(item.word)
         else:
             self.Delete.setEnabled(False)
