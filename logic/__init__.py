@@ -55,7 +55,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.LReload.clicked.connect(self.reload_lexis)
         self.setting_ui.viewLexicons.clicked.connect(lambda:Popen(f'explorer "{info.lexis_dir}"'))
         self.setting_ui.viewCache.clicked.connect(lambda:Popen(f'explorer "{info.cache_dir}"'))
-        self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
+        self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self.ui.raw, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
