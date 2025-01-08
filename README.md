@@ -1,12 +1,12 @@
 # Plume Lexicon
-**A simple locale translation tool at your service.**
+### A Simple Local Translate Tool at Your Service.
 
-### Origin
+### 💡 Origin
  - **Former Name: Translator**
  - The Lexicons Originated from [**ECDICT**](https://github.com/skywind3000/ECDICT)
  - In my quest of *4000 Essential Words* , I grappled with unfamiliar terms that were hard to comprehend and summarize. Hence, the idea for this app blossomed...
 
-### Functions
+### 🤔 Functions
 
  - Base translate / correct function \
   ![Translate (English)](.pics/translate.png "Translate (English)")
@@ -17,7 +17,7 @@
 
  - ...
 
-### Platform
+### 💻 Platforms (theoretically)
  - Windows 8.1
  - Windows 10
- - **Windows 11** (*Best*)
+ - **Windows 11** (*Best View*)
