@@ -10,6 +10,8 @@ class Public(dict):
         except:
             self['default_path'] = None
             self['ui_states'] = {}
+            self['recent'] = []
+            self['debug'] = False
     
     def dump(self):
         try: dump(self, open(data, 'w', encoding='utf-8'), indent=4)

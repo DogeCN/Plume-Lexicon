@@ -2,6 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from libs.configs.settings import Setting
+from . import res
 
 class Ui_Settings(object):
     def setupUi(self, Settings:QDialog):
@@ -21,8 +22,12 @@ class Ui_Settings(object):
         self.horizontalLayout_5.addWidget(self.lLang)
 
         self.Lang = QComboBox(Settings)
-        self.Lang.addItem(u"\u7b80\u4f53\u4e2d\u6587")
-        self.Lang.addItem(u"English")
+        icon1 = QIcon()
+        icon1.addFile(u":/icon/Chinese.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Lang.addItem(icon1, u"\u7b80\u4f53\u4e2d\u6587")
+        icon2 = QIcon()
+        icon2.addFile(u":/icon/English.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.Lang.addItem(icon2, u"English")
         self.Lang.setObjectName(u"Lang")
 
         self.horizontalLayout_5.addWidget(self.Lang)
@@ -55,8 +60,8 @@ class Ui_Settings(object):
         self.Auto_Save = QCheckBox(Settings)
         self.Auto_Save.setObjectName(u"Auto_Save")
         self.Auto_Save.setMaximumSize(QSize(40, 20))
-        icon1 = QIcon(QIcon.fromTheme(u"document-save"))
-        self.Auto_Save.setIcon(icon1)
+        icon3 = QIcon(QIcon.fromTheme(u"document-save"))
+        self.Auto_Save.setIcon(icon3)
 
         self.horizontalLayout_2.addWidget(self.Auto_Save)
 
@@ -81,15 +86,15 @@ class Ui_Settings(object):
 
         self.CClear = QPushButton(Settings)
         self.CClear.setObjectName(u"CClear")
-        icon2 = QIcon(QIcon.fromTheme(u"user-trash"))
-        self.CClear.setIcon(icon2)
+        icon4 = QIcon(QIcon.fromTheme(u"user-trash"))
+        self.CClear.setIcon(icon4)
 
         self.horizontalLayout_3.addWidget(self.CClear)
 
         self.viewCache = QToolButton(Settings)
         self.viewCache.setObjectName(u"viewCache")
-        icon3 = QIcon(QIcon.fromTheme(u"folder-open"))
-        self.viewCache.setIcon(icon3)
+        icon5 = QIcon(QIcon.fromTheme(u"folder-open"))
+        self.viewCache.setIcon(icon5)
         self.viewCache.setIconSize(QSize(30, 16))
 
         self.horizontalLayout_3.addWidget(self.viewCache)
@@ -148,21 +153,21 @@ class Ui_Settings(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.Online = QCheckBox(Settings)
         self.Online.setObjectName(u"Online")
-        icon4 = QIcon(QIcon.fromTheme(u"applications-internet"))
-        self.Online.setIcon(icon4)
+        icon6 = QIcon(QIcon.fromTheme(u"applications-internet"))
+        self.Online.setIcon(icon6)
 
         self.horizontalLayout.addWidget(self.Online)
 
         self.LReload = QPushButton(Settings)
         self.LReload.setObjectName(u"LReload")
-        icon5 = QIcon(QIcon.fromTheme(u"view-refresh"))
-        self.LReload.setIcon(icon5)
+        icon7 = QIcon(QIcon.fromTheme(u"view-refresh"))
+        self.LReload.setIcon(icon7)
 
         self.horizontalLayout.addWidget(self.LReload)
 
         self.viewLexicons = QToolButton(Settings)
         self.viewLexicons.setObjectName(u"viewLexicons")
-        self.viewLexicons.setIcon(icon3)
+        self.viewLexicons.setIcon(icon5)
         self.viewLexicons.setIconSize(QSize(30, 16))
 
         self.horizontalLayout.addWidget(self.viewLexicons)

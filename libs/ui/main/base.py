@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtCore, QtGui
 from libs.debris import Get_New_File_Name
 from libs.translate import Result
 from libs.configs.settings import Setting
+from libs.configs.public import Publics
 from libs.io import io, dialog
 from math import log10
 import info
@@ -181,11 +182,13 @@ class FItem(BaseListWidgetItem):
     def load(self):
         if self.exists():
             self.results = io.read_vocabulary(self.file)
+            self.join_recent()
         else: self.results = []
     
     def save(self, silent=False):
         if self.exists():
             io.save_vocabulary(self.results, self.file)
+            self.join_recent()
             self.saved = True
         else:
             if not silent:
@@ -201,6 +204,15 @@ class FItem(BaseListWidgetItem):
             file = dialog.SaveFile(None, Setting.getTr('save_as'), info.ext_all_voca)
             if not file: return
         io.save_vocabulary(self.results, file)
+        self.join_recent()
+
+    def join_recent(self):
+        recent = Publics['recent'] #type: list
+        if self.file in recent:
+            recent.remove(self.file)
+        recent.insert(0, self.file)
+        if len(recent) > info.max_recent: recent.pop()
+        Publics['recent'] = recent
 
 class Files(BaseListWidget):
 

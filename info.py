@@ -8,9 +8,10 @@ def check_dir(dir):
 prog_name = 'Plume Lexicon'
 prog_name_cn = '羽词'
 author = 'DogeCN'
-version = 'v1.14.9'
+version = 'v1.15.0'
 argv0 = sys.argv[0]
 argv1 = sys.argv[1] if len(sys.argv) > 1 else None
+exe = argv0.endswith('.exe')
 prog_running = True
 data_dir = check_dir(os.getenv('AppData') + os.sep + prog_name + os.sep)
 temp_dir = check_dir(os.getenv('Temp') + os.sep + prog_name + os.sep)
@@ -22,15 +23,13 @@ ext_disabled = '.disabled'
 ext_voca = '.pvf'
 ext_settings = '.psf'
 ext_all_voca = '*' + ext_voca
-ext_self_exe = '.exe'
-debug_file = data_dir + '.DEBUG'
-debug = os.path.exists(debug_file)
 temp = temp_dir + 'temp'
 timeout = 3
+max_recent = 5
 running = temp_dir + '.running'
 running_sign = ' '
 tools = 'tools'
-default_voca = data_dir + 'vocabulary' + ext_voca
+default_voca = data_dir + 'default' + ext_voca
 reg_ext = 'Software\\Classes\\' + ext_voca
 reg_cmd = 'shell\\open\\command'
 repo_name = 'Plume-Lexicon'
@@ -129,6 +128,7 @@ UITr = {
     'Relaod Tools' : '重载工具',
     'Remove' : '移除',
     'Remove Current File' : '移除当前文件',
+    'Recent' : '最近',
     'New' : '新建',
     'Create a New File' : '新建文件',
     'Save All' : '全部保存',

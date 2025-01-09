@@ -3,6 +3,7 @@ import time, winreg, traceback
 from logic import LMainWindow
 from libs.stdout import print, log_init
 from libs.debris import Refresh_Icons
+from libs.configs.public import Publics
 import info, warnings
 
 warnings.filterwarnings('ignore')
@@ -25,14 +26,13 @@ def main():
     app.exec()
 
 def register(): #For PyInstaller Exe
-    file = info.argv0
-    if file.endswith(info.ext_self_exe):
+    if info.exe:
         sub_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, info.reg_ext)
-        winreg.SetValue(sub_key, info.reg_cmd, winreg.REG_SZ, f'"{file}" "%1"')
+        winreg.SetValue(sub_key, info.reg_cmd, winreg.REG_SZ, f'"{info.argv0}" "%1"')
         Refresh_Icons()
         print('Registered')
 
-if info.debug:
+if Publics['debug']:
     print('Debug Mode ON', 'Red', 'Bold')
     main()
 else:

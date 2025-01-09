@@ -63,13 +63,14 @@ class LMain(Ui_MainWindow):
         self.parent = MainWindow
         self.raw = QMainWindow(MainWindow)
         self.raw.setStyleSheet(info.StlSheets['raw'])
-        if not info.debug:
+        if not Publics['debug']:
             Thread(target=self.check_update, args=(True,)).start()
         Thread(target=self.handle).start()
         self.connect_actions()
     
     def connect_actions(self):
         #Menu Actions
+        self.menuRecent.aboutToShow.connect(self.recent_update)
         self.actionNew.triggered.connect(self.Files.new)
         self.actionReload.triggered.connect(lambda:(lambda item:item.load() or self._display_file(item) if item else self.load())(self.Files.current))
         self.actionLoad.triggered.connect(lambda:(lambda f:self._display_file(self.Files.load(f)[0]) if f else ...)(dialog.OpenFiles(self.parent, Setting.getTr('load'), info.ext_all_voca)))
@@ -186,12 +187,12 @@ class LMain(Ui_MainWindow):
 
     def load(self, files:str|list[str]=None):
         states = Publics['ui_states']
-        if not files: files = states['files'] if 'files' in states else info.default_voca
-        if 'current' in states and (current := states['current']):
-            for f in files:
-                item = self.Files.load(f)
-                if f == current:
-                    self.Files.current = item
+        if not files: files = states['files'] if 'files' in states else [info.default_voca]
+        current = states['current'] if 'current' in states else None
+        for f in files:
+            item = self.Files.load(f)
+            if current and f == current:
+                self.Files.current = item
         self.display_file()
 
     def store_states(self):
@@ -224,6 +225,14 @@ class LMain(Ui_MainWindow):
             elif not silent: QMessageBox.information(self.raw, Setting.getTr('info'), Setting.getTr('update_latest'))
         except:
             if not silent: QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('update_failed'))
+
+    def recent_update(self):
+        self.menuRecent.clear()
+        recent = Publics['recent'] #type: list[str]
+        for f in recent:
+            action = self.menuRecent.addAction(f.split('/')[-1])
+            action.triggered.connect(lambda f=f:self.load(f))
+            self.menuRecent.addAction(action)
 
     def display_selection(self):
         items = self.Bank.selections

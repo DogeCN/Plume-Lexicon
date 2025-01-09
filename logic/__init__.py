@@ -5,7 +5,7 @@ from libs.translate import trans
 from libs.translate.dict import LexiBox, csignal
 from libs.configs.settings import Setting
 from libs.tool import load
-from libs.ui.setting import Ui_Settings
+from libs.ui.settings import Ui_Settings
 from libs.debris import Ticker, Set_Acrylic, Clean_Dir, Convert_Size
 from .main import LMain
 from threading import Thread
@@ -24,7 +24,6 @@ class LMainWindow(QMainWindow):
         self.tmenu.setStyleSheet(info.StlSheets['tmenu'])
         self.tray.setContextMenu(self.tmenu)
         self.show()
-        self.tray.show()
         #Setting
         self.setting = QDialog(self)
         self.setting_ui = Ui_Settings()
@@ -38,7 +37,7 @@ class LMainWindow(QMainWindow):
         self.ui.restore_states()
         Set_Acrylic(self)
         #Threading
-        Thread(target=lambda:self.ui.load(info.argv1)).start()
+        Thread(target=self.ui.load, args=(info.argv1,)).start()
         Thread(target=self.auto_translate).start()
         self.auto_save_timer = self.ticker(lambda:self.ui.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
         self.ticker(self.check, 500)
@@ -80,6 +79,7 @@ class LMainWindow(QMainWindow):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
             self.activateWindow()
             self.showNormal()
+            self.tray.hide()
 
     def accept(self):
         Setting.Auto_save = self.setting_ui.Auto_Save.isChecked()
@@ -169,6 +169,7 @@ class LMainWindow(QMainWindow):
     def closeEvent(self, evt:QEvent):
         if info.prog_running:
             self.hide()
+            self.tray.show()
             evt.ignore()
         else:
             if Setting.Auto_save:
