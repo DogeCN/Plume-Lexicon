@@ -1,10 +1,9 @@
 from PySide6.QtWidgets import QApplication
-import time, winreg, traceback
 from logic import LMainWindow
 from libs.stdout import print, log_init
 from libs.debris import Refresh_Icons
 from libs.configs.public import Publics
-import info, warnings
+import time, winreg, traceback, warnings, info
 
 warnings.filterwarnings('ignore')
 
@@ -22,7 +21,12 @@ def main():
             return
     log_init()
     app = QApplication()
-    LMainWindow()
+    window = LMainWindow()
+    if info.exe:
+        import pyi_splash  #type: ignore
+        pyi_splash.close()
+        window.showMinimized()
+    window.showNormal()
     app.exec()
 
 def register(): #For PyInstaller Exe

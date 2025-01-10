@@ -23,7 +23,6 @@ class LMainWindow(QMainWindow):
         self.tmenu.addAction(self.ui.actionExit)
         self.tmenu.setStyleSheet(info.StlSheets['tmenu'])
         self.tray.setContextMenu(self.tmenu)
-        self.show()
         #Setting
         self.setting = QDialog(self)
         self.setting_ui = Ui_Settings()
