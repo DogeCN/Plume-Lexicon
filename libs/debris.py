@@ -92,7 +92,9 @@ class QSSFactory:
     def Set(cls, theme=None):
         info.app.setStyleSheet('')
         if theme in [0, cls.theme_names[0]]:
+            info.app.setStyle('Windows11')
             cls.main_bg_color = \
+            cls.border_color = \
             cls.selected_bg_color = 'transparent'
             cls.menu_bg_color = 'rgb(60, 60, 60)'
             for win in info.app.allWindows():
@@ -112,6 +114,7 @@ class QSSFactory:
             cls.main_bg_color = 'rgb(43, 43, 43)'
             cls.menu_bg_color = 'rgb(30, 30, 30)'
             cls.selected_bg_color = 'rgb(60, 60, 60)'
+            cls.border_color = 'rgb(90, 90, 90)'
             if theme in [1, cls.theme_names[1]]: info.app.setStyleSheet(cls.Get())
             elif theme in [2, cls.theme_names[2]]: info.app.setStyle('Fusion')
 

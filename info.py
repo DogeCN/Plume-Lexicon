@@ -9,7 +9,7 @@ def check_dir(dir):
 prog_name = 'Plume Lexicon'
 prog_name_cn = '羽词'
 author = 'DogeCN'
-version = 'v1.15.0'
+version = 'v1.15.1'
 app = QApplication()
 argv0 = sys.argv[0]
 argv1 = sys.argv[1] if len(sys.argv) > 1 else None
