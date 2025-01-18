@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QApplication
 import os, sys
 
 def check_dir(dir):
@@ -9,6 +10,7 @@ prog_name = 'Plume Lexicon'
 prog_name_cn = '羽词'
 author = 'DogeCN'
 version = 'v1.15.0'
+app = QApplication()
 argv0 = sys.argv[0]
 argv1 = sys.argv[1] if len(sys.argv) > 1 else None
 exe = argv0.endswith('.exe')
@@ -82,6 +84,12 @@ StlSheets = {
 
 UITr = {
     'Setting' : '设置',
+    'Interface' : '界面',
+    'Theme' : '主题',
+    'Acrylic' : '亚克力',
+    'Dark' : '暗黑',
+    'Default' : '默认',
+    'Fusion' : '聚变',
     'Language' : '语言',
     'Auto Save' : '自动保存',
     'Top' : '置顶',

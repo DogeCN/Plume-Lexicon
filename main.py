@@ -1,4 +1,3 @@
-from PySide6.QtWidgets import QApplication
 from logic import LMainWindow
 from libs.stdout import print, log_init
 from libs.debris import Refresh_Icons
@@ -20,9 +19,8 @@ def main():
             else: open(fr, 'a').write(f'{info.running_sign}\n')
             return
     log_init()
-    app = QApplication()
-    LMainWindow().show()
-    app.exec()
+    LMainWindow()
+    info.app.exec()
 
 def register(): #For PyInstaller Exe
     if info.exe:

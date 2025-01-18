@@ -13,6 +13,20 @@ class Ui_Settings(object):
         Settings.setWindowIcon(icon)
         self.gridLayout = QGridLayout(Settings)
         self.gridLayout.setObjectName(u"gridLayout")
+        self.lInterface = QLabel(Settings)
+        self.lInterface.setObjectName(u"lInterface")
+        self.lInterface.setMinimumSize(QSize(218, 0))
+        self.lInterface.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout.addWidget(self.lInterface, 0, 0, 1, 2)
+
+        self.buttonBox = QDialogButtonBox(Settings)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Orientation.Vertical)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
+
+        self.gridLayout.addWidget(self.buttonBox, 0, 2, 2, 1)
+
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.lLang = QLabel(Settings)
@@ -33,21 +47,45 @@ class Ui_Settings(object):
         self.horizontalLayout_5.addWidget(self.Lang)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_5, 0, 0, 1, 2)
+        self.gridLayout.addLayout(self.horizontalLayout_5, 1, 0, 1, 2)
 
-        self.buttonBox = QDialogButtonBox(Settings)
-        self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Orientation.Vertical)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.lTheme = QLabel(Settings)
+        self.lTheme.setObjectName(u"lTheme")
+        self.lTheme.setMaximumSize(QSize(57, 16777215))
 
-        self.gridLayout.addWidget(self.buttonBox, 0, 2, 2, 1)
+        self.horizontalLayout_4.addWidget(self.lTheme)
+
+        self.themeAcrylic = QRadioButton(Settings)
+        self.themeAcrylic.setObjectName(u"themeAcrylic")
+
+        self.horizontalLayout_4.addWidget(self.themeAcrylic)
+
+        self.themeDark = QRadioButton(Settings)
+        self.themeDark.setObjectName(u"themeDark")
+
+        self.horizontalLayout_4.addWidget(self.themeDark)
+
+        self.themeFusion = QRadioButton(Settings)
+        self.themeFusion.setObjectName(u"themeFusion")
+
+        self.horizontalLayout_4.addWidget(self.themeFusion)
+
+        self.themeDefault = QRadioButton(Settings)
+        self.themeDefault.setObjectName(u"themeDefault")
+
+        self.horizontalLayout_4.addWidget(self.themeDefault)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_4, 2, 0, 1, 2)
 
         self.lFile = QLabel(Settings)
         self.lFile.setObjectName(u"lFile")
         self.lFile.setMinimumSize(QSize(218, 0))
         self.lFile.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout.addWidget(self.lFile, 1, 0, 1, 2)
+        self.gridLayout.addWidget(self.lFile, 3, 0, 1, 2)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -74,7 +112,7 @@ class Ui_Settings(object):
         self.horizontalLayout_2.addWidget(self.Interval)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_2, 2, 0, 1, 2)
+        self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 2)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -100,13 +138,13 @@ class Ui_Settings(object):
         self.horizontalLayout_3.addWidget(self.viewCache)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_3, 3, 0, 1, 2)
+        self.gridLayout.addLayout(self.horizontalLayout_3, 5, 0, 1, 2)
 
         self.lHot = QLabel(Settings)
         self.lHot.setObjectName(u"lHot")
         self.lHot.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout.addWidget(self.lHot, 4, 0, 1, 2)
+        self.gridLayout.addWidget(self.lHot, 6, 0, 1, 2)
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -126,28 +164,28 @@ class Ui_Settings(object):
         self.verticalLayout_2.addWidget(self.lTop)
 
 
-        self.gridLayout.addLayout(self.verticalLayout_2, 5, 0, 3, 1)
+        self.gridLayout.addLayout(self.verticalLayout_2, 7, 0, 3, 1)
 
         self.Key_Add = QKeySequenceEdit(Settings)
         self.Key_Add.setObjectName(u"Key_Add")
 
-        self.gridLayout.addWidget(self.Key_Add, 5, 1, 1, 1)
+        self.gridLayout.addWidget(self.Key_Add, 7, 1, 1, 1)
 
         self.Key_Delete = QKeySequenceEdit(Settings)
         self.Key_Delete.setObjectName(u"Key_Delete")
 
-        self.gridLayout.addWidget(self.Key_Delete, 6, 1, 1, 1)
+        self.gridLayout.addWidget(self.Key_Delete, 8, 1, 1, 1)
 
         self.Key_Top = QKeySequenceEdit(Settings)
         self.Key_Top.setObjectName(u"Key_Top")
 
-        self.gridLayout.addWidget(self.Key_Top, 7, 1, 1, 1)
+        self.gridLayout.addWidget(self.Key_Top, 9, 1, 1, 1)
 
         self.lTranslate = QLabel(Settings)
         self.lTranslate.setObjectName(u"lTranslate")
         self.lTranslate.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout.addWidget(self.lTranslate, 8, 0, 1, 2)
+        self.gridLayout.addWidget(self.lTranslate, 10, 0, 1, 2)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -173,7 +211,7 @@ class Ui_Settings(object):
         self.horizontalLayout.addWidget(self.viewLexicons)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout, 9, 0, 1, 2)
+        self.gridLayout.addLayout(self.horizontalLayout, 11, 0, 1, 2)
 
         self.LexiconBox = QGroupBox(Settings)
         self.LexiconBox.setObjectName(u"LexiconBox")
@@ -188,7 +226,7 @@ class Ui_Settings(object):
         self.Lexicons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 401, 112))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 401, 64))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.Lexicons.setWidget(self.scrollAreaWidgetContents)
@@ -196,7 +234,7 @@ class Ui_Settings(object):
         self.verticalLayout_3.addWidget(self.Lexicons)
 
 
-        self.gridLayout.addWidget(self.LexiconBox, 10, 0, 1, 2)
+        self.gridLayout.addWidget(self.LexiconBox, 12, 0, 1, 2)
 
 
         self.retranslateUi(Settings)
@@ -205,7 +243,13 @@ class Ui_Settings(object):
 
     def retranslateUi(self, Settings:QDialog):
         Settings.setWindowTitle(Setting.translateUI('Settings'))
+        self.lInterface.setText(Setting.translateUI('Interface'))
         self.lLang.setText(Setting.translateUI('Language'))
+        self.lTheme.setText(Setting.translateUI('Theme'))
+        self.themeAcrylic.setText(Setting.translateUI('Acrylic'))
+        self.themeDark.setText(Setting.translateUI('Dark'))
+        self.themeFusion.setText(Setting.translateUI('Fusion'))
+        self.themeDefault.setText(Setting.translateUI('Default'))
         self.lFile.setText(Setting.translateUI('Files'))
         self.lAuto.setText(Setting.translateUI('Auto Save'))
         self.Interval.setSuffix(Setting.translateUI(' Secs'))
