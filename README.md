@@ -17,7 +17,7 @@
 
  - ...
 
-### 💻 Platforms (theoretically)
+### 💻 Platforms
  - Windows 8.1
  - Windows 10
- - **Windows 11** (*Best View*)
+ - **Windows 11**
