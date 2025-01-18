@@ -64,15 +64,12 @@ def uimain():
     dialog.exec()
 
 def main():
-    try:
-        save_settings()
-        file_name = tool.dialog.SaveFile(type='*.docx')
-        if file_name:
-            process().save(file_name)
-            if tool.message.Ask(tool.tr('view') % file_name):
-                tool.dialog.Pop(file_name)
-    except Exception as e:
-        tool.message.Error(tool.tr('error') % e)
+    save_settings()
+    file_name = tool.dialog.SaveFile(type='*.docx')
+    if file_name:
+        process().save(file_name)
+        if tool.message.Ask(tool.tr('view') % file_name):
+            tool.dialog.Pop(file_name)
 
 def process():
     from libs.configs.settings import Setting

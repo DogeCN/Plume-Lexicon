@@ -54,8 +54,10 @@ class LMain(Ui_MainWindow):
         for item in self.Files.items: item.save(silent)
     def check(self): self.set_add_locked(not len(self.Files.items))
     def close(self): info.prog_running = False; self.parent.close()
-    def set_expand(self, results): self.Expand.results = results
-    def set_exchanges(self, results): self.Exchanges.results = results
+    def set_expand(self, results):
+        if not self.hc and not self.tc: self.Expand.results = results
+    def set_exchanges(self, results):
+        if not self.hc and not self.tc: self.Exchanges.results = results
 
     def __init__(self, MainWindow:QMainWindow):
         super().__init__()
@@ -100,8 +102,8 @@ class LMain(Ui_MainWindow):
         self.signal.set_result_singal.connect(self.set_result)
         self.signal.show_update_singal.connect(self.show_update)
         self.signal.callback_singal.connect(lambda:QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('translate_function_unavailable')))
-        self.signal.exchange_singal.connect(lambda r: self.set_exchanges(r) if not self.tc else ...)
-        self.signal.expand_singal.connect(lambda r: self.set_expand(r) if not self.tc else ...)
+        self.signal.exchange_singal.connect(self.set_exchanges)
+        self.signal.expand_singal.connect(self.set_expand)
 
     def setShotcuts(self):
         self.Add.setShortcut(Setting.Key_Add)
@@ -139,10 +141,10 @@ class LMain(Ui_MainWindow):
             self.Translated_text.setToolTip(Setting.getTr('correct_hint'))
         elif result:
             self.Phonetic.setToolTip(info.speech_hint % Setting.getTr('speech_hint'))
-            self.hc = True
             self.exchanges = result.exchanges
             self.expands = result.expands
             self.result = result
+            self.hc = True
 
     def _handle(self, generator, emit):
         if generator:

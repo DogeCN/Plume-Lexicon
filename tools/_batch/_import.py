@@ -9,33 +9,30 @@ tr = {
 }
 
 def main():
-    try:
-        files = tool.dialog.OpenFiles(type='*.txt')
-        if files:
-            results = []
-            correct = {}
-            for file in files:
-                with open(file, 'r', encoding='utf-8') as t:
-                    for word in t:
-                        word = word.strip()
-                        if word:
-                            top = word[0] == '*'
-                            result = translate(word[1:] if top else word)
-                            result.top = top
-                            if result.match:
-                                correct[word] = result.word
-                                result.match = False
-                                result.top = True
-                            results.append(result)
-            tool.mw.ui.Files.new()
-            tool.mw.ui.Bank.append(results)
-            finfo = ', '.join(files)
-            tool.message.Show(tool.tr('imported') % finfo)
-            if correct:
-                info = '\n'.join([f"'{w}' -> '{correct[w]}'" for w in correct])
-                tool.message.Show(tool.tr('corrected') % info)
-    except Exception as e:
-        tool.message.Error(tool.tr('error') % e)
+    files = tool.dialog.OpenFiles(type='*.txt')
+    if files:
+        results = []
+        correct = {}
+        for file in files:
+            with open(file, 'r', encoding='utf-8') as t:
+                for word in t:
+                    word = word.strip()
+                    if word:
+                        top = word[0] == '*'
+                        result = translate(word[1:] if top else word)
+                        result.top = top
+                        if result.match:
+                            correct[word] = result.word
+                            result.match = False
+                            result.top = True
+                        results.append(result)
+        tool.mw.ui.Files.new()
+        tool.mw.ui.Bank.append(results)
+        finfo = ', '.join(files)
+        tool.message.Show(tool.tr('imported') % finfo)
+        if correct:
+            info = '\n'.join([f"'{w}' -> '{correct[w]}'" for w in correct])
+            tool.message.Show(tool.tr('corrected') % info)
 
 tool = Tool()
 tool.name = 'Import'

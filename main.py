@@ -21,12 +21,7 @@ def main():
             return
     log_init()
     app = QApplication()
-    window = LMainWindow()
-    if info.exe:
-        import pyi_splash  #type: ignore
-        pyi_splash.close()
-        window.showMinimized()
-    window.showNormal()
+    LMainWindow().show()
     app.exec()
 
 def register(): #For PyInstaller Exe

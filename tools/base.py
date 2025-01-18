@@ -45,7 +45,8 @@ class Menu(_Action):
             self._menu = QMenu(self.tool.mw.ui.menuTools)
             self._menu.hide()
         for tool in self.tools:
-            tool.action.icon = self.icon
+            if not tool.action.icon:
+                tool.action.icon = self.icon
             action = tool.action()
             action.setParent(self._menu)
             if tool.type: action.setMenu(action)
@@ -141,7 +142,9 @@ class Tool:
     def init(self):
         pass
     def __call__(self, *args):
-        if self.entrance: self.entrance(*args)
+        if self.entrance:
+            try: self.entrance(*args)
+            except Exception as e: self.message.Error(e)
         else: print(f"Can't find an entrance of the tool {self.name}", 'Red')
     #Get Info in Diffrent Languages
     def _get(self, attr) -> str:
