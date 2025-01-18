@@ -1,12 +1,6 @@
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QApplication
 from pywinstyles import apply_style
-import win32clipboard, platform, ctypes, os
-
-def Set_Acrylic(window:QMainWindow):
-    try:
-        assert int(platform.release()) > 10
-        #apply_style(window, 'acrylic')
-    except: ...
+import win32clipboard, ctypes, os
 
 def Get_Language():
     dll_h = ctypes.windll.kernel32
@@ -81,3 +75,139 @@ class Ticker:
         else:
             self.tick += 1
             return False
+
+class QSSFactory:
+    main_bg_color = "rgb(43, 43, 43)"
+    menu_bg_color = "rgb(30, 30, 30)"
+    selected_bg_color = "rgb(60, 60, 60)"
+    text_color = "rgb(255, 255, 255)"
+    border_color = "rgb(90, 90, 90)"
+    hover_border_color = "rgb(0, 170, 255)"
+    padding = "3px"
+    padding_right = "10px"
+
+    @classmethod
+    def Set(cls, theme):
+        if theme == 'Acrylic':
+            for win in QApplication.allWindows():
+                apply_style(win, 'acrylic')
+        elif theme == 'Dark':
+            QApplication.setStyleSheet(cls.Get())
+        else:
+            QApplication.setStyle(theme)
+
+    @classmethod
+    def Get(cls):
+        return f"""
+            QMainWindow {{
+                background-color: {cls.main_bg_color};
+                border-radius: 5px;
+            }}
+            QMenuBar {{
+                background-color: {cls.main_bg_color};
+                color: {cls.text_color};
+                border-radius: 5px;
+                padding: {cls.padding};
+            }}
+            QMenuBar::item {{
+                background-color: {cls.main_bg_color};
+                color: {cls.text_color};
+                border-radius: 5px;
+                padding: {cls.padding} {cls.padding_right};
+            }}
+            QMenuBar::item:selected {{
+                background-color: {cls.selected_bg_color};
+                border-radius: 5px;
+            }}
+            QMenu {{
+                background-color: {cls.menu_bg_color};
+                color: {cls.text_color};
+                border-radius: 5px;
+                padding: {cls.padding};
+            }}
+            QMenu::item {{
+                background-color: {cls.menu_bg_color};
+                color: {cls.text_color};
+                border-radius: 5px;
+                padding: {cls.padding} {cls.padding_right};
+            }}
+            QMenu::item:selected {{
+                background-color: {cls.selected_bg_color};
+                border-radius: 5px;
+            }}
+            QStatusBar {{
+                background-color: {cls.main_bg_color};
+                color: {cls.text_color};
+                border-radius: 5px;
+            }}
+            QPushButton {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+                min-width: 70px;
+            }}
+            QPushButton:disabled {{
+                background-color: {cls.main_bg_color};
+                color: {cls.border_color};
+                border-radius: 5px;
+            }}
+            QPushButton:hover {{
+                background-color: {cls.selected_bg_color};
+                border-radius: 5px;
+                border: 1px solid {cls.hover_border_color};
+            }}
+            QLineEdit {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+            }}
+            QLineEdit:hover {{
+                border: 1px solid {cls.hover_border_color};
+            }}
+            QLabel {{
+                color: {cls.text_color};
+                border-radius: 5px;
+            }}
+            QListWidget {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+            }}
+            QListWidget:hover {{
+                border: 1px solid {cls.hover_border_color};
+            }}
+            QToolTip {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 0px;
+            }}
+            QSplitter::handle {{
+                border: 0px;
+            }}
+            QSplitter::handle:horizontal {{
+                width: 5px;
+            }}
+            QToolButton {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+            }}
+            QToolButton:hover {{
+                background-color: {cls.selected_bg_color};
+                border: 1px solid {cls.hover_border_color};
+            }}
+            QKeySequenceEdit {{
+                background-color: {cls.selected_bg_color};
+                color: {cls.text_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+            }}
+            QKeySequenceEdit:hover {{
+                background-color: {cls.selected_bg_color};
+                border: 1px solid {cls.hover_border_color};
+            }}
+        """

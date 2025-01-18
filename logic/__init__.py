@@ -6,7 +6,7 @@ from libs.translate.dict import LexiBox, csignal
 from libs.configs.settings import Setting
 from libs.tool import load
 from libs.ui.settings import Ui_Settings
-from libs.debris import Ticker, Set_Acrylic, Clean_Dir, Convert_Size
+from libs.debris import Ticker, Clean_Dir, Convert_Size
 from .main import LMain
 from threading import Thread
 from subprocess import Popen
@@ -19,9 +19,8 @@ class LMainWindow(QMainWindow):
         #Window Build
         self.ui = LMain(self)
         self.tray = QSystemTrayIcon(self.ui.icon, self)
-        self.tmenu = QMenu(self.ui.raw)
+        self.tmenu = QMenu(self)
         self.tmenu.addAction(self.ui.actionExit)
-        self.tmenu.setStyleSheet(info.StlSheets['tmenu'])
         self.tray.setContextMenu(self.tmenu)
         #Setting
         self.setting = QDialog(self)
@@ -34,7 +33,6 @@ class LMainWindow(QMainWindow):
         self.ui.setShotcuts()
         self.ui.load_lexis()
         self.ui.restore_states()
-        Set_Acrylic(self)
         #Threading
         Thread(target=self.ui.load, args=(info.argv1,)).start()
         Thread(target=self.auto_translate).start()
@@ -53,7 +51,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.LReload.clicked.connect(self.reload_lexis)
         self.setting_ui.viewLexicons.clicked.connect(lambda:Popen(f'explorer "{info.lexis_dir}"'))
         self.setting_ui.viewCache.clicked.connect(lambda:Popen(f'explorer "{info.cache_dir}"'))
-        self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self.ui.raw, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
+        self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
@@ -91,7 +89,6 @@ class LMainWindow(QMainWindow):
         Setting.dump()
 
     def setting_show(self):
-        Set_Acrylic(self.setting)
         self.setting_ui.Lang.setCurrentIndex(Setting.Language)
         self.setting_ui.Auto_Save.setChecked(Setting.Auto_save)
         self.setting_ui.Interval.setEnabled(Setting.Auto_save)

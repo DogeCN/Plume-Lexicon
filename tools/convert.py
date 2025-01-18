@@ -2,7 +2,6 @@ from .base import *
 from PySide6.QtWidgets import QDialog
 from ._convert import ui
 from libs.stdout import _getstamp
-from libs.debris import Set_Acrylic
 from docx import Document
 from docx.oxml.ns import qn
 from docx.shared import Pt
@@ -57,7 +56,6 @@ def uimain():
     dialog.setWindowIcon(ui.icon)
     dialog.accepted.connect(main)
     dialog.setWindowTitle(tool.get_name())
-    Set_Acrylic(dialog)
     ui.setupUi(dialog, UITr)
     ui.Stamp.toggled.connect(lambda b: ui.Stamp_Format.setEnabled(b) or ui.Word_Count.setEnabled(b))
     load_settings()

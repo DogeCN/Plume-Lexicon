@@ -76,10 +76,8 @@ you can read existed vocabularies.
 }
 
 StlSheets = {
-    'tmenu' : 'border-radius:5px;',
-    'raw' : 'background-color: rgb(30, 30, 30);',
     'green' : 'color: rgb(30,200,30);',
-    'red' : 'color: rgb(200,30,30);'
+    'red' : 'color: rgb(200,30,30);',
 }
 
 UITr = {

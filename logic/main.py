@@ -34,7 +34,6 @@ class LMain(Ui_MainWindow):
     exchanges = None
     expands = None
     parent = None
-    raw = None
     tc = False
     hc = False
 
@@ -63,8 +62,6 @@ class LMain(Ui_MainWindow):
         super().__init__()
         self.setupUi(MainWindow)
         self.parent = MainWindow
-        self.raw = QMainWindow(MainWindow)
-        self.raw.setStyleSheet(info.StlSheets['raw'])
         if not Publics['debug']:
             Thread(target=self.check_update, args=(True,)).start()
         Thread(target=self.handle).start()
@@ -84,7 +81,7 @@ class LMain(Ui_MainWindow):
         self.actionExit.triggered.connect(self.close)
         self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
         self.actionAbout.triggered.connect(lambda:webbrowser.open(info.repo_url))
-        self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.raw))
+        self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.parent))
         #Button Actions
         self.Add.clicked.connect(self.command_add)
         self.Delete.clicked.connect(self.Bank.remove)
@@ -101,7 +98,7 @@ class LMain(Ui_MainWindow):
         #Signal
         self.signal.set_result_singal.connect(self.set_result)
         self.signal.show_update_singal.connect(self.show_update)
-        self.signal.callback_singal.connect(lambda:QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('translate_function_unavailable')))
+        self.signal.callback_singal.connect(lambda:QMessageBox.warning(self.parent, Setting.getTr('warning'), Setting.getTr('translate_function_unavailable')))
         self.signal.exchange_singal.connect(self.set_exchanges)
         self.signal.expand_singal.connect(self.set_expand)
 
@@ -222,11 +219,11 @@ class LMain(Ui_MainWindow):
         try:
             ver = latest['tag_name']
             if ver != info.version:
-                if QMessageBox.question(self.raw, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
+                if QMessageBox.question(self.parent, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
                     == QMessageBox.StandardButton.Yes: webbrowser.open(latest['html_url'])
-            elif not silent: QMessageBox.information(self.raw, Setting.getTr('info'), Setting.getTr('update_latest'))
+            elif not silent: QMessageBox.information(self.parent, Setting.getTr('info'), Setting.getTr('update_latest'))
         except:
-            if not silent: QMessageBox.warning(self.raw, Setting.getTr('warning'), Setting.getTr('update_failed'))
+            if not silent: QMessageBox.warning(self.parent, Setting.getTr('warning'), Setting.getTr('update_failed'))
 
     def recent_update(self):
         self.menuRecent.clear()
