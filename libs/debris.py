@@ -5,7 +5,7 @@ import win32clipboard, platform, ctypes, os
 def Set_Acrylic(window:QMainWindow):
     try:
         assert int(platform.release()) > 10
-        apply_style(window, 'acrylic')
+        #apply_style(window, 'acrylic')
     except: ...
 
 def Get_Language():

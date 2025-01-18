@@ -9,12 +9,100 @@ class Ui_MainWindow:
     def __init__(self):
         self.icon = QIcon()
         self.icon.addFile(u":/img/icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.dark_theme_qss = """
+        QMainWindow {
+            background-color: #2b2b2b;
+            border-radius: 5px;
+        }
+        QMenuBar {
+            background-color: #2b2b2b;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        QMenuBar::item {
+            background-color: #2b2b2b;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        QMenuBar::item:selected {
+            background-color: #3c3c3c;
+            border-radius: 5px;
+        }
+        QMenu {
+            background-color: #2b2b2b;
+            color: #ffffff;
+            border-radius: 5px;
+        }
+        QMenu::item:selected {
+            background-color: #3c3c3c;
+            border-radius: 5px;
+        }
+        QStatusBar {
+            background-color: #2b2b2b;
+            color: #ffffff;
+            border-radius: 5px;
+        }
+        QPushButton {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+            min-width: 70px;
+        }
+        QPushButton:disabled {
+            background-color: #2b2b2b;
+            color: #5a5a5a;
+            border-radius: 5px;
+        }
+        QPushButton:hover {
+            background-color: #4c4c4c;
+            border-radius: 5px;
+            border: 1px solid #00aaff;
+        }
+        QLineEdit {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+        }
+        QLineEdit:hover {
+            border: 1px solid #00aaff;
+        }
+        QLabel {
+            color: #ffffff;
+            border-radius: 5px;
+        }
+        QListWidget {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+        }
+        QListWidget:hover {
+            border: 1px solid #00aaff;
+        }
+        QToolTip {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+        }
+        QSplitter::handle {
+            border: 0px;
+        }
+        QSplitter::handle:horizontal {
+            width: 5px;
+        }
+        """
 
     def setupUi(self, MainWindow:QMainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(800, 500)
         MainWindow.setWindowIcon(self.icon)
+        MainWindow.setStyleSheet(self.dark_theme_qss)
         self.actionReload = QAction(MainWindow)
         self.actionReload.setObjectName(u"actionReload")
         icon1 = QIcon(QIcon.fromTheme(u"view-refresh"))
@@ -223,7 +311,7 @@ class Ui_MainWindow:
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
         self.menuBar.setGeometry(QRect(0, 0, 800, 33))
-        self.menuBar.setStyleSheet(u"QMenu{color: rgb(255, 255, 255);background-color: rgba(30, 30, 30, 100);border-radius:10px;}")
+        self.menuBar.setStyleSheet(u"QMenu{color: rgb(255, 255, 255);background-color: rgba(30, 30, 30, 100);}")
         self.menuFile = QMenu(self.menuBar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuFile.setToolTipsVisible(False)
