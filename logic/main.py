@@ -187,6 +187,7 @@ class LMain(Ui_MainWindow):
     def load(self, files:str|list[str]=None):
         states = Publics['ui_states']
         if not files: files = states['files'] if 'files' in states else [info.default_voca]
+        elif isinstance(files, str): files = [files]
         current = states['current'] if 'current' in states else None
         for f in files:
             item = self.Files.load(f)
@@ -230,8 +231,8 @@ class LMain(Ui_MainWindow):
         recent = Publics['recent'] #type: list[str]
         for f in recent:
             action = self.menuRecent.addAction(f.split('/')[-1])
-            action.triggered.connect(lambda f=f:self.load(f))
-            self.menuRecent.addAction(action)
+            action.setStatusTip(f)
+            action.triggered.connect(lambda *x, f=f:self.load(f))
 
     def display_selection(self):
         items = self.Bank.selections

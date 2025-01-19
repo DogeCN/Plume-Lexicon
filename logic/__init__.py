@@ -28,11 +28,10 @@ class LMainWindow(QMainWindow):
         self.setting_ui.setupUi(self.setting)
         #UI
         self.show()
-        self.themes = [self.setting_ui.themeAcrylic, self.setting_ui.themeDark,
-                    self.setting_ui.themeFusion, self.setting_ui.themeDefault]
+        QSSFactory.AddAcrylic(self)
+        QSSFactory.Set(Setting.Theme)
         self.lboxes = [] #type: list[LexiBox]
         self.connect_actions()
-        self.themes[Setting.Theme].setChecked(True)
         self.retrans()
         self.ui.setShotcuts()
         self.ui.load_lexis()
@@ -44,6 +43,8 @@ class LMainWindow(QMainWindow):
         self.ticker(self.check, 500)
 
     def connect_actions(self):
+        self.themes = [self.setting_ui.themeAcrylic, self.setting_ui.themeDark,
+                    self.setting_ui.themeFusion, self.setting_ui.themeDefault]
         self.tray.activated.connect(self.tray_activated)
         self.ui.actionSetting.triggered.connect(self.setting_show)
         self.ui.actionTool_Reload.triggered.connect(lambda:load() or self.show_tools())
@@ -57,6 +58,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.viewCache.clicked.connect(lambda:Popen(f'explorer "{info.cache_dir}"'))
         self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
+        self.themes[Setting.Theme].setChecked(True)
         for i in range(len(self.themes)): self.themes[i].toggled.connect(lambda *x, i=i:QSSFactory.Set(i) or setattr(Setting, 'Theme', i) or Setting.dump())
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
@@ -103,6 +105,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.Key_Top.setKeySequence(Setting.Key_Top)
         self.setting_ui.Online.setChecked(Setting.Online)
         self.setting.show()
+        QSSFactory.AddAcrylic(self.setting)
 
     def show_tools(self):
         for action in self.ui.menuTools.actions()[2:]:

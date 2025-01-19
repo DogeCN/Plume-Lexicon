@@ -87,43 +87,62 @@ class QSSFactory:
     hover_border_color = 'rgb(0, 170, 255)'
     padding = '3px'
     padding_right = '10px'
+    acrylic_wins = []
+    acrylic = False
+
+    @classmethod
+    def AddAcrylic(cls, win):
+        if cls.acrylic:
+            cls.ApplyAcrylic(win)
+        if win not in cls.acrylic_wins:
+            cls.acrylic_wins.append(win)
+
+    @classmethod
+    def ApplyAcrylic(cls, win=None):
+        info.app.setStyle('Windows11')
+        cls.main_bg_color = \
+        cls.border_color = \
+        cls.selected_bg_color = 'transparent'
+        cls.menu_bg_color = 'rgba(60, 60, 60, 60)'
+        info.app.setStyleSheet(cls.Get())
+        aws = [win] if win else cls.acrylic_wins
+        for win in aws:
+            hWnd = win.winId()
+            ChangeDWMAttrib(hWnd, 20, c_int(1))
+            ChangeDWMAccent(hWnd, 30, 3, 0x292929)
+            ExtendFrameIntoClientArea(hWnd)
+
+    @classmethod
+    def DiscardAcrylic(cls):
+        info.app.setStyle('Fusion')
+        info.app.setStyle('Windows11')
+        cls.acrylic = False
+        cls.main_bg_color = 'rgb(43, 43, 43)'
+        cls.menu_bg_color = 'rgb(30, 30, 30)'
+        cls.selected_bg_color = 'rgb(60, 60, 60)'
+        cls.border_color = 'rgb(90, 90, 90)'
+        for win in cls.acrylic_wins:
+            hWnd = win.winId()
+            ChangeDWMAttrib(hWnd, 20, c_int(0))
+            ChangeDWMAccent(hWnd, 30, 0)
+            DisableFrameIntoClientArea(hWnd)
 
     @classmethod
     def Set(cls, theme=None):
         info.app.setStyleSheet('')
         if theme in [0, cls.theme_names[0]]:
-            info.app.setStyle('Windows11')
-            cls.main_bg_color = \
-            cls.border_color = \
-            cls.selected_bg_color = 'transparent'
-            cls.menu_bg_color = 'rgb(60, 60, 60)'
-            for win in info.app.allWindows():
-                hWnd = win.winId()
-                ChangeDWMAttrib(hWnd, 20, c_int(1))
-                ChangeDWMAccent(hWnd, 30, 3, 0x292929)
-                ExtendFrameIntoClientArea(hWnd)
-            info.app.setStyleSheet(cls.Get())
+            cls.acrylic = True
+            cls.ApplyAcrylic()
         else:
-            info.app.setStyle('Fusion')
-            info.app.setStyle('Windows11')
-            for win in info.app.allWindows():
-                hWnd = win.winId()
-                ChangeDWMAttrib(hWnd, 20, c_int(0))
-                ChangeDWMAccent(hWnd, 30, 0)
-                DisableFrameIntoClientArea(hWnd)
-            cls.main_bg_color = 'rgb(43, 43, 43)'
-            cls.menu_bg_color = 'rgb(30, 30, 30)'
-            cls.selected_bg_color = 'rgb(60, 60, 60)'
-            cls.border_color = 'rgb(90, 90, 90)'
+            cls.DiscardAcrylic()
             if theme in [1, cls.theme_names[1]]: info.app.setStyleSheet(cls.Get())
-            elif theme in [2, cls.theme_names[2]]: info.app.setStyle('Fusion')
+            if theme in [2, cls.theme_names[2]]: info.app.setStyle('Fusion')
 
     @classmethod
     def Get(cls):
         return f'''
-            QMainWindow {{
+            * {{
                 background-color: {cls.main_bg_color};
-                border-radius: 5px;
             }}
             QMenuBar {{
                 background-color: {cls.main_bg_color};
@@ -184,6 +203,7 @@ class QSSFactory:
                 color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
+                padding: {cls.padding};
             }}
             QLineEdit:hover {{
                 border: 1px solid {cls.hover_border_color};
@@ -231,5 +251,12 @@ class QSSFactory:
             QKeySequenceEdit:hover {{
                 background-color: {cls.selected_bg_color};
                 border: 1px solid {cls.hover_border_color};
+            }}
+            QMessageBox {{
+                background-color: {cls.menu_bg_color};
+                color: {cls.text_color};
+            }}
+            QMessageBox QLabel {{
+                color: {cls.text_color};
             }}
         '''

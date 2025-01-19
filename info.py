@@ -34,6 +34,7 @@ tools = 'tools'
 default_voca = data_dir + 'default' + ext_voca
 reg_ext = 'Software\\Classes\\' + ext_voca
 reg_cmd = 'shell\\open\\command'
+cmd = f'"{os.path.abspath(argv0)}" "%1"'
 repo_name = 'Plume-Lexicon'
 repo_url = f'github.com/{author}/{repo_name}'
 release_api = f'https://api.github.com/repos/{author}/{repo_name}/releases/latest'

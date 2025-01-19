@@ -25,7 +25,7 @@ def main():
 def register(): #For PyInstaller Exe
     if info.exe:
         sub_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, info.reg_ext)
-        winreg.SetValue(sub_key, info.reg_cmd, winreg.REG_SZ, f'"{info.argv0}" "%1"')
+        winreg.SetValue(sub_key, info.reg_cmd, winreg.REG_SZ, info.cmd)
         Refresh_Icons()
         print('Registered')
 
