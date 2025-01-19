@@ -2,7 +2,7 @@ from .base import *
 from PySide6.QtWidgets import QDialog
 from ._convert import ui
 from libs.stdout import _getstamp
-from libs.debris import QSSFactory
+from libs.ui import Theme
 from docx import Document
 from docx.oxml.ns import qn
 from docx.shared import Pt
@@ -60,7 +60,7 @@ def uimain():
     ui.setupUi(dialog, UITr)
     ui.Stamp.toggled.connect(lambda b: ui.Stamp_Format.setEnabled(b) or ui.Word_Count.setEnabled(b))
     load_settings()
-    QSSFactory.AddAcrylic(dialog)
+    Theme.AddAcrylic(dialog)
     dialog.exec()
 
 def main():

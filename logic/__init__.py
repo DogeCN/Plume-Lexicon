@@ -5,8 +5,9 @@ from libs.translate import trans
 from libs.translate.dict import LexiBox, csignal
 from libs.configs.settings import Setting
 from libs.tool import load
+from libs.ui import Theme
 from libs.ui.settings import Ui_Settings
-from libs.debris import Ticker, QSSFactory, Clean_Dir, Convert_Size
+from libs.debris import Ticker, Clean_Dir, Convert_Size
 from .main import LMain
 from threading import Thread
 from subprocess import Popen
@@ -28,8 +29,8 @@ class LMainWindow(QMainWindow):
         self.setting_ui.setupUi(self.setting)
         #UI
         self.show()
-        QSSFactory.AddAcrylic(self)
-        QSSFactory.Set(Setting.Theme)
+        Theme.AddAcrylic(self)
+        Theme.Set(Setting.Theme)
         self.lboxes = [] #type: list[LexiBox]
         self.connect_actions()
         self.retrans()
@@ -59,7 +60,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
         self.themes[Setting.Theme].setChecked(True)
-        for i in range(len(self.themes)): self.themes[i].toggled.connect(lambda *x, i=i:QSSFactory.Set(i) or setattr(Setting, 'Theme', i) or Setting.dump())
+        for i in range(len(self.themes)): self.themes[i].toggled.connect(lambda *x, i=i:Theme.Set(i) or setattr(Setting, 'Theme', i) or Setting.dump())
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
     def ticker(self, func, interval):
@@ -105,7 +106,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.Key_Top.setKeySequence(Setting.Key_Top)
         self.setting_ui.Online.setChecked(Setting.Online)
         self.setting.show()
-        QSSFactory.AddAcrylic(self.setting)
+        Theme.AddAcrylic(self.setting)
 
     def show_tools(self):
         for action in self.ui.menuTools.actions()[2:]:

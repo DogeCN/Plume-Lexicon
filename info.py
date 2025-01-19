@@ -11,6 +11,7 @@ prog_name_cn = '羽词'
 author = 'DogeCN'
 version = 'v1.15.1'
 app = QApplication()
+clipboard = app.clipboard()
 argv0 = sys.argv[0]
 argv1 = sys.argv[1] if len(sys.argv) > 1 else None
 exe = argv0.endswith('.exe')
@@ -98,6 +99,13 @@ UITr = {
     'Cache' : '缓存',
     'Delete' : '删除',
     'Vocabulary' : '词汇表',
+    'Copy' : '复制',
+    'Paste' : '粘贴',
+    'Cut' : '剪切',
+    'Undo' : '撤销',
+    'Redo' : '重做',
+    'Select All' : '全选',
+    'Deselect' : '取消选择',
     'Secs' : '秒',
     'Add' : '添加',
     'Hotkeys' : '快捷键',

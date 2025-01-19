@@ -3,7 +3,7 @@ from PySide6.QtCore import Signal, QObject
 from libs.translate.dict import load_lexis
 from libs.ui.main import Ui_MainWindow
 from libs.ui.main.base import FItem
-from libs.debris import Clipboard, Ticker
+from libs.debris import Ticker
 from libs.translate import Result
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
@@ -129,7 +129,7 @@ class LMain(Ui_MainWindow):
             self.Word_Entry.setText(result.word)
             result.match = False
         elif result:
-            Clipboard.Write(result.get_translation())
+            info.clipboard.setText(result.get_translation())
 
     def set_result(self):
         result = self.result

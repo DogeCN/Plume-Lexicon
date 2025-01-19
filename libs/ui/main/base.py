@@ -1,11 +1,12 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from libs.debris import Get_New_File_Name
 from libs.translate import Result
+from libs.stdout import print
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.io import io, dialog
 from math import log10
-import info
+import info, pickle
 
 TOP = QtWidgets.QAbstractItemView.ScrollHint.PositionAtTop
 
@@ -52,11 +53,73 @@ class LItem(BaseListWidgetItem):
         return self.result.get_translation()
 
 class Bank(BaseListWidget):
+    def __init__(self, parent=None, ccenabled=True):
+        super().__init__(parent)
+        if ccenabled:
+            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+            self.customContextMenuRequested.connect(self.show_context_menu)
+
+    def show_context_menu(self, pos):
+        menu = QtWidgets.QMenu(self)
+        
+        copy_action = QtGui.QAction(Setting.translateUI('Copy'), self)
+        copy_action.setShortcut('Ctrl+C')
+        copy_action.triggered.connect(self.copy)
+        menu.addAction(copy_action)
+
+        cut_action = QtGui.QAction(Setting.translateUI('Cut'), self)
+        cut_action.setShortcut('Ctrl+X')
+        cut_action.triggered.connect(self.cut)
+        menu.addAction(cut_action)
+
+        paste_action = QtGui.QAction(Setting.translateUI('Paste'), self)
+        paste_action.setShortcut('Ctrl+V')
+        paste_action.triggered.connect(self.paste)
+        menu.addAction(paste_action)
+
+        menu.addSeparator()
+
+        select_all_action = QtGui.QAction(Setting.translateUI('Select All'), self)
+        select_all_action.setShortcut('Ctrl+A')
+        select_all_action.triggered.connect(self.selectAll)
+        menu.addAction(select_all_action)
+
+        deselect_all_action = QtGui.QAction(Setting.translateUI('Deselect'), self)
+        deselect_all_action.triggered.connect(self.clearSelection)
+        menu.addAction(deselect_all_action)
+
+        menu.exec(self.mapToGlobal(pos))
+
+    def keyPressEvent(self, event):
+        if event.matches(QtGui.QKeySequence.StandardKey.Copy): self.copy()
+        elif event.matches(QtGui.QKeySequence.StandardKey.Cut): self.cut()
+        elif event.matches(QtGui.QKeySequence.StandardKey.Paste): self.paste()
+        else: super().keyPressEvent(event)
+
+    def copy(self):
+        try:
+            items = self.selections
+            if items:
+                datas = [pickle.dumps(item.result) for item in items]
+                info.clipboard.setText(pickle.dumps(datas).decode('latin1'))
+        except Exception as e: print(f'Copy Failed: {e}', 'Red')
+
+    def cut(self):
+        self.copy()
+        self.remove()
+
+    def paste(self):
+        try:
+            text = info.clipboard.text()
+            if text:
+                datas = pickle.loads(text.encode('latin1'))
+                for data in datas: self.append(pickle.loads(data))
+        except Exception as e: print(f'Paste Failed: {e}', 'Red')
 
     def top(self):
         for item in self.selections:
             item.top = not item.top
-        self.scrollToItem(self.current, TOP)
+        self.roll()
 
     def append(self, result:Result|list[Result]):
         if isinstance(result, list):
@@ -71,7 +134,7 @@ class Bank(BaseListWidget):
             self.addItem(item)
             self.scrollToItem(item, TOP)
 
-    def roll(self, word:str):
+    def roll(self, word:str=None):
         if word:
             word = word.lower()
             for i in self.items:

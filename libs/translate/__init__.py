@@ -102,7 +102,7 @@ def online_translate(word: str) -> Result:
 @fast
 def translate(word: str) -> Result:
     if word:
-        max = 0.3
+        max = 0.5
         s = SequenceMatcher()
         s.set_seq2(word)
         result = None
