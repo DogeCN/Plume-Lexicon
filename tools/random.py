@@ -3,7 +3,7 @@ from random import choice, randint
 
 def all():
     global lexicons
-    from libs.translate.dict import lexicons
+    from libs.translate.lexicons import lexicons
     while True:
         try: retry()
         except: continue

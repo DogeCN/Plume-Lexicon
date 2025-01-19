@@ -69,6 +69,7 @@ class Ui_Settings(object):
 
         self.themeFusion = QRadioButton(Settings)
         self.themeFusion.setObjectName(u"themeFusion")
+        self.themeFusion.setText('Fusion')
 
         self.horizontalLayout_4.addWidget(self.themeFusion)
 
@@ -248,7 +249,6 @@ class Ui_Settings(object):
         self.lTheme.setText(Setting.translateUI('Theme'))
         self.themeAcrylic.setText(Setting.translateUI('Acrylic'))
         self.themeDark.setText(Setting.translateUI('Dark'))
-        self.themeFusion.setText(Setting.translateUI('Fusion'))
         self.themeDefault.setText(Setting.translateUI('Default'))
         self.lFile.setText(Setting.translateUI('Files'))
         self.lAuto.setText(Setting.translateUI('Auto Save'))

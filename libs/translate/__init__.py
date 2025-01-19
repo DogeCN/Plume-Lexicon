@@ -1,6 +1,6 @@
 from difflib import SequenceMatcher
 from .api import api_translate
-from .dict import lexicons
+from .lexicons import lexicons
 from libs.configs.settings import Setting
 import info, time
 
@@ -102,7 +102,7 @@ def online_translate(word: str) -> Result:
 @fast
 def translate(word: str) -> Result:
     if word:
-        max = 0.5
+        max = info.min_similarity
         s = SequenceMatcher()
         s.set_seq2(word)
         result = None

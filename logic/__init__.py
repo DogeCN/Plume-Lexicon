@@ -1,8 +1,8 @@
 from __future__ import annotations
-from PySide6.QtWidgets import QApplication, QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
+from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QTimer, QEvent
+from libs.translate.lexicons import LexiBox, csignal
 from libs.translate import trans
-from libs.translate.dict import LexiBox, csignal
 from libs.configs.settings import Setting
 from libs.tool import load
 from libs.ui import Theme
@@ -39,8 +39,8 @@ class LMainWindow(QMainWindow):
         self.ui.restore_states()
         #Threading
         Thread(target=self.ui.load, args=(info.argv1,)).start()
-        Thread(target=self.auto_translate).start()
-        self.auto_save_timer = self.ticker(lambda:self.ui.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
+        Thread(target=self.auto_translate, name='Translate').start()
+        self.auto_save_timer = self.ticker(lambda:self.ui.Files.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
         self.ticker(self.check, 500)
 
     def connect_actions(self):
@@ -126,7 +126,7 @@ class LMainWindow(QMainWindow):
         self.ui.load_lexis()
 
     def show_lexicons(self):
-        from libs.translate.dict import lexicons
+        from libs.translate.lexicons import lexicons
         for l in lexicons:
             lb = LexiBox(l, self)
             self.lboxes.append(lb)
@@ -178,6 +178,6 @@ class LMainWindow(QMainWindow):
             evt.ignore()
         else:
             if Setting.Auto_save:
-                self.ui.save_all(False)
+                self.ui.Files.save_all(False)
             self.ui.store_states()
-            QApplication.exit()
+            info.app.exit()

@@ -1,13 +1,11 @@
 from PySide6.QtWidgets import QMessageBox, QMainWindow
 from PySide6.QtCore import Signal, QObject
-from libs.translate.dict import load_lexis
+from libs.translate.lexicons import load_lexis
 from libs.ui.main import Ui_MainWindow
-from libs.ui.main.base import FItem
 from libs.debris import Ticker
 from libs.translate import Result
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
-from libs.io import dialog
 from win32com.client import Dispatch
 from threading import Thread
 from requests import get
@@ -30,7 +28,7 @@ class LMain(Ui_MainWindow):
     signal = LSignal()
     lexi_thread = Thread()
     add_locked = False
-    add_enabled = True
+    add_enabled = False
     exchanges = None
     expands = None
     parent = None
@@ -49,8 +47,6 @@ class LMain(Ui_MainWindow):
     def _load_lexis(self):
         load_lexis(self.signal.callback_singal.emit)
         self.signal.show_lexis_singal.emit()
-    def save_all(self, silent=True):
-        for item in self.Files.items: item.save(silent)
     def check(self): self.set_add_locked(not len(self.Files.items))
     def close(self): info.prog_running = False; self.parent.close()
     def set_expand(self, results):
@@ -62,22 +58,24 @@ class LMain(Ui_MainWindow):
         super().__init__()
         self.setupUi(MainWindow)
         self.parent = MainWindow
-        if not Publics['debug']:
-            Thread(target=self.check_update, args=(True,)).start()
-        Thread(target=self.handle).start()
+        Thread(target=self.check_update, args=(True,)).start()
+        Thread(target=self.handle, name='Handle').start()
         self.connect_actions()
     
     def connect_actions(self):
         #Menu Actions
         self.menuRecent.aboutToShow.connect(self.recent_update)
         self.actionNew.triggered.connect(self.Files.new)
-        self.actionReload.triggered.connect(lambda:(lambda item:item.load() or self._display_file(item) if item else self.load())(self.Files.current))
-        self.actionLoad.triggered.connect(lambda:(lambda f:self._display_file(self.Files.load(f)[0]) if f else ...)(dialog.OpenFiles(self.parent, Setting.getTr('load'), info.ext_all_voca)))
-        self.actionSave.triggered.connect(lambda:self.Files.current.save())
-        self.actionSave_All.triggered.connect(lambda:self.save_all(False))
-        self.actionSave_As.triggered.connect(lambda:self.Files.current.save_as())
+        self.actionReload.triggered.connect(self.Files.reload)
+        self.actionLoad.triggered.connect(self.Files.open)
+        self.actionSave.triggered.connect(self.Files.save)
+        self.actionSave_All.triggered.connect(lambda:self.Files.save_all(False))
+        self.actionSave_As.triggered.connect(self.Files.save_as)
         self.actionRemove.triggered.connect(self.Files.remove)
         self.actionClear.triggered.connect(self.Files.clear)
+        actions = self.menuFile.actions()
+        self.Files.menu.addActions(actions[:4] + actions[5:12])
+        
         self.actionExit.triggered.connect(self.close)
         self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
         self.actionAbout.triggered.connect(lambda:webbrowser.open(info.repo_url))
@@ -91,7 +89,6 @@ class LMain(Ui_MainWindow):
         self.Translated_text.mouseDoubleClickEvent = self.correct
         self.Phonetic.mouseDoubleClickEvent = lambda *evt:Thread(target=lambda:self._voice.Speak(self.Word_Entry.text()) if self.result else ..., daemon=True).start()
         #List Widgets
-        self.Files.itemSelectionChanged.connect(self.display_file)
         self.Bank.itemSelectionChanged.connect(self.display_selection)
         self.Exchanges.itemSelectionChanged.connect(self.display_exchanges)
         self.Expand.itemSelectionChanged.connect(self.display_phrases)
@@ -118,7 +115,7 @@ class LMain(Ui_MainWindow):
         self.Translated_text.setText(result.get_translation())
         self.Translated_text.setToolTip(result.get_definition())
         self.Phonetic.setText(result.phonetic)
-        self.set_add_enabled(word not in self.Bank.words and result)
+        self.set_add_enabled(word not in self.Bank.words and bool(result))
 
     def correct(self, *evt):
         result = self.result
@@ -137,8 +134,8 @@ class LMain(Ui_MainWindow):
             self.Phonetic.setToolTip(info.speech_hint % Setting.getTr('speech_hint'))
             self.exchanges = result.exchanges
             self.expands = result.expands
-            self.result = result
             self.hc = True
+        self.result = result
 
     def _handle(self, generator, emit):
         if generator:
@@ -190,7 +187,6 @@ class LMain(Ui_MainWindow):
             item = self.Files.load(f)
             if current and f == current:
                 self.Files.current = item
-        self.display_file()
 
     def store_states(self):
         states = Publics['ui_states']
@@ -216,7 +212,7 @@ class LMain(Ui_MainWindow):
     def show_update(self, latest, silent):
         try:
             ver = latest['tag_name']
-            if ver != info.version:
+            if ver > info.version:
                 if QMessageBox.question(self.parent, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
                     == QMessageBox.StandardButton.Yes: webbrowser.open(latest['html_url'])
             elif not silent: QMessageBox.information(self.parent, Setting.getTr('info'), Setting.getTr('update_latest'))
@@ -259,13 +255,3 @@ class LMain(Ui_MainWindow):
             item = item if item else items[-1]
             self.Word_Entry.setText(item.word)
 
-    def display_file(self):
-        item = self.Files.current
-        if item and not item.on_display:
-            self._display_file(item)
-
-    def _display_file(self, item:FItem):
-        for i in self.Files.items:
-            i.on_display = False
-        item.on_display = True
-        self.Bank.results = item.results

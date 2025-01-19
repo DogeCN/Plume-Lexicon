@@ -62,31 +62,36 @@ class Bank(BaseListWidget):
     def show_context_menu(self, pos):
         menu = QtWidgets.QMenu(self)
         
-        copy_action = QtGui.QAction(Setting.translateUI('Copy'), self)
-        copy_action.setShortcut('Ctrl+C')
-        copy_action.triggered.connect(self.copy)
-        menu.addAction(copy_action)
+        copy = QtGui.QAction(Setting.translateUI('Copy'), self)
+        copy.setShortcut('Ctrl+C')
+        copy.setIcon(QtGui.QIcon.fromTheme('edit-copy'))
+        copy.triggered.connect(self.copy)
+        menu.addAction(copy)
 
-        cut_action = QtGui.QAction(Setting.translateUI('Cut'), self)
-        cut_action.setShortcut('Ctrl+X')
-        cut_action.triggered.connect(self.cut)
-        menu.addAction(cut_action)
+        cut = QtGui.QAction(Setting.translateUI('Cut'), self)
+        cut.setShortcut('Ctrl+X')
+        cut.setIcon(QtGui.QIcon.fromTheme('edit-cut'))
+        cut.triggered.connect(self.cut)
+        menu.addAction(cut)
 
-        paste_action = QtGui.QAction(Setting.translateUI('Paste'), self)
-        paste_action.setShortcut('Ctrl+V')
-        paste_action.triggered.connect(self.paste)
-        menu.addAction(paste_action)
+        paste = QtGui.QAction(Setting.translateUI('Paste'), self)
+        paste.setShortcut('Ctrl+V')
+        paste.setIcon(QtGui.QIcon.fromTheme('edit-paste'))
+        paste.triggered.connect(self.paste)
+        menu.addAction(paste)
 
         menu.addSeparator()
 
-        select_all_action = QtGui.QAction(Setting.translateUI('Select All'), self)
-        select_all_action.setShortcut('Ctrl+A')
-        select_all_action.triggered.connect(self.selectAll)
-        menu.addAction(select_all_action)
+        select_all = QtGui.QAction(Setting.translateUI('Select All'), self)
+        select_all.setShortcut('Ctrl+A')
+        select_all.setIcon(QtGui.QIcon.fromTheme('edit-select-all'))
+        select_all.triggered.connect(self.selectAll)
+        menu.addAction(select_all)
 
-        deselect_all_action = QtGui.QAction(Setting.translateUI('Deselect'), self)
-        deselect_all_action.triggered.connect(self.clearSelection)
-        menu.addAction(deselect_all_action)
+        deselect = QtGui.QAction(Setting.translateUI('Deselect'), self)
+        deselect.triggered.connect(self.clearSelection)
+        deselect.setIcon(QtGui.QIcon.fromTheme('edit-clear'))
+        menu.addAction(deselect)
 
         menu.exec(self.mapToGlobal(pos))
 
@@ -245,6 +250,7 @@ class FItem(BaseListWidgetItem):
     def load(self):
         if self.exists():
             self.results = io.read_vocabulary(self.file)
+            self.saved = True
             self.join_recent()
         else: self.results = []
     
@@ -282,6 +288,41 @@ class Files(BaseListWidget):
     def __init__(self, parent, bank:Bank):
         super().__init__(parent)
         self.bank = bank
+        self.itemSelectionChanged.connect(self.display_file)
+        self.menu = QtWidgets.QMenu(self)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(lambda p:self.menu.exec(self.mapToGlobal(p)))
+
+    def open(self):
+        f = dialog.OpenFiles(self.parent(), Setting.getTr('load'), info.ext_all_voca)
+        if f: self._display_file(self.load(f)[0])
+
+    def save(self):
+        self.current.save()
+
+    def save_as(self):
+        self.current.save_as()
+
+    def save_all(self, silent=True):
+        for item in self.items: item.save(silent)
+    
+    def reload(self):
+        item = self.current
+        if item:
+            item.load()
+            self._display_file(item)
+        else: self.load()
+
+    def display_file(self):
+        item = self.current
+        if item and not item.on_display:
+            self._display_file(item)
+
+    def _display_file(self, item:FItem):
+        for i in self.items:
+            i.on_display = False
+        item.on_display = True
+        self.bank.results = item.results
 
     def load(self, file:str|list[str]):
         if isinstance(file, list):
@@ -367,6 +408,7 @@ class Files(BaseListWidget):
     @current.setter
     def current(self, item:FItem):
         self.setCurrentItem(item)
+        self.display_file()
 
     def clear(self):
         super().clear()

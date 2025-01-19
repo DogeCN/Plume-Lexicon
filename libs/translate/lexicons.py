@@ -1,13 +1,14 @@
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
-from concurrent.futures import ThreadPoolExecutor
-from requests import get
-from libs.io.base import _dump, _load, load, _hash
 from libs.configs.settings import Setting
 from libs.stdout import print
+from libs.io.base import *
+from concurrent.futures import ThreadPoolExecutor
+from requests import get
 import info
 
 pool = ThreadPoolExecutor(3)
+pool._thread_name_prefix = __name__.split('.')[-1].capitalize()
 
 class LSignal(QObject):
     update = Signal()
@@ -48,7 +49,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
             self.loaded = \
             self.failed = False
             self.signal = LSignal()
-            if self.hash_exists: self._update(_load(self.hash_file))
+            if self.hash_exists: self._update(load_(self.hash_file))
             else: self.name = self.name_zh = fp.split('\\')[-1].strip(info.ext_disabled)
     
     @property
@@ -61,7 +62,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
 
     @property
     def hash_file(self):
-        return _hash(self.fp.strip(info.ext_disabled).encode())
+        return hash_(self.fp.strip(info.ext_disabled).encode())
     
     @property
     def hash_exists(self):
@@ -71,16 +72,21 @@ class Lexicon(dict[str, list[str, list[str]]]):
         pool.submit(self._setEnabled, enable)
 
     def _setEnabled(self, enable):
-        csignal.add()
         if enable and not self.loaded:
+            csignal.add()
             try:
                 self._update(load(self.fp))
                 if not self.hash_exists:
                     header = Lexicon()
                     header.name = self.name
                     header.name_zh = self.name_zh
-                    _dump(self.hash_file, header)
-                self.loaded = self.enabled = True
+                    dump_(self.hash_file, header)
+                l = Lexicon()
+                l.name_zh = self.name_zh
+                l.name = self.name
+                l.update(self)
+                dump(self.fp, l)
+                self.loaded = True
                 self.failed = False
                 self.signal.update.emit()
             except Exception as e:
@@ -89,14 +95,14 @@ class Lexicon(dict[str, list[str, list[str]]]):
                 self.signal.update.emit()
                 csignal.sub()
                 return
+            csignal.sub()
+        self.enabled = enable
         fp = self.fp.strip(info.ext_disabled)
         if not enable:
             fp = fp + info.ext_disabled
-            self.enabled = False
         if self.fp != fp:
             info.os.rename(self.fp, fp)
             self.fp = fp
-        csignal.sub()
 
     def _update(self, l):
         self.name = getattr(l, 'name')

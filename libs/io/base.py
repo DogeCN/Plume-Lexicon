@@ -1,23 +1,22 @@
 import pickle, info
-from libs.debris import Get_New_File_Name
 from zlib import compress, decompress
 from hashlib import md5
 
-def _hash(b) -> str:
+def hash_(b) -> str:
     return info.cache_dir + md5(b, usedforsecurity=False).hexdigest()
 
-def _load(file):
+def load_(file):
     return pickle.load(open(file, 'rb'))
 
 def load(file):
-    if not info.os.path.exists(hash := _hash(content := open(file, 'rb').read())):
+    content = open(file, 'rb').read()
+    hash = hash_(content)
+    if not info.os.path.exists(hash):
         open(hash, 'wb').write(decompress(content))
-    return _load(hash)
+    return load_(hash)
 
-def _dump(file, obj):
+def dump_(file, obj):
     pickle.dump(obj, open(file, 'wb'))
 
 def dump(file, obj):
-    _dump(temp := Get_New_File_Name(info.temp), obj)
-    open(file, 'wb').write(compress(open(temp, 'rb').read()))
-    info.os.remove(temp)
+    open(file, 'wb').write(compress(pickle.dumps(obj)))

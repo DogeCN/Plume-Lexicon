@@ -29,6 +29,7 @@ ext_all_voca = '*' + ext_voca
 temp = temp_dir + 'temp'
 timeout = 3
 max_recent = 5
+min_similarity = 0.5
 running = temp_dir + '.running'
 running_sign = ' '
 tools = 'tools'
@@ -91,7 +92,6 @@ UITr = {
     'Acrylic' : '亚克力',
     'Dark' : '暗黑',
     'Default' : '默认',
-    'Fusion' : '聚变',
     'Language' : '语言',
     'Auto Save' : '自动保存',
     'Top' : '置顶',
