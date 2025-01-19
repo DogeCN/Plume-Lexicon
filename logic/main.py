@@ -118,10 +118,7 @@ class LMain(Ui_MainWindow):
         self.Translated_text.setText(result.get_translation())
         self.Translated_text.setToolTip(result.get_definition())
         self.Phonetic.setText(result.phonetic)
-        if word in self.Bank.words or not result:
-            self.set_add_enabled(False)
-        else:
-            self.set_add_enabled(True)
+        self.set_add_enabled(word not in self.Bank.words and result)
 
     def correct(self, *evt):
         result = self.result

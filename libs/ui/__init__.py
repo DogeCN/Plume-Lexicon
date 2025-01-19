@@ -1,6 +1,5 @@
-from pywinstyles.py_win_style import ChangeDWMAccent, ChangeDWMAttrib, DisableFrameIntoClientArea, ExtendFrameIntoClientArea
-from ctypes import c_int
 import info
+from .base import *
 
 class Theme:
     theme_names = ['Acrylic', 'Dark', 'Fusion', 'Default']
@@ -33,7 +32,7 @@ class Theme:
         aws = [win] if win else cls.acrylic_wins
         for win in aws:
             hWnd = win.winId()
-            ChangeDWMAttrib(hWnd, 20, c_int(1))
+            ChangeDWMAttrib(hWnd, 20, 1)
             ChangeDWMAccent(hWnd, 30, 3, 0x292929)
             ExtendFrameIntoClientArea(hWnd)
 
@@ -48,7 +47,7 @@ class Theme:
         cls.border_color = 'rgb(90, 90, 90)'
         for win in cls.acrylic_wins:
             hWnd = win.winId()
-            ChangeDWMAttrib(hWnd, 20, c_int(0))
+            ChangeDWMAttrib(hWnd, 20, 0)
             ChangeDWMAccent(hWnd, 30, 0)
             DisableFrameIntoClientArea(hWnd)
 
@@ -68,16 +67,13 @@ class Theme:
         return f'''
             * {{
                 background-color: {cls.main_bg_color};
+                color: {cls.text_color};
             }}
             QMenuBar {{
-                background-color: {cls.main_bg_color};
-                color: {cls.text_color};
                 border-radius: 5px;
                 padding: {cls.padding};
             }}
             QMenuBar::item {{
-                background-color: {cls.main_bg_color};
-                color: {cls.text_color};
                 border-radius: 5px;
                 padding: {cls.padding} {cls.padding_right};
             }}
@@ -87,13 +83,11 @@ class Theme:
             }}
             QMenu {{
                 background-color: {cls.menu_bg_color};
-                color: {cls.text_color};
                 border-radius: 5px;
                 padding: {cls.padding};
             }}
             QMenu::item {{
                 background-color: {cls.menu_bg_color};
-                color: {cls.text_color};
                 border-radius: 5px;
                 padding: {cls.padding} {cls.padding_right};
             }}
@@ -101,20 +95,13 @@ class Theme:
                 background-color: {cls.selected_bg_color};
                 border-radius: 5px;
             }}
-            QStatusBar {{
-                background-color: {cls.main_bg_color};
-                color: {cls.text_color};
-                border-radius: 5px;
-            }}
             QPushButton {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
                 min-width: 70px;
             }}
             QPushButton:disabled {{
-                background-color: {cls.main_bg_color};
                 color: {cls.border_color};
                 border-radius: 5px;
             }}
@@ -125,7 +112,6 @@ class Theme:
             }}
             QLineEdit {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
                 padding: {cls.padding};
@@ -133,13 +119,8 @@ class Theme:
             QLineEdit:hover {{
                 border: 1px solid {cls.hover_border_color};
             }}
-            QLabel {{
-                color: {cls.text_color};
-                border-radius: 5px;
-            }}
             QListWidget {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
             }}
@@ -148,18 +129,13 @@ class Theme:
             }}
             QToolTip {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 0px;
             }}
             QSplitter::handle {{
                 border: 0px;
             }}
-            QSplitter::handle:horizontal {{
-                width: 5px;
-            }}
             QToolButton {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
             }}
@@ -169,7 +145,6 @@ class Theme:
             }}
             QKeySequenceEdit {{
                 background-color: {cls.selected_bg_color};
-                color: {cls.text_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
             }}
@@ -179,9 +154,5 @@ class Theme:
             }}
             QMessageBox {{
                 background-color: {cls.menu_bg_color};
-                color: {cls.text_color};
-            }}
-            QMessageBox QLabel {{
-                color: {cls.text_color};
             }}
         '''
