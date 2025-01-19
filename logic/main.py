@@ -121,7 +121,6 @@ class LMain(Ui_MainWindow):
         result = self.result
         if result.match:
             self.Word_Entry.setText(result.word)
-            result.match = False
         elif result:
             info.clipboard.setText(result.get_translation())
 
@@ -130,7 +129,8 @@ class LMain(Ui_MainWindow):
         if result.match:
             self.Translated_text.setText(result.get_tip())
             self.Translated_text.setToolTip(Setting.getTr('correct_hint'))
-        elif result:
+            return
+        if result:
             self.Phonetic.setToolTip(info.speech_hint % Setting.getTr('speech_hint'))
             self.exchanges = result.exchanges
             self.expands = result.expands

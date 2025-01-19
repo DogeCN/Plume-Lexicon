@@ -88,15 +88,13 @@ class Lexicon(dict[str, list[str, list[str]]]):
                 dump(self.fp, l)
                 self.loaded = True
                 self.failed = False
-                self.signal.update.emit()
             except Exception as e:
                 print(f'Failed to load {self.fp}: {e}', 'Red')
                 self.failed = True
-                self.signal.update.emit()
-                csignal.sub()
-                return
             csignal.sub()
         self.enabled = enable
+        self.signal.update.emit()
+        if self.failed: return
         fp = self.fp.strip(info.ext_disabled)
         if not enable:
             fp = fp + info.ext_disabled

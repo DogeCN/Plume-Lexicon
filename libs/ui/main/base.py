@@ -21,6 +21,9 @@ class BaseListWidget(QtWidgets.QListWidget):
     def addItem(self, item):
         super().addItem(item)
         self.update()
+    
+    def clear(self):
+        super().clear()
 
 class BaseListWidgetItem(QtWidgets.QListWidgetItem): ...
 
@@ -195,11 +198,12 @@ class Bank(BaseListWidget):
         return [i.word for i in self.items]
 
 class FItem(BaseListWidgetItem):
-    _results = None
+    _results = []
+    origin = []
+    loaded = False
     _saved = True
     _file = ''
     _name = ''
-    on_display = False
 
     def __init__(self, file:str):
         super().__init__()
@@ -233,7 +237,9 @@ class FItem(BaseListWidgetItem):
     
     @results.setter
     def results(self, results):
-        self._results = results
+        if results != self._results:
+            self._results = results
+        self.saved = self.origin == results
     
     @property
     def saved(self):
@@ -242,6 +248,9 @@ class FItem(BaseListWidgetItem):
     @saved.setter
     def saved(self, value):
         self.setText(self.name if value else '*'+self.name)
+        if value and self.exists():
+            self.origin = self.results[:]
+            self.join_recent()
         self._saved = value
 
     def exists(self, file=None):
@@ -251,13 +260,12 @@ class FItem(BaseListWidgetItem):
         if self.exists():
             self.results = io.read_vocabulary(self.file)
             self.saved = True
-            self.join_recent()
         else: self.results = []
+        self.loaded = True
     
     def save(self, silent=False):
         if self.exists():
             io.save_vocabulary(self.results, self.file)
-            self.join_recent()
             self.saved = True
         else:
             if not silent:
@@ -273,7 +281,6 @@ class FItem(BaseListWidgetItem):
             file = dialog.SaveFile(None, Setting.getTr('save_as'), info.ext_all_voca)
             if not file: return
         io.save_vocabulary(self.results, file)
-        self.join_recent()
 
     def join_recent(self):
         recent = Publics['recent'] #type: list
@@ -295,7 +302,7 @@ class Files(BaseListWidget):
 
     def open(self):
         f = dialog.OpenFiles(self.parent(), Setting.getTr('load'), info.ext_all_voca)
-        if f: self._display_file(self.load(f)[0])
+        if f: self.display_file(self.load(f)[0])
 
     def save(self):
         self.current.save()
@@ -310,19 +317,13 @@ class Files(BaseListWidget):
         item = self.current
         if item:
             item.load()
-            self._display_file(item)
-        else: self.load()
+            self.display_file(item)
 
-    def display_file(self):
-        item = self.current
-        if item and not item.on_display:
-            self._display_file(item)
-
-    def _display_file(self, item:FItem):
-        for i in self.items:
-            i.on_display = False
-        item.on_display = True
-        self.bank.results = item.results
+    def display_file(self, item=None):
+        item = item if item else self.current
+        if item in self.items:
+            if not item.loaded: item.load()
+            self.bank.results = item.results
 
     def load(self, file:str|list[str]):
         if isinstance(file, list):
@@ -339,15 +340,10 @@ class Files(BaseListWidget):
 
     def remove(self):
         self.takeItem(self.row(self.current))
-        if not self.current:
-            self.bank.clear()
         self.update()
 
     def keep(self):
-        results = self.bank.results
-        if self.current and self.current.results != results:
-            self.current.results = results
-            self.current.saved = False
+        if self.current: self.current.results = self.bank.results
 
     def new(self, fn=None):
         if not fn:
