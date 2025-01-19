@@ -81,11 +81,6 @@ class Lexicon(dict[str, list[str, list[str]]]):
                     header.name = self.name
                     header.name_zh = self.name_zh
                     dump_(self.hash_file, header)
-                l = Lexicon()
-                l.name_zh = self.name_zh
-                l.name = self.name
-                l.update(self)
-                dump(self.fp, l)
                 self.loaded = True
                 self.failed = False
             except Exception as e:

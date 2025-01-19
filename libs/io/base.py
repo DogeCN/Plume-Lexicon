@@ -6,17 +6,22 @@ def hash_(b) -> str:
     return info.cache_dir + md5(b, usedforsecurity=False).hexdigest()
 
 def load_(file):
-    return pickle.load(open(file, 'rb'))
+    with open(file, 'rb') as f:
+        return pickle.load(f)
 
 def load(file):
-    content = open(file, 'rb').read()
+    with open(file, 'rb') as f:
+        content = f.read()
     hash = hash_(content)
     if not info.os.path.exists(hash):
-        open(hash, 'wb').write(decompress(content))
+        with open(hash, 'wb') as f:
+            f.write(decompress(content))
     return load_(hash)
 
 def dump_(file, obj):
-    pickle.dump(obj, open(file, 'wb'))
+    with open(file, 'wb') as f:
+        pickle.dump(obj, f)
 
 def dump(file, obj):
-    open(file, 'wb').write(compress(pickle.dumps(obj)))
+    with open(file, 'wb') as f:
+        f.write(compress(pickle.dumps(obj)))

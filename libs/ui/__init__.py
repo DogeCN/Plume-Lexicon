@@ -102,12 +102,10 @@ class Theme:
                 min-width: 70px;
             }}
             QPushButton:disabled {{
-                color: {cls.border_color};
-                border-radius: 5px;
+                color: rgb(150, 150, 150);
             }}
             QPushButton:hover {{
                 background-color: {cls.selected_bg_color};
-                border-radius: 5px;
                 border: 1px solid {cls.hover_border_color};
             }}
             QLineEdit {{
