@@ -27,21 +27,21 @@ class LMainWindow(QMainWindow):
         self.setting = QDialog(self)
         self.setting_ui = Ui_Settings()
         self.setting_ui.setupUi(self.setting)
+        #Threading
+        self.ui.load_lexis()
+        Thread(target=self.ui.load, args=(info.argv1,)).start()
+        Thread(target=self.auto_translate, name='Translate').start()
+        self.auto_save_timer = self.ticker(lambda:self.ui.Files.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
+        self.ticker(self.check, 500)
         #UI
-        self.show()
         Theme.AddAcrylic(self)
         Theme.Set(Setting.Theme)
         self.lboxes = [] #type: list[LexiBox]
         self.connect_actions()
         self.retrans()
         self.ui.setShotcuts()
-        self.ui.load_lexis()
         self.ui.restore_states()
-        #Threading
-        Thread(target=self.ui.load, args=(info.argv1,)).start()
-        Thread(target=self.auto_translate, name='Translate').start()
-        self.auto_save_timer = self.ticker(lambda:self.ui.Files.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
-        self.ticker(self.check, 500)
+        self.show()
 
     def connect_actions(self):
         self.themes = [self.setting_ui.themeAcrylic, self.setting_ui.themeDark,
