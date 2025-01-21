@@ -1,4 +1,5 @@
 from ctypes import windll
+from subprocess import Popen
 import os
 
 def Get_Language():
@@ -10,6 +11,12 @@ def Get_Language():
 
 def Refresh_Icons():
     windll.Shell32.SHChangeNotify(0x8000000, 0, 0, 0)
+
+def Explore(path:str):
+    if not os.path.exists(path): return
+    path = path.replace('/', '\\')
+    cmd = 'select' if os.path.isfile(path) else 'e'
+    Popen(f'explorer /{cmd},"{path}"')
 
 def Get_New_File_Name(fn:str, ext:str='', exclusions:list[str]=[]):
     fn = fn + '%s' + ext

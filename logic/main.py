@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QMessageBox, QMainWindow
 from PySide6.QtCore import Signal, QObject
+from PySide6.QtGui import QAction, QIcon, QDesktopServices
 from libs.translate.lexicons import load_lexis
 from libs.ui.main import Ui_MainWindow
 from libs.debris import Ticker
@@ -10,7 +11,7 @@ from win32com.client import Dispatch
 from threading import Thread
 from requests import get
 from time import sleep
-import webbrowser, info
+import info
 
 class LSignal(QObject):
     set_result_singal = Signal()
@@ -53,6 +54,7 @@ class LMain(Ui_MainWindow):
         if not self.hc and not self.tc: self.Expand.results = results
     def set_exchanges(self, results):
         if not self.hc and not self.tc: self.Exchanges.results = results
+    def clear_recent(self): Publics['recent'] = []
 
     def __init__(self, MainWindow:QMainWindow):
         super().__init__()
@@ -73,12 +75,13 @@ class LMain(Ui_MainWindow):
         self.actionSave_As.triggered.connect(self.Files.save_as)
         self.actionRemove.triggered.connect(self.Files.remove)
         self.actionClear.triggered.connect(self.Files.clear)
+        self.actionClearRecent.triggered.connect(self.clear_recent)
         actions = self.menuFile.actions()
         self.Files.menu.addActions(actions[:4] + actions[5:12])
         
         self.actionExit.triggered.connect(self.close)
         self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
-        self.actionAbout.triggered.connect(lambda:webbrowser.open(info.repo_url))
+        self.actionAbout.triggered.connect(lambda:QDesktopServices.openUrl(info.repo_url))
         self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.parent))
         #Button Actions
         self.Add.clicked.connect(self.command_add)
@@ -215,13 +218,14 @@ class LMain(Ui_MainWindow):
             ver = latest['tag_name']
             if ver > info.version:
                 if QMessageBox.question(self.parent, Setting.getTr('info'), Setting.getTr('update_tip') % ver) \
-                    == QMessageBox.StandardButton.Yes: webbrowser.open(latest['html_url'])
+                    == QMessageBox.StandardButton.Yes: QDesktopServices.openUrl(latest['html_url'])
             elif not silent: QMessageBox.information(self.parent, Setting.getTr('info'), Setting.getTr('update_latest'))
         except:
             if not silent: QMessageBox.warning(self.parent, Setting.getTr('warning'), Setting.getTr('update_failed'))
 
     def recent_update(self):
-        self.menuRecent.clear()
+        for action in self.menuRecent.actions()[2:]:
+            self.menuRecent.removeAction(action)
         recent = Publics['recent'] #type: list[str]
         for f in recent:
             action = self.menuRecent.addAction(f.split('/')[-1])

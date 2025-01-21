@@ -7,7 +7,7 @@ from libs.configs.settings import Setting
 from libs.tool import load
 from libs.ui import Theme
 from libs.ui.settings import Ui_Settings
-from libs.debris import Ticker, Clean_Dir, Convert_Size
+from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
 from .main import LMain
 from threading import Thread
 from subprocess import Popen
@@ -56,8 +56,8 @@ class LMainWindow(QMainWindow):
         self.setting_ui.buttonBox.rejected.connect(self.setting.hide)
         self.setting_ui.Online.toggled.connect(self.set_online)
         self.setting_ui.LReload.clicked.connect(self.reload_lexis)
-        self.setting_ui.viewLexicons.clicked.connect(lambda:Popen(f'explorer "{info.lexis_dir}"'))
-        self.setting_ui.viewCache.clicked.connect(lambda:Popen(f'explorer "{info.cache_dir}"'))
+        self.setting_ui.viewLexicons.clicked.connect(lambda:Explore(info.lexis_dir))
+        self.setting_ui.viewCache.clicked.connect(lambda:Explore(info.cache_dir))
         self.setting_ui.CClear.clicked.connect(lambda:QMessageBox.information(self, Setting.getTr('info'), Setting.getTr('cache_cleared')%Convert_Size(Clean_Dir(info.cache_dir))))
         self.setting_ui.Auto_Save.stateChanged.connect(lambda:self.setting_ui.Interval.setEnabled(self.setting_ui.Auto_Save.isChecked()))
         self.themes[Setting.Theme].setChecked(True)

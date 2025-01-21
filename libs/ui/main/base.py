@@ -1,10 +1,10 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from libs.debris import Get_New_File_Name
-from libs.translate import Result
-from libs.stdout import print
+from libs.debris import Get_New_File_Name, Explore
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
+from libs.translate import Result
 from libs.io import io, dialog
+from libs.stdout import print
 import info, pickle
 
 TOP = QtWidgets.QAbstractItemView.ScrollHint.PositionAtTop
@@ -294,10 +294,19 @@ class Files(BaseListWidget):
         super().__init__(parent)
         self.bank = bank
         self.menu = QtWidgets.QMenu(self)
-        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.explorer = QtGui.QAction(self.menu)
+        self.explorer.setIcon(QtGui.QIcon(QtGui.QIcon.fromTheme(u"folder-open")))
+        self.explorer.triggered.connect(lambda:Explore(self.current.file))
+        self.menu.addAction(self.explorer)
+        self.menu.addSeparator()
         bank.edit_signal.connect(self.keep)
         self.itemSelectionChanged.connect(self.display_file)
-        self.customContextMenuRequested.connect(lambda p:self.menu.exec(self.mapToGlobal(p)))
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.show_menu)
+
+    def show_menu(self, pos):
+        self.explorer.setText(Setting.getTr('explore'))
+        self.menu.exec(self.mapToGlobal(pos))
 
     def open(self):
         f = dialog.OpenFiles(self.parent(), Setting.getTr('load'), info.ext_all_voca)
@@ -393,7 +402,8 @@ class Files(BaseListWidget):
 
     @property
     def current(self) -> FItem:
-        return self.currentItem()
+        select = self.selectedItems()
+        return select[0] if select else self.currentItem()
     
     @current.setter
     def current(self, item:FItem):
