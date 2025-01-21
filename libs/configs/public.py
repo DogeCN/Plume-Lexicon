@@ -23,6 +23,8 @@ class Public(dict):
         Publics = Public(file)
 
     def __setitem__(self, key, value):
+        if key in self and self[key] == value:
+            return
         super().__setitem__(key, value)
         self.dump()
 

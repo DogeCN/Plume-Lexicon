@@ -2,6 +2,7 @@ import os, importlib
 from libs.stdout import print
 from tools.base import Tool
 import info
+from tools import one
 
 def load():
     global Tools
@@ -22,7 +23,7 @@ def dynamic_get() -> list[Tool]:
     return Tools
 
 def static_get():
-    from tools import batch, convert, random, mix
-    return {batch.tool, random.tool, convert.tool, mix.tool}
+    from tools import batch, convert, random
+    return {batch.tool, random.tool, convert.tool, one.tool}
 
 load()

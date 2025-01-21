@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QApplication
+from math import log10
 import os, sys
 
 def check_dir(dir):
@@ -30,6 +31,10 @@ temp = temp_dir + 'temp'
 timeout = 3
 max_recent = 5
 min_similarity = 0.5
+item_tbg = (255, 100, 100)
+item_obg = (100, 255, 255)
+item_fbg = (255, 100, 255, 30)
+fading_method = lambda c: round(max(255 - log10(c + 1) * 100, 1) / 5)
 running = temp_dir + '.running'
 running_sign = ' '
 tools = 'tools'

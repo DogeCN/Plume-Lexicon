@@ -182,19 +182,20 @@ class LMain(Ui_MainWindow):
         states = Publics['ui_states']
         if not files: files = states['files'] if 'files' in states else [info.default_voca]
         elif isinstance(files, str): files = [files]
-        current = states['current'] if 'current' in states else None
-        for f in files:
-            item = self.Files.load(f)
-            if current and f == current:
-                self.Files.current = item
+        cf = states['current'] if 'current' in states else None
+        for i in range(len(files)):
+            item = self.Files.load(files[i])
+            if cf == i: self.Files.current = item
+        self.Files.current = self.Files.current or self.Files.items[0]
 
     def store_states(self):
         states = Publics['ui_states']
         states['geometry'] = tuple(self.parent.geometry().getRect()) if not self.parent.isMaximized() else None
         states['text'] = self.Word_Entry.text()
-        states['files'] = self.Files.files
+        files = self.Files.files
+        states['files'] = files
         current = self.Files.current
-        states['current'] = current.file if current else None
+        states['current'] = files.index(current.file) if current else None
         Publics.dump()
 
     def restore_states(self):

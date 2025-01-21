@@ -5,7 +5,6 @@ from libs.stdout import print
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.io import io, dialog
-from math import log10
 import info, pickle
 
 TOP = QtWidgets.QAbstractItemView.ScrollHint.PositionAtTop
@@ -33,7 +32,7 @@ class LItem(BaseListWidgetItem):
         self.result = result
         self.word = result.word
         self.setToolTip(result.get_translation())
-        self.setBackground(self.dcolor(255, 100, 100) if result.online else self.dcolor(100, 255, 255))
+        self.setBackground(self.dcolor(*info.item_tbg) if result.online else self.dcolor(*info.item_obg))
         self.update()
 
     @property
@@ -46,8 +45,7 @@ class LItem(BaseListWidgetItem):
         self.update()
 
     def dcolor(self, r, g, b):
-        rate = round(max(255 - log10(self.result.past + 1) * 100, 1) / 5)
-        return QtGui.QColor(r, g, b, rate)
+        return QtGui.QColor(r, g, b, info.fading_method(self.result.past))
 
     def update(self):
         self.setText('*'+self.word if self.top else self.word)
@@ -56,53 +54,52 @@ class LItem(BaseListWidgetItem):
         return self.result.get_translation()
 
 class Bank(BaseListWidget):
-    def __init__(self, parent=None, ccenabled=True):
-        super().__init__(parent)
-        if ccenabled:
-            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-            self.customContextMenuRequested.connect(self.show_context_menu)
+    edit_signal = QtCore.Signal()
+    menu = None
 
-    def show_context_menu(self, pos):
-        menu = QtWidgets.QMenu(self)
+    def init_menu(self):
+        self.menu = QtWidgets.QMenu(self)
         
         copy = QtGui.QAction(Setting.translateUI('Copy'), self)
         copy.setShortcut('Ctrl+C')
         copy.setIcon(QtGui.QIcon.fromTheme('edit-copy'))
         copy.triggered.connect(self.copy)
-        menu.addAction(copy)
+        self.menu.addAction(copy)
 
         cut = QtGui.QAction(Setting.translateUI('Cut'), self)
         cut.setShortcut('Ctrl+X')
         cut.setIcon(QtGui.QIcon.fromTheme('edit-cut'))
         cut.triggered.connect(self.cut)
-        menu.addAction(cut)
+        self.menu.addAction(cut)
 
         paste = QtGui.QAction(Setting.translateUI('Paste'), self)
         paste.setShortcut('Ctrl+V')
         paste.setIcon(QtGui.QIcon.fromTheme('edit-paste'))
         paste.triggered.connect(self.paste)
-        menu.addAction(paste)
+        self.menu.addAction(paste)
 
-        menu.addSeparator()
+        self.menu.addSeparator()
 
         select_all = QtGui.QAction(Setting.translateUI('Select All'), self)
         select_all.setShortcut('Ctrl+A')
         select_all.setIcon(QtGui.QIcon.fromTheme('edit-select-all'))
         select_all.triggered.connect(self.selectAll)
-        menu.addAction(select_all)
+        self.menu.addAction(select_all)
 
         deselect = QtGui.QAction(Setting.translateUI('Deselect'), self)
         deselect.triggered.connect(self.clearSelection)
         deselect.setIcon(QtGui.QIcon.fromTheme('edit-clear'))
-        menu.addAction(deselect)
+        self.menu.addAction(deselect)
 
-        menu.exec(self.mapToGlobal(pos))
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(lambda p:self.menu.exec(self.mapToGlobal(p)))
 
     def keyPressEvent(self, event):
-        if event.matches(QtGui.QKeySequence.StandardKey.Copy): self.copy()
-        elif event.matches(QtGui.QKeySequence.StandardKey.Cut): self.cut()
-        elif event.matches(QtGui.QKeySequence.StandardKey.Paste): self.paste()
-        else: super().keyPressEvent(event)
+        if self.menu:
+            if event.matches(QtGui.QKeySequence.StandardKey.Copy): self.copy()
+            elif event.matches(QtGui.QKeySequence.StandardKey.Cut): self.cut()
+            elif event.matches(QtGui.QKeySequence.StandardKey.Paste): self.paste()
+            else: super().keyPressEvent(event)
 
     def copy(self):
         try:
@@ -127,6 +124,7 @@ class Bank(BaseListWidget):
     def top(self):
         for item in self.selections:
             item.top = not item.top
+        self.edit_signal.emit()
         self.roll()
 
     def append(self, result:Result|list[Result]):
@@ -141,6 +139,7 @@ class Bank(BaseListWidget):
             item = LItem(result)
             self.addItem(item)
             self.scrollToItem(item, TOP)
+            self.edit_signal.emit()
 
     def roll(self, word:str=None):
         if word:
@@ -155,6 +154,7 @@ class Bank(BaseListWidget):
         for item in self.selections:
             row = self.row(item)
             self.takeItem(row)
+        self.edit_signal.emit()
         self.update()
 
     def clear(self):
@@ -208,7 +208,7 @@ class FItem(BaseListWidgetItem):
     def __init__(self, file:str):
         super().__init__()
         self.file = info.os.path.abspath(file)
-        self.setBackground(QtGui.QColor(255, 100, 255, 30))
+        self.setBackground(QtGui.QColor(*info.item_fbg))
     
     @property
     def file(self):
@@ -231,8 +231,6 @@ class FItem(BaseListWidgetItem):
 
     @property
     def results(self):
-        if self._results is None:
-            self.load()
         return self._results
     
     @results.setter
@@ -295,9 +293,10 @@ class Files(BaseListWidget):
     def __init__(self, parent, bank:Bank):
         super().__init__(parent)
         self.bank = bank
-        self.itemSelectionChanged.connect(self.display_file)
         self.menu = QtWidgets.QMenu(self)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        bank.edit_signal.connect(self.keep)
+        self.itemSelectionChanged.connect(self.display_file)
         self.customContextMenuRequested.connect(lambda p:self.menu.exec(self.mapToGlobal(p)))
 
     def open(self):
@@ -321,14 +320,15 @@ class Files(BaseListWidget):
 
     def display_file(self, item=None):
         item = item if item else self.current
-        if item in self.items:
+        if item:
             if not item.loaded: item.load()
             self.bank.results = item.results
+        else: self.bank.results = []
 
     def load(self, file:str|list[str]):
         if isinstance(file, list):
             return [self.load(f) for f in file]
-        else:
+        elif file.endswith(info.ext_voca):
             file = info.os.path.abspath(file).replace('\\', '/')
             for item in self.items:
                 if item.file == file:
@@ -393,18 +393,12 @@ class Files(BaseListWidget):
 
     @property
     def current(self) -> FItem:
-        item = self.currentItem()
-        if not item:
-            items = self.items
-            if items:
-                item = items[0]
-                self.current = item
-        return item
+        return self.currentItem()
     
     @current.setter
     def current(self, item:FItem):
         self.setCurrentItem(item)
-        self.display_file()
+        item.setSelected(True)
 
     def clear(self):
         super().clear()

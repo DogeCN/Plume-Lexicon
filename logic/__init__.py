@@ -39,6 +39,7 @@ class LMainWindow(QMainWindow):
         self.lboxes = [] #type: list[LexiBox]
         self.connect_actions()
         self.retrans()
+        self.ui.Bank.init_menu()
         self.ui.setShotcuts()
         self.ui.restore_states()
         self.show()
@@ -77,7 +78,6 @@ class LMainWindow(QMainWindow):
             self.activateWindow()
             self.showNormal()
         open(info.running, 'w').write('')
-        self.ui.Files.keep()
         self.ui.check()
 
     def tray_activated(self, reason):

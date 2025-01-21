@@ -82,16 +82,6 @@ class Result:
         trans_html = self.get_translation().replace('\n', '<br>')
         return info.htip_hint % (Setting.getTr('htip') % self.word, trans_html)
 
-def fast(func):
-    def wrapper(word: str, *res_lists: list[Result]) -> Result:
-        for res_list in res_lists:
-            for res in res_list:
-                if res == word:
-                    return res
-        return func(word)
-    return wrapper
-
-@fast
 def online_translate(word: str) -> Result:
     result = Result(word)
     try: result.translation = api_translate(word, 0)
@@ -99,7 +89,6 @@ def online_translate(word: str) -> Result:
     else: result.online = True
     return result
 
-@fast
 def translate(word: str) -> Result:
     if word:
         max = info.min_similarity
@@ -127,8 +116,8 @@ def translate(word: str) -> Result:
         
     return Result(word)
 
-def trans(word: str, *res_lists):
-    if Setting.Online:
-        return online_translate(word, *res_lists)
-    else:
-        return translate(word, *res_lists)
+def trans(word: str, *results):
+    for res in results:
+        for r in res:
+            if r == word: return r
+    return online_translate(word) if Setting.Online else translate(word)

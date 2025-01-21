@@ -4,7 +4,7 @@ from .base import *
 class Theme:
     theme_names = ['Acrylic', 'Dark', 'Fusion', 'Default']
     main_bg_color = 'rgb(43, 43, 43)'
-    menu_bg_color = 'rgb(30, 30, 30)'
+    default_bg_color = 'rgb(30, 30, 30)'
     selected_bg_color = 'rgb(60, 60, 60)'
     text_color = 'rgb(255, 255, 255)'
     border_color = 'rgb(90, 90, 90)'
@@ -27,7 +27,7 @@ class Theme:
         cls.main_bg_color = \
         cls.border_color = \
         cls.selected_bg_color = 'transparent'
-        cls.menu_bg_color = 'rgba(60, 60, 60, 60)'
+        cls.default_bg_color = 'rgba(60, 60, 60, 60)'
         info.app.setStyleSheet(cls.Get())
         aws = [win] if win else cls.acrylic_wins
         for win in aws:
@@ -42,7 +42,7 @@ class Theme:
         info.app.setStyle('Windows11')
         cls.acrylic = False
         cls.main_bg_color = 'rgb(43, 43, 43)'
-        cls.menu_bg_color = 'rgb(30, 30, 30)'
+        cls.default_bg_color = 'rgb(30, 30, 30)'
         cls.selected_bg_color = 'rgb(60, 60, 60)'
         cls.border_color = 'rgb(90, 90, 90)'
         for win in cls.acrylic_wins:
@@ -82,12 +82,12 @@ class Theme:
                 border-radius: 5px;
             }}
             QMenu {{
-                background-color: {cls.menu_bg_color};
+                background-color: {cls.default_bg_color};
                 border-radius: 5px;
                 padding: {cls.padding};
             }}
             QMenu::item {{
-                background-color: {cls.menu_bg_color};
+                background-color: {cls.default_bg_color};
                 border-radius: 5px;
                 padding: {cls.padding} {cls.padding_right};
             }}
@@ -150,7 +150,7 @@ class Theme:
                 background-color: {cls.selected_bg_color};
                 border: 1px solid {cls.hover_border_color};
             }}
-            QMessageBox {{
-                background-color: {cls.menu_bg_color};
+            QMessageBox, QInputDialog {{
+                background-color: {cls.default_bg_color};
             }}
         '''

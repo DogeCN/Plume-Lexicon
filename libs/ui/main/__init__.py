@@ -150,7 +150,7 @@ class Ui_MainWindow:
         self.splitter = QSplitter(self.centralwidget)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Orientation.Vertical)
-        self.Exchanges = Bank(self.splitter, False)
+        self.Exchanges = Bank(self.splitter)
         self.Exchanges.setObjectName(u"Exchanges")
         self.Exchanges.setMinimumSize(QSize(128, 0))
         self.Exchanges.setMaximumSize(QSize(128, 16777215))
@@ -181,7 +181,7 @@ class Ui_MainWindow:
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 1, 2, 1)
 
 
-        self.Expand = Bank(self.centralwidget, False)
+        self.Expand = Bank(self.centralwidget)
         self.Expand.setObjectName(u"Expand")
         self.Expand.setMinimumSize(QSize(150, 0))
         self.Expand.setMaximumSize(QSize(150, 16777215))

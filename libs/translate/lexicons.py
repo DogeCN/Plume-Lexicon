@@ -3,12 +3,9 @@ from PySide6.QtCore import Signal, QObject
 from libs.configs.settings import Setting
 from libs.stdout import print
 from libs.io.base import *
-from concurrent.futures import ThreadPoolExecutor
+from threading import Thread
 from requests import get
 import info
-
-pool = ThreadPoolExecutor(3)
-pool._thread_name_prefix = __name__.split('.')[-1].capitalize()
 
 class LSignal(QObject):
     update = Signal()
@@ -69,7 +66,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
         return info.os.path.exists(self.hash_file)
 
     def setEnabled(self, enable):
-        pool.submit(self._setEnabled, enable)
+        Thread(target=self._setEnabled, name=self.name, args=(enable,)).start()
 
     def _setEnabled(self, enable):
         if enable and not self.loaded:
@@ -142,12 +139,12 @@ def _load_lexis():
 
 def load_lexis(callback):
     if _load_lexis():
-        dlpool = ThreadPoolExecutor()
         csignal.lock()
-        for lname in info.default_lexis:
-            fname = lname + info.ext_lexi
-            dlpool.submit(getfile, fname, info.lexis_dir)
-        dlpool.shutdown()
+        dlpool = [Thread(target=getfile, name=ln,
+                    args=(ln + info.ext_lexi,info.lexis_dir)
+                    ) for ln in info.default_lexis]
+        for t in dlpool: t.start()
+        for t in dlpool: t.join()
         csignal.unlock()
         if _load_lexis():
             callback()

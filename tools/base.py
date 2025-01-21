@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox, QMenu
+from PySide6.QtWidgets import QMessageBox, QInputDialog, QMenu
 from PySide6.QtGui import QAction, QIcon
 from libs.stdout import print
 from libs.configs.public import Publics
@@ -56,22 +56,34 @@ class Menu(_Action):
 
 class Message:
     tool = ... #type: Tool
-    def _msg(self, info, icon):
+    icons = QMessageBox.Icon
+    buttons = QMessageBox.StandardButton
+    def _msg(self, info=None, icon=None):
         msg = QMessageBox(self.tool.mw)
         msg.setWindowTitle(self.tool.get_name())
-        msg.setText(str(info))
-        msg.setIcon(icon)
+        msg.setStandardButtons(self.buttons.Ok)
+        if info: msg.setText(str(info))
+        if icon: msg.setIcon(icon)
         return msg
+    def Raw(self, info):
+        self._msg(info).exec()
     def Show(self, info):
-        self._msg(info, QMessageBox.Icon.Information).exec()
+        self._msg(info, self.icons.Information).exec()
     def Warn(self, info):
-        self._msg(info, QMessageBox.Icon.Warning).exec()
+        self._msg(info, self.icons.Warning).exec()
     def Error(self, info):
-        self._msg(info, QMessageBox.Icon.Critical).exec()
+        self._msg(info, self.icons.Critical).exec()
     def Ask(self, info):
-        msg = self._msg(info, QMessageBox.Icon.Question)
-        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        return msg.exec() == QMessageBox.StandardButton.Yes
+        msg = self._msg(info, self.icons.Question)
+        msg.setStandardButtons(self.buttons.Yes | self.buttons.No)
+        return msg.exec() == self.buttons.Yes
+    def Input(self, info, callback):
+        dialog = QInputDialog(self.tool.mw)
+        dialog.setWindowTitle(self.tool.get_name())
+        dialog.setLabelText(str(info))
+        dialog.accepted.connect(lambda:callback(dialog.textValue()))
+        #Solve Errors Occured in Callback Yourself :)
+        dialog.exec()
 
 class Dialog:
     tool = ... #type: Tool
@@ -126,7 +138,6 @@ class Tool:
     name_zh = '新工具'
     doc = 'This is a new tool'
     doc_zh = '这是一个新的工具'
-    entrance = None
     def __init__(self, type=0):
         self.type = type
         self.action = Menu() if type else Action()
@@ -141,11 +152,11 @@ class Tool:
         self.tr.tool = self
     def init(self):
         pass
+    def entrance(self):
+        raise NotImplementedError("Can't find an entrance of the tool!")
     def __call__(self, *args):
-        if self.entrance:
-            try: self.entrance(*args)
-            except Exception as e: self.message.Error(e)
-        else: print(f"Can't find an entrance of the tool {self.name}", 'Red')
+        try: self.entrance(*args)
+        except Exception as e: self.message.Error(e)
     #Get Info in Diffrent Languages
     def _get(self, attr) -> str:
         return getattr(self, attr if Setting.Language else f'{attr}_zh')
