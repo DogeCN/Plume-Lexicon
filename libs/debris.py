@@ -1,3 +1,4 @@
+from win32com.client import Dispatch
 from ctypes import windll
 from subprocess import Popen
 import os
@@ -67,3 +68,10 @@ class Ticker:
         else:
             self.tick += 1
             return False
+
+class Speak:
+    voice = Dispatch('SAPI.SpVoice')
+
+    @classmethod
+    def __call__(cls, text):
+        cls.voice.Speak(text)

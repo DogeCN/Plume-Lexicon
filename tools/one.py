@@ -1,7 +1,8 @@
 from .base import *
 from PySide6.QtWidgets import QAbstractScrollArea
 from PySide6.QtCore import Qt
-from requests import get
+from libs.io.thread import Pool
+from libs.requests import get
 from random import choice
 import time
 
@@ -10,10 +11,10 @@ moons = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘']
 foods = ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍']
 # Emoji Just for Fun
 
-def one(before=0):
+def one(before):
     try:
         day = time.strftime('%Y-%m-%d', time.localtime(time.time()-before*86400))
-        response = get(url%day).json()
+        response = get(url%day)
         sentence = response['content']
         translation = response['translation']
         result = f'{sentence}\n{translation}'
@@ -22,8 +23,12 @@ def one(before=0):
 
 def main(): #Extremely UNGRACEFUL :<
     global msg, detail
-    msg = tool.message._msg(one())
-    msg.setDetailedText('\n\n\n'.join([one(b) for b in range(1, 8)]))
+    pool = Pool()
+    for b in range(0, 8):
+        pool.submit(one, b)
+    pool.wait()
+    msg = tool.message._msg(pool.results[0])
+    msg.setDetailedText('\n\n\n'.join(pool.results[1:]))
     detail = msg.buttons()[1]
     _switch()
     detail.clicked.connect(lambda:_switch())

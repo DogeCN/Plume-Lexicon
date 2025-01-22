@@ -28,7 +28,6 @@ ext_voca = '.pvf'
 ext_settings = '.psf'
 ext_all_voca = '*' + ext_voca
 temp = temp_dir + 'temp'
-timeout = 3
 max_recent = 5
 min_similarity = 0.5
 item_tbg = (255, 100, 100)

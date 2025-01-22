@@ -1,15 +1,14 @@
 from PySide6.QtWidgets import QMessageBox, QMainWindow
 from PySide6.QtCore import Signal, QObject
-from PySide6.QtGui import QAction, QIcon, QDesktopServices
+from PySide6.QtGui import QDesktopServices
 from libs.translate.lexicons import load_lexis
 from libs.ui.main import Ui_MainWindow
-from libs.debris import Ticker
+from libs.debris import Ticker, Speak
 from libs.translate import Result
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
-from win32com.client import Dispatch
-from threading import Thread
-from requests import get
+from libs.io.thread import Thread
+from libs.requests import get
 from time import sleep
 import info
 
@@ -24,10 +23,8 @@ class LSignal(QObject):
         super().__init__()
 
 class LMain(Ui_MainWindow):
-    _voice = Dispatch('SAPI.SpVoice')
     _result = Result()
     signal = LSignal()
-    lexi_thread = Thread()
     add_locked = False
     add_enabled = False
     exchanges = None
@@ -43,13 +40,11 @@ class LMain(Ui_MainWindow):
         self.add_locked = l
         self.Add.setEnabled(False if l else self.add_enabled)
     def load_lexis(self):
-        self.lexi_thread = Thread(target=self._load_lexis)
-        self.lexi_thread.start()
-    def _load_lexis(self):
         load_lexis(self.signal.callback_singal.emit)
         self.signal.show_lexis_singal.emit()
-    def check(self): self.set_add_locked(not len(self.Files.items))
     def close(self): info.prog_running = False; self.parent.close()
+    def speak(self):
+        if self.result: Speak(self.Word_Entry.text())
     def set_expand(self, results):
         if not self.hc and not self.tc: self.Expand.results = results
     def set_exchanges(self, results):
@@ -60,8 +55,8 @@ class LMain(Ui_MainWindow):
         super().__init__()
         self.setupUi(MainWindow)
         self.parent = MainWindow
-        Thread(target=self.check_update, args=(True,)).start()
-        Thread(target=self.handle, name='Handle').start()
+        Thread(self.check_update, True)
+        Thread(self.handle)
         self.connect_actions()
     
     def connect_actions(self):
@@ -80,7 +75,7 @@ class LMain(Ui_MainWindow):
         self.Files.menu.addActions(actions[:4] + actions[5:12])
         
         self.actionExit.triggered.connect(self.close)
-        self.actionCheck.triggered.connect(lambda:Thread(target=self.check_update).start())
+        self.actionCheck.triggered.connect(lambda:Thread(self.check_update))
         self.actionAbout.triggered.connect(lambda:QDesktopServices.openUrl(info.repo_url))
         self.actionAboutQt.triggered.connect(lambda:QMessageBox.aboutQt(self.parent))
         #Button Actions
@@ -90,7 +85,7 @@ class LMain(Ui_MainWindow):
         #Text
         self.Word_Entry.textChanged.connect(self.text_change)
         self.Translated_text.mouseDoubleClickEvent = self.correct
-        self.Phonetic.mouseDoubleClickEvent = lambda *evt:Thread(target=lambda:self._voice.Speak(self.Word_Entry.text()) if self.result else ..., daemon=True).start()
+        self.Phonetic.mouseDoubleClickEvent = lambda *e:Thread(self.speak)
         #List Widgets
         self.Bank.itemSelectionChanged.connect(self.display_selection)
         self.Exchanges.itemSelectionChanged.connect(self.display_exchanges)
@@ -209,7 +204,7 @@ class LMain(Ui_MainWindow):
             self.Word_Entry.setText(text)
 
     def check_update(self, silent=False):
-        try: latest = get(info.release_api, timeout=info.timeout, verify=False).json()
+        try: latest = get(info.release_api)
         except: latest = None
         self.signal.show_update_singal.emit(latest, silent)
 

@@ -1,16 +1,15 @@
 from __future__ import annotations
 from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
-from PySide6.QtCore import QTimer, QEvent
+from PySide6.QtCore import QEvent
+from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
 from libs.translate.lexicons import LexiBox, csignal
 from libs.translate import trans
 from libs.configs.settings import Setting
 from libs.tool import load
 from libs.ui import Theme
 from libs.ui.settings import Ui_Settings
-from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
+from libs.io.thread import Scheduler, Thread
 from .main import LMain
-from threading import Thread
-from subprocess import Popen
 from time import sleep
 import info
 
@@ -28,11 +27,12 @@ class LMainWindow(QMainWindow):
         self.setting_ui = Ui_Settings()
         self.setting_ui.setupUi(self.setting)
         #Threading
-        self.ui.load_lexis()
-        Thread(target=self.ui.load, args=(info.argv1,)).start()
-        Thread(target=self.auto_translate, name='Translate').start()
-        self.auto_save_timer = self.ticker(lambda:self.ui.Files.save_all() if Setting.Auto_save else ..., Setting.Auto_save_interval*1000)
-        self.ticker(self.check, 500)
+        Thread(self.ui.load_lexis)
+        Thread(self.ui.load, info.argv1)
+        Thread(self.auto_translate)
+        self.saver = Scheduler(lambda:self.ui.Files.save_all() if Setting.Auto_save else ...,
+                            Setting.Auto_save_interval*1000)
+        Scheduler(self.check)
         #UI
         Theme.AddAcrylic(self)
         Theme.Set(Setting.Theme)
@@ -64,12 +64,6 @@ class LMainWindow(QMainWindow):
         for i in range(len(self.themes)): self.themes[i].toggled.connect(lambda *x, i=i:Theme.Set(i) or setattr(Setting, 'Theme', i) or Setting.dump())
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
 
-    def ticker(self, func, interval):
-        timer = QTimer(self)
-        timer.timeout.connect(func)
-        timer.start(interval)
-        return timer
-
     def check(self):
         action = open(info.running).readline().strip('\n')
         if action:
@@ -78,7 +72,7 @@ class LMainWindow(QMainWindow):
             self.activateWindow()
             self.showNormal()
         open(info.running, 'w').write('')
-        self.ui.check()
+        self.ui.set_add_locked(not len(self.ui.Files.items))
 
     def tray_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
@@ -89,7 +83,7 @@ class LMainWindow(QMainWindow):
     def accept(self):
         Setting.Auto_save = self.setting_ui.Auto_Save.isChecked()
         Setting.Auto_save_interval = self.setting_ui.Interval.value()
-        self.auto_save_timer.setInterval(Setting.Auto_save_interval*1000)
+        self.saver.setInterval(Setting.Auto_save_interval*1000)
         Setting.Key_Add = self.setting_ui.Key_Add.keySequence().toString()
         Setting.Key_Del = self.setting_ui.Key_Delete.keySequence().toString()
         Setting.Key_Top = self.setting_ui.Key_Top.keySequence().toString()
@@ -123,7 +117,7 @@ class LMainWindow(QMainWindow):
             self.setting_ui.verticalLayout.removeWidget(a)
             a.deleteLater()
         self.lboxes.clear()
-        self.ui.load_lexis()
+        Thread(self.ui.load_lexis)
 
     def show_lexicons(self):
         from libs.translate.lexicons import lexicons
