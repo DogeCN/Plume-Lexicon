@@ -10,13 +10,12 @@ from libs.configs.public import Publics
 from libs.io.thread import Thread
 from libs.requests import get
 from time import sleep
-import info
+import logic, info
 
 
 class LSignal(QObject):
     set_result_singal = Signal()
-    callback_singal = Signal()
-    show_lexis_singal = Signal()
+    callback_signal = Signal(bool)
     show_update_singal = Signal(dict, bool)
     exchange_singal = Signal(Result)
     expand_singal = Signal(Result)
@@ -36,6 +35,14 @@ class LMain(Ui_MainWindow):
     tc = False
     hc = False
 
+    def __init__(self, parent):
+        super().__init__()
+        self.setupUi(parent)
+        self.parent = parent  # type: logic.LMainWindow
+        Thread(self.check_update, True)
+        Thread(self.handle)
+        self.connect_actions()
+
     def set_add_enabled(self, e):
         self.add_enabled = e
         self.Add.setEnabled(False if self.add_locked else e)
@@ -45,8 +52,16 @@ class LMain(Ui_MainWindow):
         self.Add.setEnabled(False if l else self.add_enabled)
 
     def load_lexis(self):
-        load_lexis(self.signal.callback_singal.emit)
-        self.signal.show_lexis_singal.emit()
+        load_lexis(self.signal.callback_signal.emit)
+
+    def callback(self, succeed):
+        if succeed:
+            self.parent.show_lexicons()
+        else:
+            QMessageBox.warning(
+                Setting.getTr("warning"),
+                Setting.getTr("lexi_unavailable"),
+            )
 
     def close(self):
         info.prog_running = False
@@ -66,14 +81,6 @@ class LMain(Ui_MainWindow):
 
     def clear_recent(self):
         Publics["recent"] = []
-
-    def __init__(self, MainWindow: QMainWindow):
-        super().__init__()
-        self.setupUi(MainWindow)
-        self.parent = MainWindow
-        Thread(self.check_update, True)
-        Thread(self.handle)
-        self.connect_actions()
 
     def connect_actions(self):
         # Menu Actions
@@ -111,15 +118,9 @@ class LMain(Ui_MainWindow):
         # Signal
         self.signal.set_result_singal.connect(self.set_result)
         self.signal.show_update_singal.connect(self.show_update)
-        self.signal.callback_singal.connect(
-            lambda: QMessageBox.warning(
-                self.parent,
-                Setting.getTr("warning"),
-                Setting.getTr("translate_function_unavailable"),
-            )
-        )
         self.signal.exchange_singal.connect(self.set_exchanges)
         self.signal.expand_singal.connect(self.set_expand)
+        self.signal.callback_signal.connect(self.callback)
 
     def setShotcuts(self):
         self.Add.setShortcut(Setting.Key_Add)

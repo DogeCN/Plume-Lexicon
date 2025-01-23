@@ -9,7 +9,7 @@ def get(url, timeout=3):
     conn.request("GET", parsed_url.path + "?" + parsed_url.query)
     res = conn.getresponse()
     if res.status != 200:
-        raise Exception(f"HTTP request failed with status {res.status}")
+        return
     data = res.read()
     conn.close()
     try:

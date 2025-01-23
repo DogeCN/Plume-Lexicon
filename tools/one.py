@@ -45,9 +45,9 @@ def main():  # Extremely UNGRACEFUL :<
     pool = Pool()
     for b in range(0, 8):
         pool.submit(one, b)
-    pool.wait()
-    msg = tool.message._msg(pool.results[0])
-    msg.setDetailedText("\n\n\n".join(pool.results[1:]))
+    results = pool.wait()
+    msg = tool.message._msg(results[0])
+    msg.setDetailedText("\n\n\n".join(results[1:]))
     detail = msg.buttons()[1]
     _switch()
     detail.clicked.connect(lambda: _switch())

@@ -17,18 +17,17 @@ import info
 class LMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # Window Build
         self.ui = LMain(self)
         self.tray = QSystemTrayIcon(self.ui.icon, self)
         self.tmenu = QMenu(self)
         self.tmenu.addAction(self.ui.actionExit)
         self.tray.setContextMenu(self.tmenu)
-        # Setting
         self.setting = QDialog(self)
         self.setting_ui = Ui_Settings()
         self.setting_ui.setupUi(self.setting)
-        # Threading
-        Thread(self.ui.load_lexis)
+        self.connect_actions()
+        self.lboxes = []  # type: list[LexiBox]
+        self.ui.load_lexis()
         Thread(self.ui.load, info.argv1)
         Thread(self.auto_translate)
         self.saver = Scheduler(
@@ -36,16 +35,13 @@ class LMainWindow(QMainWindow):
             Setting.Auto_save_interval * 1000,
         )
         Scheduler(self.check)
-        # UI
+        self.ui.restore_states()
         Theme.AddAcrylic(self)
         Theme.Set(Setting.Theme)
-        self.lboxes = []  # type: list[LexiBox]
-        self.connect_actions()
+        self.show()
         self.retrans()
         self.ui.Bank.init_menu()
         self.ui.setShotcuts()
-        self.ui.restore_states()
-        self.show()
 
     def connect_actions(self):
         self.themes = [
@@ -56,8 +52,6 @@ class LMainWindow(QMainWindow):
         ]
         self.tray.activated.connect(self.tray_activated)
         self.ui.actionSetting.triggered.connect(self.setting_show)
-        self.ui.actionTool_Reload.triggered.connect(lambda: load() or self.show_tools())
-        self.ui.signal.show_lexis_singal.connect(self.show_lexicons)
         self.setting_ui.Lang.currentIndexChanged.connect(
             lambda: self.retrans(self.setting_ui.Lang.currentIndex())
         )
@@ -145,13 +139,13 @@ class LMainWindow(QMainWindow):
             self.setting_ui.verticalLayout.removeWidget(a)
             a.deleteLater()
         self.lboxes.clear()
-        Thread(self.ui.load_lexis)
+        self.ui.load_lexis()
 
     def show_lexicons(self):
         from libs.translate.lexicons import lexicons
 
         for l in lexicons:
-            lb = LexiBox(l, self)
+            lb = LexiBox(self.setting, l)
             self.lboxes.append(lb)
             self.setting_ui.verticalLayout.addWidget(lb)
 

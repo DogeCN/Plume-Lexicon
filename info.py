@@ -44,7 +44,7 @@ reg_ext = "Software\\Classes\\" + ext_voca
 reg_cmd = "shell\\open\\command"
 cmd = f'"{os.path.abspath(argv0)}" "%1"'
 repo_name = "Plume-Lexicon"
-repo_url = f"github.com/{author}/{repo_name}"
+repo_url = f"https://github.com/{author}/{repo_name}"
 release_api = f"https://api.github.com/repos/{author}/{repo_name}/releases/latest"
 url_trans = "https://trans-api.dogecn.workers.dev/translate_a/single?client=gtx&dt=t&sl=auto&tl=%s&q=%s"
 htip_hint = '<html><body><p><span style=" font-size:11pt; font-weight:600;">%s</span style=" font-size:10pt"></p><p>%s</p></body></html>'
@@ -68,7 +68,7 @@ Tr = {
     "warning": ("警告", "Warning"),
     "unload": ("未加载", "Unload"),
     "loadfailed": ("加载失败", "Failed to Load"),
-    "translate_function_unavailable": (
+    "trans_unavailable": (
         """无法加载词典
 翻译功能不可用
 但你可以浏览已有词汇
@@ -148,7 +148,6 @@ UITr = {
     "About This Programm": "关于本项目",
     "About Qt": "关于Qt",
     "About Qt Engine": "关于Qt引擎",
-    "Relaod Tools": "重载工具",
     "Remove": "移除",
     "Remove Current File": "移除当前文件",
     "Recent": "最近",

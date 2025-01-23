@@ -5,7 +5,7 @@ from libs.configs.public import Publics
 from libs.configs.settings import Setting
 from libs.io import io
 from subprocess import Popen
-from libs.ui import Dialog
+from libs.ui import Dialog as DG
 import info, logic
 
 
@@ -111,22 +111,22 @@ class Dialog:
     def OpenDir(self, title=None, dir=None):
         if not title:
             title = self.tool.get_name()
-        return Dialog.OpenDir(self.tool.mw, title, dir)
+        return DG.OpenDir(self.tool.mw, title, dir)
 
     def OpenFile(self, title=None, type=..., dir=None):
         if not title:
             title = self.tool.get_name()
-        return Dialog.OpenFile(self.tool.mw, title, type, dir)
+        return DG.OpenFile(self.tool.mw, title, type, dir)
 
     def OpenFiles(self, title=None, type=..., dir=None):
         if not title:
             title = self.tool.get_name()
-        return Dialog.OpenFiles(self.tool.mw, title, type, dir)
+        return DG.OpenFiles(self.tool.mw, title, type, dir)
 
     def SaveFile(self, title=None, type=..., dir=None):
         if not title:
             title = self.tool.get_name()
-        return Dialog.SaveFile(self.tool.mw, title, type, dir)
+        return DG.SaveFile(self.tool.mw, title, type, dir)
 
     @staticmethod
     def Pop(f):

@@ -1,18 +1,7 @@
 from PySide6.QtCore import QThread, QTimer
 
 
-class Objects(set["Scheduler|Thread"]):
-
-    def clear(self):
-        for obj in self:
-            self.remove(obj)
-
-    @property
-    def names(self):
-        return [obj.name for obj in self]
-
-
-_objects = Objects()
+_objects = set()
 
 
 class Scheduler(QTimer):
@@ -27,14 +16,8 @@ class Scheduler(QTimer):
         super().stop()
         _objects.remove(self)
 
-    @property
-    def name(self):
-        return self._target.__name__
-
 
 class Thread(QThread):
-    result = None
-
     def __init__(self, target, *args):
         super().__init__()
         _objects.add(self)
@@ -44,28 +27,24 @@ class Thread(QThread):
         self.start()
 
     def run(self):
-        self.result = self._target(*self._args)
+        self._result = self._target(*self._args)
 
     def remove(self):
-        print(self._target.__name__, "finished")
         _objects.remove(self)
-        name = self.name
-        print(f"{name} count: {_objects.names.count(name)}")
 
-    @property
-    def name(self):
-        return self._target.__name__
+    def wait(self):
+        super().wait()
+        return self._result
 
 
 class Pool:
     def __init__(self):
-        self.results = []
-        self.threads = []  # type: list[Thread]
+        self._threads = []  # type: list[Thread]
 
     def submit(self, task, *args):
-        self.threads.append(Thread(task, *args))
+        self._threads.append(Thread(task, *args))
 
     def wait(self):
-        for t in self.threads:
-            t.wait()
-            self.results.append(t.result)
+        results = [t.wait() for t in self._threads]
+        self._threads.clear()
+        return results

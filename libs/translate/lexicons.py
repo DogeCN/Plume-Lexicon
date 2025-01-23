@@ -3,7 +3,7 @@ from PySide6.QtCore import Signal, QObject
 from libs.configs.settings import Setting
 from libs.stdout import print
 from libs.io.base import *
-from libs.io.thread import Thread, Pool
+from libs.io.thread import Thread
 from libs.requests import get
 import info
 
@@ -46,7 +46,6 @@ class Lexicon(dict[str, list[str, list[str]]]):
 
     def __init__(self, fp: str = None):
         if fp:
-            lexicons.append(self)
             self.fp = fp
             self.enabled = self.loaded = self.failed = False
             self.signal = LSignal()
@@ -74,10 +73,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
     def hash_exists(self):
         return info.os.path.exists(self.hash_file)
 
-    def setEnabled(self, e=True):
-        Thread(self._setEnabled, e)
-
-    def _setEnabled(self, e=True):
+    def setEnabled(self, e):
         if e and not self.loaded:
             csignal.begin()
             try:
@@ -111,10 +107,10 @@ class Lexicon(dict[str, list[str, list[str]]]):
 
 
 class LexiBox(QCheckBox):
-    def __init__(self, lexicon: Lexicon, parent):
+    def __init__(self, parent, lexicon: Lexicon):
         super().__init__(parent)
         lexicon.signal.update.connect(self.update)
-        self.toggled.connect(lexicon.setEnabled)
+        self.toggled.connect(lambda e: Thread(lexicon.setEnabled, e))
         self.lexicon = lexicon
         self.update()
 
@@ -132,19 +128,7 @@ class LexiBox(QCheckBox):
 lexicons = []  # type: list[Lexicon]
 
 
-def getlexi(name, dir):
-    print(f"Downloading {name}", "Blue")
-    try:
-        data = get(info.lurl_cn % name)
-    except:
-        data = get(info.lurl % name)
-    fp = dir + name
-    with open(fp, "wb") as f:
-        f.write(data)
-        Lexicon(fp)._setEnabled()
-
-
-def _load_lexis():
+def dir_lexis():
     files = info.os.listdir(info.lexis_dir)
     lexicons.clear()
     for f in files:
@@ -152,17 +136,31 @@ def _load_lexis():
         disabled = f.endswith(info.ext_lexi + info.ext_disabled)
         if enabled or disabled:
             fp = info.lexis_dir + f
-            Lexicon(fp).setEnabled(enabled)
+            l = Lexicon(fp)
+            Thread(l.setEnabled, enabled)
+            lexicons.append(l)
 
 
 def load_lexis(callback):
-    _load_lexis()
+    dir_lexis()
     if not lexicons:
         csignal.lock()
-        pool = Pool()
         for ln in info.default_lexis:
-            pool.submit(getlexi, ln + info.ext_lexi, info.lexis_dir)
-        pool.wait()
+            name = ln + info.ext_lexi
+            print(f"Downloading {name}", "Blue")
+            for lu in (info.lurl_cn, info.lurl):
+                data = get(lu % name)
+                if data:
+                    fp = info.lexis_dir + name
+                    with open(fp, "wb") as f:
+                        f.write(data)
+                        l = Lexicon(fp)
+                        l.setEnabled(True)
+                        lexicons.append(l)
+                        callback(True)
+                    break
+            else:
+                return callback(False)
         csignal.unlock()
-        if not lexicons:
-            callback()
+    else:
+        callback(True)
