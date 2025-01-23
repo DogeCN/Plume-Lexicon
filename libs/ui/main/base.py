@@ -3,9 +3,11 @@ from libs.debris import Get_New_File_Name, Explore
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.translate import Result
-from libs.io import io, dialog
+from libs.io import io
 from libs.stdout import print
 import info, pickle
+
+from libs.ui import Dialog
 
 TOP = QtWidgets.QAbstractItemView.ScrollHint.PositionAtTop
 
@@ -290,7 +292,7 @@ class FItem(BaseListWidgetItem):
 
     def save_as(self, file=None):
         if file:
-            file = dialog.SaveFile(
+            file = Dialog.SaveFile(
                 None, Setting.getTr("save_as"), info.ext_all_voca, file
             )
             if not file:
@@ -298,7 +300,7 @@ class FItem(BaseListWidgetItem):
             self.file = file
             self.saved = True
         else:
-            file = dialog.SaveFile(None, Setting.getTr("save_as"), info.ext_all_voca)
+            file = Dialog.SaveFile(None, Setting.getTr("save_as"), info.ext_all_voca)
             if not file:
                 return
         io.save_vocabulary(self.results, file)
@@ -334,7 +336,7 @@ class Files(BaseListWidget):
         self.menu.exec(self.mapToGlobal(pos))
 
     def open(self):
-        f = dialog.OpenFiles(self.parent(), Setting.getTr("load"), info.ext_all_voca)
+        f = Dialog.OpenFiles(self.parent(), Setting.getTr("load"), info.ext_all_voca)
         if f:
             self.display_file(self.load(f)[0])
 
