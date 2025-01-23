@@ -1,16 +1,17 @@
 import info
 from .base import *
 
+
 class Theme:
-    theme_names = ['Acrylic', 'Dark', 'Fusion', 'Default']
-    main_bg_color = 'rgb(43, 43, 43)'
-    default_bg_color = 'rgb(30, 30, 30)'
-    selected_bg_color = 'rgb(60, 60, 60)'
-    text_color = 'rgb(255, 255, 255)'
-    border_color = 'rgb(90, 90, 90)'
-    hover_border_color = 'rgb(0, 170, 255)'
-    padding = '3px'
-    padding_right = '10px'
+    theme_names = ["Acrylic", "Dark", "Fusion", "Default"]
+    main_bg_color = "rgb(43, 43, 43)"
+    default_bg_color = "rgb(30, 30, 30)"
+    selected_bg_color = "rgb(60, 60, 60)"
+    text_color = "rgb(255, 255, 255)"
+    border_color = "rgb(90, 90, 90)"
+    hover_border_color = "rgb(0, 170, 255)"
+    padding = "3px"
+    padding_right = "10px"
     acrylic_wins = []
     acrylic = False
 
@@ -23,11 +24,9 @@ class Theme:
 
     @classmethod
     def ApplyAcrylic(cls, win=None):
-        info.app.setStyle('Windows11')
-        cls.main_bg_color = \
-        cls.border_color = \
-        cls.selected_bg_color = 'transparent'
-        cls.default_bg_color = 'rgba(60, 60, 60, 60)'
+        info.app.setStyle("Windows11")
+        cls.main_bg_color = cls.border_color = cls.selected_bg_color = "transparent"
+        cls.default_bg_color = "rgba(60, 60, 60, 60)"
         info.app.setStyleSheet(cls.Get())
         aws = [win] if win else cls.acrylic_wins
         for win in aws:
@@ -38,13 +37,13 @@ class Theme:
 
     @classmethod
     def DiscardAcrylic(cls):
-        info.app.setStyle('Fusion')
-        info.app.setStyle('Windows11')
+        info.app.setStyle("Fusion")
+        info.app.setStyle("Windows11")
         cls.acrylic = False
-        cls.main_bg_color = 'rgb(43, 43, 43)'
-        cls.default_bg_color = 'rgb(30, 30, 30)'
-        cls.selected_bg_color = 'rgb(60, 60, 60)'
-        cls.border_color = 'rgb(90, 90, 90)'
+        cls.main_bg_color = "rgb(43, 43, 43)"
+        cls.default_bg_color = "rgb(30, 30, 30)"
+        cls.selected_bg_color = "rgb(60, 60, 60)"
+        cls.border_color = "rgb(90, 90, 90)"
         for win in cls.acrylic_wins:
             hWnd = win.winId()
             ChangeDWMAttrib(hWnd, 20, 0)
@@ -53,18 +52,20 @@ class Theme:
 
     @classmethod
     def Set(cls, theme=None):
-        info.app.setStyleSheet('')
+        info.app.setStyleSheet("")
         if theme in [0, cls.theme_names[0]]:
             cls.acrylic = True
             cls.ApplyAcrylic()
         else:
             cls.DiscardAcrylic()
-            if theme in [1, cls.theme_names[1]]: info.app.setStyleSheet(cls.Get())
-            if theme in [2, cls.theme_names[2]]: info.app.setStyle('Fusion')
+            if theme in [1, cls.theme_names[1]]:
+                info.app.setStyleSheet(cls.Get())
+            if theme in [2, cls.theme_names[2]]:
+                info.app.setStyle("Fusion")
 
     @classmethod
     def Get(cls):
-        return f'''
+        return f"""
             * {{
                 background-color: {cls.main_bg_color};
                 color: {cls.text_color};
@@ -153,4 +154,4 @@ class Theme:
             QMessageBox, QInputDialog {{
                 background-color: {cls.default_bg_color};
             }}
-        '''
+        """

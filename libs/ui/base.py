@@ -1,5 +1,6 @@
 from ctypes import POINTER, Structure, byref, c_int, pointer, sizeof, windll, wintypes
 
+
 class ACCENT_POLICY(Structure):
     _fields_ = [
         ("AccentState", wintypes.DWORD),
@@ -8,12 +9,14 @@ class ACCENT_POLICY(Structure):
         ("AnimationId", wintypes.DWORD),
     ]
 
+
 class WINDOW_COMPOSITION_ATTRIBUTES(Structure):
     _fields_ = [
         ("Attribute", wintypes.DWORD),
         ("Data", POINTER(ACCENT_POLICY)),
         ("SizeOfData", wintypes.ULONG),
     ]
+
 
 class MARGINS(Structure):
     _fields_ = [
@@ -23,10 +26,14 @@ class MARGINS(Structure):
         ("cyBottomHeight", c_int),
     ]
 
-def ChangeDWMAttrib(hWnd: int, attrib: int, color) -> None:
-    windll.dwmapi.DwmSetWindowAttribute(hWnd, attrib, byref(c_int(color)), sizeof(c_int))
 
-def ChangeDWMAccent(hWnd: int, attrib: int, state: int, color = None) -> None:
+def ChangeDWMAttrib(hWnd: int, attrib: int, color) -> None:
+    windll.dwmapi.DwmSetWindowAttribute(
+        hWnd, attrib, byref(c_int(color)), sizeof(c_int)
+    )
+
+
+def ChangeDWMAccent(hWnd: int, attrib: int, state: int, color=None) -> None:
     accentPolicy = ACCENT_POLICY()
 
     winCompAttrData = WINDOW_COMPOSITION_ATTRIBUTES()
@@ -40,9 +47,11 @@ def ChangeDWMAccent(hWnd: int, attrib: int, state: int, color = None) -> None:
 
     windll.user32.SetWindowCompositionAttribute(hWnd, pointer(winCompAttrData))
 
+
 def ExtendFrameIntoClientArea(HWND: int) -> None:
     margins = MARGINS(-1, -1, -1, -1)
     windll.dwmapi.DwmExtendFrameIntoClientArea(HWND, byref(margins))
+
 
 def DisableFrameIntoClientArea(HWND: int) -> None:
     margins = MARGINS(0, 0, 0, 0)

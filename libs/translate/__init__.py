@@ -4,12 +4,13 @@ from .lexicons import lexicons
 from libs.configs.settings import Setting
 import info, time
 
+
 class Result:
     top = False
     match = False
     online = False
 
-    def __init__(self, word:str='', value:list[str, list[str]]=[*['']*3, []]):
+    def __init__(self, word: str = "", value: list[str, list[str]] = [*[""] * 3, []]):
         self.time = time.time()
         self.word = word
         self.value = value
@@ -22,7 +23,7 @@ class Result:
     def translation(self):
         translation = self.value[2]
         return translation if translation else info.nontr[0]
-    
+
     @translation.setter
     def translation(self, translation):
         self.value[2] = translation
@@ -56,10 +57,12 @@ class Result:
                 if result:
                     yield result
         for lexicon in lexicons:
-            if not lexicon.enabled: continue
+            if not lexicon.enabled:
+                continue
             for wp in lexicon:
-                if (sep in self.word and self.word != wp and self.word in wp) \
-                    or (sep in wp and self.word in wp.split(sep)):
+                if (sep in self.word and self.word != wp and self.word in wp) or (
+                    sep in wp and self.word in wp.split(sep)
+                ):
                     yield Result(wp, lexicon[wp])
 
     @property
@@ -71,23 +74,28 @@ class Result:
     @property
     def phonetic(self):
         return self.value[0]
-    
+
     def __bool__(self):
         return bool(self.value[1 if Setting.Language else 2]) and not self.match
-    
+
     def __eq__(self, value):
         return self.word == value
-    
+
     def get_tip(self):
-        trans_html = self.get_translation().replace('\n', '<br>')
-        return info.htip_hint % (Setting.getTr('htip') % self.word, trans_html)
+        trans_html = self.get_translation().replace("\n", "<br>")
+        return info.htip_hint % (Setting.getTr("htip") % self.word, trans_html)
+
 
 def online_translate(word: str) -> Result:
     result = Result(word)
-    try: result.translation = api_translate(word, 0)
-    except: ...
-    else: result.online = True
+    try:
+        result.translation = api_translate(word, 0)
+    except:
+        ...
+    else:
+        result.online = True
     return result
+
 
 def translate(word: str) -> Result:
     if word:
@@ -96,7 +104,8 @@ def translate(word: str) -> Result:
         s.set_seq2(word)
         result = None
         for lexicon in lexicons:
-            if not lexicon.enabled: continue
+            if not lexicon.enabled:
+                continue
             for wp in [word, word.lower(), word.capitalize()]:
                 if wp in lexicon:
                     return Result(word, lexicon[wp])
@@ -113,11 +122,13 @@ def translate(word: str) -> Result:
         if result is not None:
             result.match = True
             return result
-        
+
     return Result(word)
+
 
 def trans(word: str, *results):
     for res in results:
         for r in res:
-            if r == word: return r
+            if r == word:
+                return r
     return online_translate(word) if Setting.Online else translate(word)

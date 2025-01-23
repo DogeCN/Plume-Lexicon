@@ -450,4 +450,6 @@ qt_resource_struct = b"\
 \x00\x00\x01\x93}(8\xb2\
 "
 
-QtCore.qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
+QtCore.qRegisterResourceData(
+    0x03, qt_resource_struct, qt_resource_name, qt_resource_data
+)

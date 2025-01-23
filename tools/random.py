@@ -1,17 +1,24 @@
 from .base import *
 from random import choice, randint
 
+
 def all():
     global lexicons
     from libs.translate.lexicons import lexicons
+
     while True:
-        try: retry()
-        except: continue
-        else: break
+        try:
+            retry()
+        except:
+            continue
+        else:
+            break
+
 
 def inbank():
     Bank = tool.mw.ui.Bank
     Bank.current = choice(Bank.items)
+
 
 def retry():
     dicts = [d for d in lexicons if d.enabled]
@@ -19,27 +26,29 @@ def retry():
     word = choose(dict)
     tool.mw.ui.Word_Entry.setText(word)
 
-def choose(dict:dict):
-    return list(dict.keys())[randint(0, len(dict)-1)]
+
+def choose(dict: dict):
+    return list(dict.keys())[randint(0, len(dict) - 1)]
+
 
 tool1 = Tool()
-tool1.name = 'Random all'
-tool1.name_zh = '随机所有'
-tool1.doc = 'Random word in dictionary'
-tool1.doc_zh = '在字典中随机'
-tool1.action.shortcut = 'Ctrl+Shift+R'
+tool1.name = "Random all"
+tool1.name_zh = "随机所有"
+tool1.doc = "Random word in dictionary"
+tool1.doc_zh = "在字典中随机"
+tool1.action.shortcut = "Ctrl+Shift+R"
 tool1.entrance = all
 
 tool2 = Tool()
-tool2.name = 'Random in bank'
-tool2.name_zh = '随机单词'
-tool2.doc = 'Random word in bank'
-tool2.doc_zh = '在单词表中随机单词'
-tool2.action.shortcut = 'Ctrl+Alt+R'
+tool2.name = "Random in bank"
+tool2.name_zh = "随机单词"
+tool2.doc = "Random word in bank"
+tool2.doc_zh = "在单词表中随机单词"
+tool2.action.shortcut = "Ctrl+Alt+R"
 tool2.entrance = inbank
 
 tool = Tool(1)
-tool.name = 'Random'
-tool.name_zh = '随机'
+tool.name = "Random"
+tool.name_zh = "随机"
 tool.action.tools = [tool1, tool2]
-tool.action.icon = 'help-browser'
+tool.action.icon = "help-browser"
