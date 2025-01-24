@@ -1,21 +1,19 @@
-from PySide6.QtWidgets import QMessageBox, QMainWindow
+from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QDesktopServices
-from libs.translate.lexicons import load_lexis
 from libs.ui.main import Ui_MainWindow
 from libs.debris import Ticker, Speak
 from libs.translate import Result
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.io.thread import Thread
-from libs.requests import get
+from libs.io.requests import get
 from time import sleep
 import logic, info
 
 
 class LSignal(QObject):
     set_result_singal = Signal()
-    callback_signal = Signal(bool)
     show_update_singal = Signal(dict, bool)
     exchange_singal = Signal(Result)
     expand_singal = Signal(Result)
@@ -51,18 +49,6 @@ class LMain(Ui_MainWindow):
         self.add_locked = l
         self.Add.setEnabled(False if l else self.add_enabled)
 
-    def load_lexis(self):
-        load_lexis(self.signal.callback_signal.emit)
-
-    def callback(self, succeed):
-        if succeed:
-            self.parent.show_lexicons()
-        else:
-            QMessageBox.warning(
-                Setting.getTr("warning"),
-                Setting.getTr("lexi_unavailable"),
-            )
-
     def close(self):
         info.prog_running = False
         self.parent.close()
@@ -96,7 +82,6 @@ class LMain(Ui_MainWindow):
         self.actionClearRecent.triggered.connect(self.clear_recent)
         actions = self.menuFile.actions()
         self.Files.menu.addActions(actions[:4] + actions[5:12])
-
         self.actionExit.triggered.connect(self.close)
         self.actionCheck.triggered.connect(lambda: Thread(self.check_update))
         self.actionAbout.triggered.connect(
@@ -120,7 +105,6 @@ class LMain(Ui_MainWindow):
         self.signal.show_update_singal.connect(self.show_update)
         self.signal.exchange_singal.connect(self.set_exchanges)
         self.signal.expand_singal.connect(self.set_expand)
-        self.signal.callback_signal.connect(self.callback)
 
     def setShotcuts(self):
         self.Add.setShortcut(Setting.Key_Add)

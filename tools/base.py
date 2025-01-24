@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QMessageBox, QInputDialog, QMenu
 from PySide6.QtGui import QAction, QIcon
-from libs.stdout import print
+from libs.io.stdout import print
 from libs.configs.public import Publics
 from libs.configs.settings import Setting
-from libs.io import io
+from libs.io import files
 from subprocess import Popen
 from libs.ui import Dialog as DG
 import info, logic
@@ -223,4 +223,4 @@ class Tool:
         return self._get("doc")
 
 
-__all__ = ["Tool", "print", "io", "info"]
+__all__ = ["Tool", "print", "files", "info"]

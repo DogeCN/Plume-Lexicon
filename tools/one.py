@@ -2,7 +2,7 @@ from .base import *
 from PySide6.QtWidgets import QAbstractScrollArea
 from PySide6.QtCore import Qt
 from libs.io.thread import Pool
-from libs.requests import get
+from libs.io.requests import get
 from random import choice
 import time
 

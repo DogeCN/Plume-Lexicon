@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
 from libs.configs.settings import Setting
-from libs.stdout import print
 from libs.io.base import *
-from libs.io.thread import Thread
-from libs.requests import get
+from libs.io.stdout import print
+from libs.io.requests import get
+from libs.io.thread import Thread, Pool
 import info
 
 
@@ -14,6 +14,8 @@ class LSignal(QObject):
 
 class CSignal(QObject):
     sre = Signal(bool)
+    warn = Signal(str)
+    update = Signal()
     count = 0
     locked = False
 
@@ -60,7 +62,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
         if self.loaded:
             hint = len(self)
         elif self.failed:
-            hint = Setting.getTr("loadfailed")
+            hint = Setting.getTr("load_failed")
         else:
             hint = Setting.getTr("unload")
         return f"{name} ({hint})"
@@ -85,8 +87,8 @@ class Lexicon(dict[str, list[str, list[str]]]):
                     dump_(self.hash_file, header)
                 self.loaded = True
                 self.failed = False
-            except Exception as e:
-                print(f"Failed to load {self.fp}: {e}", "Red")
+            except Exception as ex:
+                print(f"Failed to load {self.fp}: {ex}", "Red")
                 self.failed = True
             csignal.final()
         self.enabled = e
@@ -97,7 +99,10 @@ class Lexicon(dict[str, list[str, list[str]]]):
         if not e:
             fp = fp + info.ext_disabled
         if self.fp != fp:
-            info.os.rename(self.fp, fp)
+            try:
+                info.os.rename(self.fp, fp)
+            except OSError:
+                print(f"Failed to rename {self.fp} to {fp}", "Red")
             self.fp = fp
 
     def _update(self, l):
@@ -128,39 +133,54 @@ class LexiBox(QCheckBox):
 lexicons = []  # type: list[Lexicon]
 
 
-def dir_lexis():
+def init_lexis(fp, e):
+    l = Lexicon(fp)
+    Thread(l.setEnabled, e)
+    lexicons.append(l)
+    csignal.update.emit()
+
+
+def get_lexis(ln):
+    data = None
+    name = ln + info.ext_lexi
+    print(f"Downloading {name}", "Black")
+    for url in (info.lurl_cn, info.lurl):
+        try:
+            data = get(url % name)
+        except:
+            continue
+    if data:
+        fp = info.lexis_dir + name
+        open(fp, "wb").write(data)
+        init_lexis(fp, True)
+    else:
+        return ln
+
+
+def down_lexis():
+    csignal.lock()
+    pool = Pool()
+    for ln in info.default_lexis:
+        pool.submit(get_lexis, ln)
+    failed = pool.wait()
+    csignal.unlock()
+    if lexicons:
+        csignal.warn.emit(
+            Setting.getTr("down_failed") % ", ".join(ln for ln in failed if ln)
+        )
+    else:
+        csignal.warn.emit(Setting.getTr("lexi_unavailable"))
+
+
+def load_lexis():
     files = info.os.listdir(info.lexis_dir)
     lexicons.clear()
+    csignal.update.emit()
     for f in files:
         enabled = f.endswith(info.ext_lexi)
         disabled = f.endswith(info.ext_lexi + info.ext_disabled)
         if enabled or disabled:
             fp = info.lexis_dir + f
-            l = Lexicon(fp)
-            Thread(l.setEnabled, enabled)
-            lexicons.append(l)
-
-
-def load_lexis(callback):
-    dir_lexis()
+            init_lexis(fp, enabled)
     if not lexicons:
-        csignal.lock()
-        for ln in info.default_lexis:
-            name = ln + info.ext_lexi
-            print(f"Downloading {name}", "Blue")
-            for lu in (info.lurl_cn, info.lurl):
-                data = get(lu % name)
-                if data:
-                    fp = info.lexis_dir + name
-                    with open(fp, "wb") as f:
-                        f.write(data)
-                        l = Lexicon(fp)
-                        l.setEnabled(True)
-                        lexicons.append(l)
-                        callback(True)
-                    break
-            else:
-                return callback(False)
-        csignal.unlock()
-    else:
-        callback(True)
+        Thread(down_lexis)

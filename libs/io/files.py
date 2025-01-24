@@ -1,6 +1,6 @@
 from libs.configs.settings import Setting
 from libs.translate import Result
-from libs.stdout import print
+from libs.io.stdout import print
 from .base import load, dump
 
 

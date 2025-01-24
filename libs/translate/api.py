@@ -1,4 +1,4 @@
-from libs.requests import get
+from libs.io.requests import get
 from urllib.parse import quote
 import info
 

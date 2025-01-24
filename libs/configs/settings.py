@@ -1,6 +1,6 @@
 from ..io.base import load, dump
 from ..debris import Get_Language
-from libs.stdout import print
+from libs.io.stdout import print
 import info
 
 data = info.settings

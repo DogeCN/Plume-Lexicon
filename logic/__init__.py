@@ -2,7 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QEvent
 from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
-from libs.translate.lexicons import LexiBox, csignal
+from libs.translate.lexicons import LexiBox, load_lexis, csignal
 from libs.translate import trans
 from libs.configs.settings import Setting
 from libs.tool import load
@@ -27,7 +27,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.setupUi(self.setting)
         self.connect_actions()
         self.lboxes = []  # type: list[LexiBox]
-        self.ui.load_lexis()
+        load_lexis()
         Thread(self.ui.load, info.argv1)
         Thread(self.auto_translate)
         self.saver = Scheduler(
@@ -58,7 +58,7 @@ class LMainWindow(QMainWindow):
         self.setting_ui.buttonBox.accepted.connect(self.accept)
         self.setting_ui.buttonBox.rejected.connect(self.setting.hide)
         self.setting_ui.Online.toggled.connect(self.set_online)
-        self.setting_ui.LReload.clicked.connect(self.reload_lexis)
+        self.setting_ui.LReload.clicked.connect(load_lexis)
         self.setting_ui.viewLexicons.clicked.connect(lambda: Explore(info.lexis_dir))
         self.setting_ui.viewCache.clicked.connect(lambda: Explore(info.cache_dir))
         self.setting_ui.CClear.clicked.connect(
@@ -82,6 +82,10 @@ class LMainWindow(QMainWindow):
                 or Setting.dump()
             )
         csignal.sre.connect(self.setting_ui.LReload.setEnabled)
+        csignal.update.connect(self.show_lexicons)
+        csignal.warn.connect(
+            lambda msg: QMessageBox.warning(self, Setting.getTr("warning"), msg)
+        )
 
     def check(self):
         action = open(info.running).readline().strip("\n")
@@ -134,14 +138,11 @@ class LMainWindow(QMainWindow):
             else:
                 self.ui.menuTools.addAction(action)
 
-    def reload_lexis(self):
+    def show_lexicons(self):
         for a in self.lboxes:
             self.setting_ui.verticalLayout.removeWidget(a)
             a.deleteLater()
         self.lboxes.clear()
-        self.ui.load_lexis()
-
-    def show_lexicons(self):
         from libs.translate.lexicons import lexicons
 
         for l in lexicons:

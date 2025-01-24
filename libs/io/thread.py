@@ -1,36 +1,33 @@
-from PySide6.QtCore import QThread, QTimer
+from PySide6.QtCore import QObject, QThread, QTimer
 
 
-_objects = set()
+manager = QObject()
 
 
 class Scheduler(QTimer):
+
     def __init__(self, target, interval=500):
         super().__init__()
-        _objects.add(self)
+        self.moveToThread(manager.thread())
+        self.setParent(manager)
+        self.moveToThread(manager.thread())
         self._target = target
         self.timeout.connect(target)
         self.start(interval)
 
-    def stop(self):
-        super().stop()
-        _objects.remove(self)
-
 
 class Thread(QThread):
+
     def __init__(self, target, *args):
         super().__init__()
-        _objects.add(self)
-        self.finished.connect(self.remove)
+        self.moveToThread(manager.thread())
+        self.setParent(manager)
         self._target = target
         self._args = args
         self.start()
 
     def run(self):
         self._result = self._target(*self._args)
-
-    def remove(self):
-        _objects.remove(self)
 
     def wait(self):
         super().wait()
@@ -39,7 +36,7 @@ class Thread(QThread):
 
 class Pool:
     def __init__(self):
-        self._threads = []  # type: list[Thread]
+        self._threads: list[Thread] = []
 
     def submit(self, task, *args):
         self._threads.append(Thread(task, *args))

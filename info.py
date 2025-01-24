@@ -56,8 +56,8 @@ nontr = ("暂无翻译", "None Translations")
 lurl = f"https://raw.githubusercontent.com/{author}/{repo_name}/refs/heads/main/{lexis_dir_name}/%s"
 lurl_cn = "https://ghproxy.cn/" + lurl
 
-default_lexis = ["Base", "Long", "Phrase", "Term"]
-seps = [" ", "-"]
+default_lexis = {"Base", "Long", "Phrase", "Term"}
+seps = {" ", "-"}
 
 Tr = {
     "title": (prog_name_cn, prog_name),
@@ -67,15 +67,19 @@ Tr = {
     "info": ("信息", "Information"),
     "warning": ("警告", "Warning"),
     "unload": ("未加载", "Unload"),
-    "loadfailed": ("加载失败", "Failed to Load"),
-    "trans_unavailable": (
+    "load_failed": ("加载失败", "Failed to Load"),
+    "down_failed": (
+        """词典下载失败: %s
+请检查网络连接""",
+        """Failed to download lexicons: %s
+Please check your Internet connection""",
+    ),
+    "lexi_unavailable": (
         """无法加载词典
-翻译功能不可用
 但你可以浏览已有词汇
 (首次使用需连接互联网)""",
         """Can't load lexicons.
-Although the translate function is unavailable,
-you can read existed vocabularies.
+You can read existed vocabularies though.
 (Internet connection required for the first use)""",
     ),
     "correct_hint": ("双击更正", "Double Click to Correct"),

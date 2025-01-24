@@ -3,8 +3,8 @@ from libs.debris import Get_New_File_Name, Explore
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.translate import Result
-from libs.io import io
-from libs.stdout import print
+from libs.io import files
+from libs.io.stdout import print
 import info, pickle
 
 from libs.ui import Dialog
@@ -276,7 +276,7 @@ class FItem(BaseListWidgetItem):
 
     def load(self):
         if self.exists():
-            self.results = io.read_vocabulary(self.file)
+            self.results = files.read_vocabulary(self.file)
             self.saved = True
         else:
             self.results = []
@@ -284,7 +284,7 @@ class FItem(BaseListWidgetItem):
 
     def save(self, silent=False):
         if self.exists():
-            io.save_vocabulary(self.results, self.file)
+            files.save_vocabulary(self.results, self.file)
             self.saved = True
         else:
             if not silent:
@@ -303,7 +303,7 @@ class FItem(BaseListWidgetItem):
             file = Dialog.SaveFile(None, Setting.getTr("save_as"), info.ext_all_voca)
             if not file:
                 return
-        io.save_vocabulary(self.results, file)
+        files.save_vocabulary(self.results, file)
 
     def join_recent(self):
         recent = Publics["recent"]  # type: list

@@ -1,5 +1,5 @@
 import os, importlib
-from libs.stdout import print
+from libs.io.stdout import print
 from tools.base import Tool
 import info
 from tools import one
