@@ -105,8 +105,6 @@ def main():
 
 
 def process():
-    from libs.configs.settings import Setting
-
     document = Document()
     section = document.sections[0]
     path = section._sectPr.xpath("./w:cols")[0]
