@@ -89,7 +89,7 @@ class Result:
 def online_translate(word: str) -> Result:
     result = Result(word)
     try:
-        result.translation = api_translate(word, 0)
+        result.translation = api_translate(word, Setting.Language)
     except:
         ...
     else:
@@ -99,10 +99,6 @@ def online_translate(word: str) -> Result:
 
 def translate(word: str) -> Result:
     if word:
-        max = info.min_similarity
-        s = SequenceMatcher()
-        s.set_seq2(word)
-        result = None
         for lexicon in lexicons:
             if not lexicon.enabled:
                 continue
@@ -110,6 +106,11 @@ def translate(word: str) -> Result:
                 if wp in lexicon:
                     return Result(word, lexicon[wp])
 
+        max = info.min_similarity
+        s = SequenceMatcher()
+        s.set_seq2(word)
+        result = None
+        for lexicon in lexicons:
             for wm in lexicon:
                 if wm[0] == word[0]:
                     s.set_seq1(wm)
@@ -126,9 +127,8 @@ def translate(word: str) -> Result:
     return Result(word)
 
 
-def trans(word: str, *results):
+def trans(word: str, results):
     for res in results:
-        for r in res:
-            if r == word:
-                return r
+        if res == word:
+            return res
     return online_translate(word) if Setting.Online else translate(word)
