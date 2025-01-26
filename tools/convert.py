@@ -119,12 +119,12 @@ def process():
     normal.font.name = font
     normal._element.rPr.rFonts.set(qn("w:eastAsia"), font)
     normal.font.size = Pt(font_size)
+    stamp = tool.tr("stamp") % (
+        f"{info.prog_name} {info.version}",
+        _getstamp(stamp_format),
+    )
     if stamp_b:
         header = section.header.paragraphs[0]
-        stamp = tool.tr("stamp") % (
-            f"{info.prog_name} {info.version}",
-            _getstamp(stamp_format),
-        )
         header.add_run(stamp + f" ({tool.mw.ui.Bank.count()})" if word_count_b else "")
     for result in tool.mw.ui.Bank.results:
         information = result.phonetic
@@ -135,6 +135,7 @@ def process():
         )
         p.paragraph_format.line_spacing = Pt(font_size)
         p.paragraph_format.space_after = Pt(5)
+    document.core_properties.comments = stamp
     return document
 
 

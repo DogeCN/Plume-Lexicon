@@ -7,24 +7,8 @@ from random import choice
 import time
 
 url = "https://apiv3.shanbay.com/weapps/dailyquote/quote/?date=%s"
-moons = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"]
-foods = [
-    "🍏",
-    "🍎",
-    "🍐",
-    "🍊",
-    "🍋",
-    "🍌",
-    "🍉",
-    "🍇",
-    "🍓",
-    "🫐",
-    "🍈",
-    "🍒",
-    "🍑",
-    "🥭",
-    "🍍",
-]
+moons = "🌑🌒🌓🌔🌕🌖🌗🌘"
+foods = "🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍"
 # Emoji Just for Fun
 
 
@@ -42,12 +26,7 @@ def one(before):
 
 def main():  # Extremely UNGRACEFUL :<
     global msg, detail
-    pool = Pool()
-    for b in range(0, 8):
-        pool.submit(one, b)
-    results = pool.wait()
-    msg = tool.message._msg(results[0])
-    msg.setDetailedText("\n\n\n".join(results[1:]))
+    msg = tool.message._msg(one(0))
     detail = msg.buttons()[1]
     _switch()
     detail.clicked.connect(lambda: _switch())
@@ -64,6 +43,11 @@ def _switch():
         detail.setText("More...")
         msg.move(msg.x(), msg.y() + 150)
     else:
+        pool = Pool()
+        for b in range(1, 10):
+            pool.submit(one, b)
+        results = pool.wait()
+        msg.setDetailedText("\n\n\n".join(results))
         detail.setText("Hide")
         area: QAbstractScrollArea = msg.findChild(QAbstractScrollArea)
         area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
