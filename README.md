@@ -1,5 +1,6 @@
 # Plume Lexicon
 ### A Simple Local Translate Tool at Your Service.
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/DogeCN/Plume-Lexicon/pulls)
 
 ### 💡 Origin
  - **Former Name: Translator**
