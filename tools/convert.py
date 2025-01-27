@@ -136,6 +136,7 @@ def process():
         p.paragraph_format.line_spacing = Pt(font_size)
         p.paragraph_format.space_after = Pt(5)
     document.core_properties.comments = stamp
+    document.core_properties.author = info.prog_name
     return document
 
 
