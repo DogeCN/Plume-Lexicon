@@ -202,7 +202,10 @@ class LMain(Ui_MainWindow):
             item = self.Files.load(files[i])
             if cf == i:
                 self.Files.current = item
-        self.Files.current = self.Files.current or self.Files.items[0]
+        current = self.Files.current
+        items = self.Files.items
+        if not current and items:
+            self.Files.current = items[0]
 
     def store_states(self):
         states = Publics["ui_states"]

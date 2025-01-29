@@ -17,7 +17,9 @@ def all():
 
 def inbank():
     Bank = tool.mw.ui.Bank
-    Bank.current = choice(Bank.items)
+    items = Bank.items
+    if items:
+        Bank.current = choice(items)
 
 
 def retry():

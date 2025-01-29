@@ -25,7 +25,9 @@ class BaseListWidget(QtWidgets.QListWidget):
         self.update()
 
     def clear(self):
+        self.selectionModel().clear()
         super().clear()
+        self.update()
 
 
 class BaseListWidgetItem(QtWidgets.QListWidgetItem): ...
@@ -174,10 +176,6 @@ class Bank(BaseListWidget):
             row = self.row(item)
             self.takeItem(row)
         self.edit_signal.emit()
-        self.update()
-
-    def clear(self):
-        super().clear()
         self.update()
 
     @property
