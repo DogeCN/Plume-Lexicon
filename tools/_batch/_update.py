@@ -5,8 +5,10 @@ from libs.translate import translate
 def main():
     count = 0
     for result in tool.mw.ui.Bank.results:
-        result.value = translate(result.word).value
-        count += 1
+        new = translate(result.word)
+        if new:
+            result.value = new.value
+            count += 1
     tool.message.Show(tool.tr("updated") % count)
 
 
