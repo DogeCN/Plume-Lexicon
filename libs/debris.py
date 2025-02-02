@@ -11,6 +11,10 @@ def Get_Language():
         return 1
 
 
+def Speak(text: str):
+    Popen(f'mshta vbscript:CreateObject("SAPI.SpVoice").Speak("{text}")(window.close)')
+
+
 def Refresh_Icons():
     windll.Shell32.SHChangeNotify(0x8000000, 0, 0, 0)
 

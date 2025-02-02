@@ -1,9 +1,8 @@
-from PySide6.QtTextToSpeech import QTextToSpeech
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QDesktopServices
 from libs.ui.main import Ui_MainWindow
-from libs.debris import Ticker
+from libs.debris import Ticker, Speak
 from libs.translate import Result
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
@@ -37,7 +36,6 @@ class LMain(Ui_MainWindow):
     def __init__(self, parent):
         super().__init__()
         self.setupUi(parent)
-        self.speaker = QTextToSpeech(parent)
         self.parent = parent  # type: logic.LMainWindow
         Thread(self.check_update, True)
         Thread(self.handle)
@@ -57,7 +55,7 @@ class LMain(Ui_MainWindow):
 
     def speak(self, e):
         if self.result:
-            self.speaker.say(self.Word_Entry.text())
+            Speak(self.Word_Entry.text())
 
     def set_expand(self, results):
         if not self.hc and not self.tc:
