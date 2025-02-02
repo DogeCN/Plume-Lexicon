@@ -162,12 +162,11 @@ def down_lexis():
     pool = Pool()
     for ln in info.default_lexis:
         pool.submit(get_lexis, ln)
-    failed = pool.wait()
+    failed = [ln for ln in pool.wait() if ln]
     csignal.unlock()
     if lexicons:
-        csignal.warn.emit(
-            Setting.getTr("down_failed") % ", ".join(ln for ln in failed if ln)
-        )
+        if failed:
+            csignal.warn.emit(Setting.getTr("down_failed") % ", ".join(failed))
     else:
         csignal.warn.emit(Setting.getTr("lexi_unavailable"))
 
