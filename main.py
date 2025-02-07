@@ -1,4 +1,3 @@
-from logic import LMainWindow
 from libs.io.stdout import print, log_init
 from libs.debris import Refresh_Icons
 from libs.configs.public import Publics
@@ -6,24 +5,26 @@ import time, winreg, traceback, warnings, info
 
 warnings.filterwarnings("ignore")
 
-print(f"{info.prog_name} {info.version} By {info.author}", "Yellow", "Bold")
-print("Starting...\n", "Green", "Bold")
+
+fr = info.running
+try:
+    difftime = time.time() - info.os.path.getatime(fr)
+except:
+    open(fr, "w").close()
+else:
+    if difftime < 1:
+        if info.argv1:
+            open(fr, "a").write(f"{info.argv1}\n")
+        else:
+            open(fr, "a").write(f"{info.running_sign}\n")
+        exit()
 
 
 def main():
-    fr = info.running
-    try:
-        difftime = time.time() - info.os.path.getatime(fr)
-    except:
-        open(fr, "w").close()
-    else:
-        if difftime < 1:
-            if info.argv1:
-                open(fr, "a").write(f"{info.argv1}\n")
-            else:
-                open(fr, "a").write(f"{info.running_sign}\n")
-            return
-    log_init()
+    print(f"{info.prog_name} {info.version} By {info.author}", "Yellow", "Bold")
+    print("Starting...\n", "Green", "Bold")
+    from logic import LMainWindow
+
     LMainWindow()
     info.app.exec()
 
@@ -40,6 +41,7 @@ if Publics["debug"]:
     print("Debug Mode ON", "Red", "Bold")
     main()
 else:
+    log_init()
     register()
     try:
         main()
