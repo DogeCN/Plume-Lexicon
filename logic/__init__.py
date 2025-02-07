@@ -200,4 +200,5 @@ class LMainWindow(QMainWindow):
             if Setting.Auto_save:
                 self.ui.Files.save_all(False)
             self.ui.store_states()
+            print("Process Finished")
             info.app.exit()

@@ -17,7 +17,7 @@ else:
             open(fr, "a").write(f"{info.argv1}\n")
         else:
             open(fr, "a").write(f"{info.running_sign}\n")
-        exit()
+        info.sys.exit()
 
 
 def main():
