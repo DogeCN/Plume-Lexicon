@@ -5,10 +5,10 @@ from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
 from libs.translate.lexicons import LexiBox, load_lexis, csignal
 from libs.translate import trans
 from libs.configs.settings import Setting
-from libs.tool import load
 from libs.ui import Theme
 from libs.ui.settings import Ui_Settings
 from libs.io.thread import Scheduler, Thread
+from libs.io.stdout import print
 from .main import LMain
 from time import sleep
 import info
@@ -86,6 +86,7 @@ class LMainWindow(QMainWindow):
         csignal.warn.connect(
             lambda msg: QMessageBox.warning(self, Setting.getTr("warning"), msg)
         )
+        info.app.commitDataRequest.connect(self.saveData)
 
     def check(self):
         action = open(info.running).readline().strip("\n")
@@ -197,8 +198,12 @@ class LMainWindow(QMainWindow):
             self.tray.show()
             evt.ignore()
         else:
-            if Setting.Auto_save:
-                self.ui.Files.save_all(False)
-            self.ui.store_states()
-            print("Process Finished")
+            self.saveData()
+            print("Process Finished", "Green")
             info.app.exit()
+
+    def saveData(self, *e):
+        if Setting.Auto_save:
+            self.ui.Files.save_all(False)
+        self.ui.store_states()
+        print("Data Saved", "Blue")

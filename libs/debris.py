@@ -1,11 +1,14 @@
 from subprocess import Popen
-from ctypes import windll
+from ctypes import WinDLL
 import os
 
 
+Kernel = WinDLL("kernel32")
+Shell = WinDLL("shell32")
+
+
 def Get_Language():
-    dll_h = windll.kernel32
-    if dll_h.GetSystemDefaultUILanguage() == 0x804:
+    if Kernel.GetSystemDefaultUILanguage() == 0x804:
         return 0
     else:
         return 1
@@ -16,7 +19,7 @@ def Speak(text: str):
 
 
 def Refresh_Icons():
-    windll.Shell32.SHChangeNotify(0x8000000, 0, 0, 0)
+    Shell.SHChangeNotify(0x8000000, 0, 0, 0)
 
 
 def Explore(path: str):
