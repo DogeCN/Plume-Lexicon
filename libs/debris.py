@@ -1,6 +1,6 @@
 from subprocess import Popen
 from ctypes import WinDLL
-import os
+import os, winreg
 
 
 Kernel = WinDLL("kernel32")
@@ -20,6 +20,12 @@ def Speak(text: str):
 
 def RefreshIcons():
     Shell.SHChangeNotify(0x8000000, 0, 0, 0)
+
+
+def Register(ext: str, command: str):
+    SubKey = winreg.CreateKey(winreg.HKEY_CURRENT_USER, "Software\\Classes\\" + ext)
+    winreg.SetValue(SubKey, "shell\\open\\command", winreg.REG_SZ, command)
+    RefreshIcons()
 
 
 def Explore(path: str):

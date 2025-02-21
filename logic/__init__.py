@@ -1,7 +1,7 @@
 from __future__ import annotations
 from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QEvent
-from libs.debris import Ticker, CleanDir, ConvertSize, Explore
+from libs.debris import Ticker, CleanDir, ConvertSize, Explore, Register
 from libs.translate.lexicons import LexiBox, loadLexis, csignal
 from libs.translate import trans
 from libs.configs.settings import Setting
@@ -25,25 +25,26 @@ class LMainWindow(QMainWindow):
         self.setting = QDialog(self)
         self.settingUi = UISettings()
         self.settingUi.setupUi(self.setting)
-        self.connect_actions()
-        self.lboxes = []  # type: list[LexiBox]
+        self.connectActions()
+        self.lboxes: list[LexiBox] = []
         loadLexis()
+        Thread(lambda: Register(info.ext_voca, info.cmd) if info.exe else ...)
         Thread(self.ui.loadWithState, info.argv1)
+        Theme.AddAcrylic(self)
+        Theme.Set(Setting.Theme)
+        self.ui.restoreStates()
+        self.retrans()
+        self.ui.setShotcuts()
+        self.ui.Bank.initMenu()
+        self.show()
         Thread(self.autoTranslate)
         self.saver = Scheduler(
             lambda: self.ui.Files.saveAll() if Setting.AutoSave else ...,
             Setting.AutoSaveInterval * 1000,
         )
         Scheduler(self.check)
-        self.ui.restoreStates()
-        Theme.AddAcrylic(self)
-        Theme.Set(Setting.Theme)
-        self.show()
-        self.retrans()
-        self.ui.Bank.initMenu()
-        self.ui.setShotcuts()
 
-    def connect_actions(self):
+    def connectActions(self):
         self.themes = [
             self.settingUi.themeAcrylic,
             self.settingUi.themeDark,
@@ -52,9 +53,7 @@ class LMainWindow(QMainWindow):
         ]
         self.tray.activated.connect(self.trayActivated)
         self.ui.actionSetting.triggered.connect(self.settingShow)
-        self.settingUi.Lang.currentIndexChanged.connect(
-            lambda: self.retrans(self.settingUi.Lang.currentIndex())
-        )
+        self.settingUi.Lang.currentIndexChanged.connect(lambda i: self.retrans(i))
         self.settingUi.buttonBox.accepted.connect(self.accept)
         self.settingUi.buttonBox.rejected.connect(self.setting.hide)
         self.settingUi.Online.toggled.connect(self.setOnline)

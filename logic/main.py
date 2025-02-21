@@ -34,7 +34,7 @@ class LMain(Ui_MainWindow):
     def __init__(self, parent):
         super().__init__()
         self.setupUi(parent)
-        self.parent = parent  # type: logic.LMainWindow
+        self.parent: logic.LMainWindow = parent
         Thread(self.checkUpdate, True)
         Thread(self.handle)
         self.connectActions()
@@ -177,6 +177,7 @@ class LMain(Ui_MainWindow):
 
     def loadWithState(self, file):
         states = Publics["ui_states"]
+        current = None
         if file:
             self.load(file)
         else:
@@ -185,11 +186,14 @@ class LMain(Ui_MainWindow):
             for i in range(len(files)):
                 item = self.Files.load(files[i])
                 if cIndex == i:
-                    self.Files.current = item
-        current = self.Files.current
-        items = self.Files.items
-        if not current and items:
-            self.Files.current = items[0]
+                    current = item
+        if current:
+            current.load()
+            self.Files.current = current
+        else:
+            items = self.Files.items
+            if items:
+                self.Files.current = items[0]
 
     def load(self, files: str | list[str]):
         self.Files.current = (
