@@ -28,7 +28,7 @@ class LMainWindow(QMainWindow):
         self.connect_actions()
         self.lboxes = []  # type: list[LexiBox]
         loadLexis()
-        Thread(self.ui.load, info.argv1)
+        Thread(self.ui.loadWithState, info.argv1)
         Thread(self.autoTranslate)
         self.saver = Scheduler(
             lambda: self.ui.Files.saveAll() if Setting.AutoSave else ...,
@@ -40,7 +40,7 @@ class LMainWindow(QMainWindow):
         Theme.Set(Setting.Theme)
         self.show()
         self.retrans()
-        self.ui.Bank.init_menu()
+        self.ui.Bank.initMenu()
         self.ui.setShotcuts()
 
     def connect_actions(self):
@@ -154,6 +154,10 @@ class LMainWindow(QMainWindow):
             Setting.Language = lang
         self.settingUi.retranslateUi(self.setting)
         self.ui.retranslateUi()
+        self.ui.Bank.update()
+        self.ui.Exchanges.update()
+        self.ui.Expand.update()
+        self.ui.Files.update()
         for lb in self.lboxes:
             lb.update()
         title = f"{Setting.getTr('title')} {info.version}"

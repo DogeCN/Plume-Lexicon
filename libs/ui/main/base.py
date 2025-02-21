@@ -69,7 +69,7 @@ class Bank(BaseListWidget):
     onEdit = QtCore.Signal()
     menu = None
 
-    def init_menu(self):
+    def initMenu(self):
         self.menu = QtWidgets.QMenu(self)
 
         copy = QtGui.QAction(Setting.translateUI("Copy"), self)
@@ -92,11 +92,11 @@ class Bank(BaseListWidget):
 
         self.menu.addSeparator()
 
-        select_all = QtGui.QAction(Setting.translateUI("Select All"), self)
-        select_all.setShortcut("Ctrl+A")
-        select_all.setIcon(QtGui.QIcon.fromTheme("edit-select-all"))
-        select_all.triggered.connect(self.selectAll)
-        self.menu.addAction(select_all)
+        selectAll = QtGui.QAction(Setting.translateUI("Select All"), self)
+        selectAll.setShortcut("Ctrl+A")
+        selectAll.setIcon(QtGui.QIcon.fromTheme("edit-select-all"))
+        selectAll.triggered.connect(self.selectAll)
+        self.menu.addAction(selectAll)
 
         deselect = QtGui.QAction(Setting.translateUI("Deselect"), self)
         deselect.triggered.connect(self.clearSelection)
@@ -266,7 +266,7 @@ class FItem(BaseListWidgetItem):
         self.setText(self.name if value else "*" + self.name)
         if value and self.exists():
             self.origin = self.results[:]
-            self.join_recent()
+            self.joinRecent()
         self._saved = value
 
     def exists(self, file=None):
@@ -286,9 +286,9 @@ class FItem(BaseListWidgetItem):
             self.saved = True
         else:
             if not silent:
-                self.save_as(self.file)
+                self.saveAs(self.file)
 
-    def save_as(self, file=None):
+    def saveAs(self, file=None):
         if file:
             file = Dialog.SaveFile(
                 None, Setting.getTr("save_as"), info.ext_all_voca, file
@@ -303,7 +303,7 @@ class FItem(BaseListWidgetItem):
                 return
         files.saveVocabulary(self.results, file)
 
-    def join_recent(self):
+    def joinRecent(self):
         recent = Publics["recent"]  # type: list
         if self.file in recent:
             recent.remove(self.file)
@@ -328,22 +328,22 @@ class Files(BaseListWidget):
         bank.onEdit.connect(self.keep)
         self.itemSelectionChanged.connect(self.display)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.show_menu)
+        self.customContextMenuRequested.connect(self.showMenu)
 
-    def show_menu(self, pos):
+    def showMenu(self, pos):
         self.explorer.setText(Setting.getTr("explore"))
         self.menu.exec(self.mapToGlobal(pos))
 
     def open(self):
         f = Dialog.OpenFiles(self.parent(), Setting.getTr("load"), info.ext_all_voca)
         if f:
-            self.display(self.load(f)[0])
+            self.current = self.load(f)[0]
 
     def save(self):
         self.current.save()
 
     def saveAs(self):
-        self.current.save_as()
+        self.current.saveAs()
 
     def saveAll(self, silent=True):
         for item in self.items:
@@ -372,7 +372,7 @@ class Files(BaseListWidget):
             file = info.os.path.abspath(file).replace("\\", "/")
             for item in self.items:
                 if item.file == file:
-                    item.load()
+                    self.current = item
                     return item
             item = FItem(file)
             self.addItem(item)
