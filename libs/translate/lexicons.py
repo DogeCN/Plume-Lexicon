@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
 from libs.configs.settings import Setting
-from libs.io.base import *
+from libs.io.base import load, hash, load_, dump_
 from libs.io.stdout import print
 from libs.io.requests import get
 from libs.io.thread import Thread, Pool
@@ -51,8 +51,8 @@ class Lexicon(dict[str, list[str, list[str]]]):
             self.fp = fp
             self.enabled = self.loaded = self.failed = False
             self.signal = LSignal()
-            if self.hash_exists:
-                self._update(load_(self.hash_file))
+            if self.hashExists:
+                self.update(load_(self.hashFile))
             else:
                 self.name = self.name_zh = fp.split("\\")[-1].strip(info.ext_disabled)
 
@@ -68,23 +68,23 @@ class Lexicon(dict[str, list[str, list[str]]]):
         return f"{name} ({hint})"
 
     @property
-    def hash_file(self):
-        return hash_(self.fp.strip(info.ext_disabled).encode())
+    def hashFile(self):
+        return hash(self.fp.strip(info.ext_disabled).encode())
 
     @property
-    def hash_exists(self):
-        return info.os.path.exists(self.hash_file)
+    def hashExists(self):
+        return info.os.path.exists(self.hashFile)
 
     def setEnabled(self, e):
         if e and not self.loaded:
             csignal.begin()
             try:
-                self._update(load(self.fp))
-                if not self.hash_exists:
+                self.update(load(self.fp))
+                if not self.hashExists:
                     header = Lexicon()
                     header.name = self.name
                     header.name_zh = self.name_zh
-                    dump_(self.hash_file, header)
+                    dump_(self.hashFile, header)
                 self.loaded = True
                 self.failed = False
             except Exception as ex:
@@ -105,10 +105,10 @@ class Lexicon(dict[str, list[str, list[str]]]):
                 print(f"Failed to rename {self.fp} to {fp}", "Red")
             self.fp = fp
 
-    def _update(self, l):
+    def update(self, l):
         self.name = getattr(l, "name")
         self.name_zh = getattr(l, "name_zh")
-        self.update(l)
+        super().update(l)
 
 
 class LexiBox(QCheckBox):
@@ -133,14 +133,14 @@ class LexiBox(QCheckBox):
 lexicons = []  # type: list[Lexicon]
 
 
-def init_lexis(fp, e):
+def initLexis(fp, e):
     l = Lexicon(fp)
     Thread(l.setEnabled, e)
     lexicons.append(l)
     csignal.update.emit()
 
 
-def get_lexis(ln):
+def getLexis(ln):
     data = None
     name = ln + info.ext_lexi
     print(f"Downloading {name}", "Black")
@@ -152,16 +152,16 @@ def get_lexis(ln):
     if data:
         fp = info.lexis_dir + name
         open(fp, "wb").write(data)
-        init_lexis(fp, True)
+        initLexis(fp, True)
     else:
         return ln
 
 
-def down_lexis():
+def downLexis():
     csignal.lock()
     pool = Pool()
     for ln in info.default_lexis:
-        pool.submit(get_lexis, ln)
+        pool.submit(getLexis, ln)
     failed = [ln for ln in pool.wait() if ln]
     csignal.unlock()
     if lexicons:
@@ -171,7 +171,7 @@ def down_lexis():
         csignal.warn.emit(Setting.getTr("lexi_unavailable"))
 
 
-def load_lexis():
+def loadLexis():
     files = info.os.listdir(info.lexis_dir)
     lexicons.clear()
     csignal.update.emit()
@@ -180,6 +180,6 @@ def load_lexis():
         disabled = f.endswith(info.ext_lexi + info.ext_disabled)
         if enabled or disabled:
             fp = info.lexis_dir + f
-            init_lexis(fp, enabled)
+            initLexis(fp, enabled)
     if not lexicons:
-        Thread(down_lexis)
+        Thread(downLexis)

@@ -6,12 +6,12 @@ import importlib, info
 def load():
     global Tools
     try:
-        Tools = dynamic_get()
+        Tools = dynamicGet()
     except:
-        Tools = static_get()
+        Tools = staticGet()
 
 
-def dynamic_get() -> list[Tool]:
+def dynamicGet() -> list[Tool]:
     Tools = []
     names = []
     dpath = info.os.path.join(info.os.getcwd(), info.tools)
@@ -31,7 +31,7 @@ def dynamic_get() -> list[Tool]:
     return Tools
 
 
-def static_get():
+def staticGet():
     from tools import batch, random, convert, one
 
     return {batch.tool, random.tool, convert.tool, one.tool}

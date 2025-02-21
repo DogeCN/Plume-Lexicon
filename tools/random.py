@@ -26,7 +26,7 @@ def retry():
     dicts = [d for d in lexicons if d.enabled]
     dict = choice(dicts)
     word = choose(dict)
-    tool.mw.ui.Word_Entry.setText(word)
+    tool.mw.ui.WordEntry.setText(word)
 
 
 def choose(dict: dict):

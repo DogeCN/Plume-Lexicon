@@ -3,7 +3,7 @@ from zlib import compress, decompress
 from hashlib import md5
 
 
-def hash_(b) -> str:
+def hash(b) -> str:
     return info.cache_dir + md5(b, usedforsecurity=False).hexdigest()
 
 
@@ -15,11 +15,11 @@ def load_(file):
 def load(file):
     with open(file, "rb") as f:
         content = f.read()
-    hash = hash_(content)
-    if not info.os.path.exists(hash):
-        with open(hash, "wb") as f:
+    cache = hash(content)
+    if not info.os.path.exists(cache):
+        with open(cache, "wb") as f:
             f.write(decompress(content))
-    return load_(hash)
+    return load_(cache)
 
 
 def dump_(file, obj):

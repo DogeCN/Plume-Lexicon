@@ -4,7 +4,7 @@ from libs.io.stdout import print
 from .base import load, dump
 
 
-def read_vocabulary(file_name) -> list[Result]:
+def readVocabulary(file_name) -> list[Result]:
     print(f"Loading Vocabulary File: '{file_name}'", "Blue")
     try:
         return load(file_name)
@@ -12,7 +12,7 @@ def read_vocabulary(file_name) -> list[Result]:
         return []
 
 
-def save_vocabulary(results: list[Result], file_name):
+def saveVocabulary(results: list[Result], file_name):
     try:
         dump(file_name, results)
         print(f"Saved Vocabulary Flie: '{file_name}'", "Green")

@@ -21,7 +21,7 @@ class Public(dict):
             ...
 
     @staticmethod
-    def _load(file=data):
+    def load(file=data):
         global Publics
         Publics = Public(file)
 
@@ -32,4 +32,4 @@ class Public(dict):
         self.dump()
 
 
-Public._load()
+Public.load()

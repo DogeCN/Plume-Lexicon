@@ -7,7 +7,7 @@ Kernel = WinDLL("kernel32")
 Shell = WinDLL("shell32")
 
 
-def Get_Language():
+def GetLanguage():
     if Kernel.GetSystemDefaultUILanguage() == 0x804:
         return 0
     else:
@@ -18,7 +18,7 @@ def Speak(text: str):
     Popen(f'mshta vbscript:CreateObject("SAPI.SpVoice").Speak("{text}")(window.close)')
 
 
-def Refresh_Icons():
+def RefreshIcons():
     Shell.SHChangeNotify(0x8000000, 0, 0, 0)
 
 
@@ -30,7 +30,7 @@ def Explore(path: str):
     Popen(f'explorer /{cmd},"{path}"')
 
 
-def Get_New_File_Name(fn: str, ext: str = "", exclusions: list[str] = []):
+def GetNewFileName(fn: str, ext: str = "", exclusions: list[str] = []):
     fn = fn + "%s" + ext
     efn = lambda fn: fn in exclusions or os.path.exists(fn)
     if efn(fn % ""):
@@ -43,7 +43,7 @@ def Get_New_File_Name(fn: str, ext: str = "", exclusions: list[str] = []):
     return fn
 
 
-def Convert_Size(byte: int):
+def ConvertSize(byte: int):
     units = ["B", "KB", "MB", "GB", "TB", "PB"]
     size = 1024
     for u in units:
@@ -54,7 +54,7 @@ def Convert_Size(byte: int):
     return f"{byte}{units[-1]}"
 
 
-def Clean_Dir(path: str):
+def CleanDir(path: str):
     total = 0
     for root, dir, files in os.walk(path, topdown=False):
         for name in files:

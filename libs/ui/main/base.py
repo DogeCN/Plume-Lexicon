@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from libs.debris import Get_New_File_Name, Explore
+from libs.debris import GetNewFileName, Explore
 from libs.configs.settings import Setting
 from libs.configs.public import Publics
 from libs.translate import Result
@@ -38,7 +38,7 @@ class LItem(BaseListWidgetItem):
         super().__init__(result.word)
         self.result = result
         self.word = result.word
-        self.setToolTip(result.get_translation())
+        self.setToolTip(result.getTranslation())
         self.setBackground(
             self.dcolor(*info.item_tbg)
             if result.online
@@ -56,17 +56,17 @@ class LItem(BaseListWidgetItem):
         self.update()
 
     def dcolor(self, r, g, b):
-        return QtGui.QColor(r, g, b, info.fading_method(self.result.past))
+        return QtGui.QColor(r, g, b, info.fade(self.result.past))
 
     def update(self):
         self.setText("*" + self.word if self.top else self.word)
 
     def __str__(self):
-        return self.result.get_translation()
+        return self.result.getTranslation()
 
 
 class Bank(BaseListWidget):
-    edit_signal = QtCore.Signal()
+    onEdit = QtCore.Signal()
     menu = None
 
     def init_menu(self):
@@ -145,7 +145,7 @@ class Bank(BaseListWidget):
     def top(self):
         for item in self.selections:
             item.top = not item.top
-        self.edit_signal.emit()
+        self.onEdit.emit()
         self.roll()
 
     def append(self, result: Result | list[Result]):
@@ -160,7 +160,7 @@ class Bank(BaseListWidget):
             item = LItem(result)
             self.addItem(item)
             self.scrollToItem(item, TOP)
-            self.edit_signal.emit()
+            self.onEdit.emit()
 
     def roll(self, word: str = None):
         if word:
@@ -175,7 +175,7 @@ class Bank(BaseListWidget):
         for item in self.selections:
             row = self.row(item)
             self.takeItem(row)
-        self.edit_signal.emit()
+        self.onEdit.emit()
         self.update()
 
     @property
@@ -274,7 +274,7 @@ class FItem(BaseListWidgetItem):
 
     def load(self):
         if self.exists():
-            self.results = files.read_vocabulary(self.file)
+            self.results = files.readVocabulary(self.file)
             self.saved = True
         else:
             self.results = []
@@ -282,7 +282,7 @@ class FItem(BaseListWidgetItem):
 
     def save(self, silent=False):
         if self.exists():
-            files.save_vocabulary(self.results, self.file)
+            files.saveVocabulary(self.results, self.file)
             self.saved = True
         else:
             if not silent:
@@ -301,7 +301,7 @@ class FItem(BaseListWidgetItem):
             file = Dialog.SaveFile(None, Setting.getTr("save_as"), info.ext_all_voca)
             if not file:
                 return
-        files.save_vocabulary(self.results, file)
+        files.saveVocabulary(self.results, file)
 
     def join_recent(self):
         recent = Publics["recent"]  # type: list
@@ -314,6 +314,7 @@ class FItem(BaseListWidgetItem):
 
 
 class Files(BaseListWidget):
+    displayChanged = QtCore.Signal()
 
     def __init__(self, parent, bank: Bank):
         super().__init__(parent)
@@ -324,8 +325,8 @@ class Files(BaseListWidget):
         self.explorer.triggered.connect(lambda: Explore(self.current.file))
         self.menu.addAction(self.explorer)
         self.menu.addSeparator()
-        bank.edit_signal.connect(self.keep)
-        self.itemSelectionChanged.connect(self.display_file)
+        bank.onEdit.connect(self.keep)
+        self.itemSelectionChanged.connect(self.display)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_menu)
 
@@ -336,15 +337,15 @@ class Files(BaseListWidget):
     def open(self):
         f = Dialog.OpenFiles(self.parent(), Setting.getTr("load"), info.ext_all_voca)
         if f:
-            self.display_file(self.load(f)[0])
+            self.display(self.load(f)[0])
 
     def save(self):
         self.current.save()
 
-    def save_as(self):
+    def saveAs(self):
         self.current.save_as()
 
-    def save_all(self, silent=True):
+    def saveAll(self, silent=True):
         for item in self.items:
             item.save(silent)
 
@@ -352,9 +353,9 @@ class Files(BaseListWidget):
         item = self.current
         if item:
             item.load()
-            self.display_file(item)
+            self.display(item)
 
-    def display_file(self, item=None):
+    def display(self, item=None):
         item = item if item else self.current
         if item:
             if not item.loaded:
@@ -362,6 +363,7 @@ class Files(BaseListWidget):
             self.bank.results = item.results
         else:
             self.bank.results = []
+        self.displayChanged.emit()
 
     def load(self, file: str | list[str]):
         if isinstance(file, list):
@@ -386,7 +388,7 @@ class Files(BaseListWidget):
 
     def new(self, fn=None):
         if not fn:
-            fn = Get_New_File_Name("untitled", info.ext_voca, self.names)
+            fn = GetNewFileName("untitled", info.ext_voca, self.names)
         item = FItem(fn)
         self.addItem(item)
         self.current = item

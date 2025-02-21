@@ -1,5 +1,5 @@
-from libs.io.stdout import print, log_init
-from libs.debris import Refresh_Icons
+from libs.io.stdout import print, logInit
+from libs.debris import RefreshIcons
 from libs.configs.public import Publics
 import time, winreg, traceback, warnings, info
 
@@ -33,7 +33,7 @@ def register():  # For PyInstaller Exe
     if info.exe:
         sub_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, info.reg_ext)
         winreg.SetValue(sub_key, info.reg_cmd, winreg.REG_SZ, info.cmd)
-        Refresh_Icons()
+        RefreshIcons()
         print("Registered")
 
 
@@ -41,7 +41,7 @@ if Publics["debug"]:
     print("Debug Mode ON", "Red", "Bold")
     main()
 else:
-    log_init()
+    logInit()
     register()
     try:
         main()

@@ -4,7 +4,7 @@ stdout = info.sys.stdout
 log = info.log
 
 
-def log_init():
+def logInit():
     if not stdout:
         open(log, "w").close()
 
@@ -26,7 +26,7 @@ Attr = {
     "White": 37,
 }
 
-_getstamp = lambda f: time.strftime(f, time.localtime())
+getstamp = lambda f: time.strftime(f, time.localtime())
 
 
 # Redefine the print function
@@ -41,6 +41,4 @@ def print(rstr, *attr):
         if stdout:
             stdout.write(f"{fstr%attr}{rstr}{fstr%Attr['Reset']}\n")
         else:
-            open(log, "a", encoding="utf-8").write(
-                f"{_getstamp('[%H:%M:%S]')} {rstr}\n"
-            )
+            open(log, "a", encoding="utf-8").write(f"{getstamp('[%H:%M:%S]')} {rstr}\n")

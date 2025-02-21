@@ -1,5 +1,5 @@
 from difflib import SequenceMatcher
-from .api import api_translate
+from .api import apiTranslate
 from .lexicons import lexicons
 from libs.configs.settings import Setting
 import info, time
@@ -28,7 +28,7 @@ class Result:
     def translation(self, translation):
         self.value[2] = translation
 
-    def get_translation(self):
+    def getTranslation(self):
         return self.definition if Setting.Language else self.translation
 
     @property
@@ -40,7 +40,7 @@ class Result:
     def definition(self, definition):
         self.value[1] = definition
 
-    def get_definition(self):
+    def getDefinition(self):
         return self.translation if Setting.Language else self.definition
 
     @property
@@ -50,46 +50,42 @@ class Result:
             if result:
                 yield result
 
-    def _expands(self, sep):
-        if sep in self.word:
-            for wp in set(self.word.split(sep)):
-                result = translate(wp)
-                if result:
-                    yield result
-        for lexicon in lexicons:
-            if not lexicon.enabled:
-                continue
-            for wp in lexicon:
-                if (sep in self.word and self.word != wp and self.word in wp) or (
-                    sep in wp and self.word in wp.split(sep)
-                ):
-                    yield Result(wp, lexicon[wp])
-
     @property
     def expands(self):
         for sep in info.seps:
-            for result in self._expands(sep):
-                yield result
+            if sep in self.word:
+                for wp in set(self.word.split(sep)):
+                    result = translate(wp)
+                    if result:
+                        yield result
+            for lexicon in lexicons:
+                if not lexicon.enabled:
+                    continue
+                for wp in lexicon:
+                    if (sep in self.word and self.word != wp and self.word in wp) or (
+                        sep in wp and self.word in wp.split(sep)
+                    ):
+                        yield Result(wp, lexicon[wp])
 
     @property
     def phonetic(self):
         return self.value[0]
 
     def __bool__(self):
-        return bool(self.value[1 if Setting.Language else 2]) and not self.match
+        return not self.match and bool(self.value[1 if Setting.Language else 2])
 
     def __eq__(self, value):
         return self.word == value
 
-    def get_tip(self):
-        trans_html = self.get_translation().replace("\n", "<br>")
+    def getTip(self):
+        trans_html = self.getTranslation().replace("\n", "<br>")
         return info.htip_hint % (Setting.getTr("htip") % self.word, trans_html)
 
 
-def online_translate(word: str) -> Result:
+def onlineTranslate(word: str) -> Result:
     result = Result(word)
     try:
-        result.translation = api_translate(word, Setting.Language)
+        result.translation = apiTranslate(word, Setting.Language)
     except:
         ...
     else:
@@ -131,4 +127,4 @@ def trans(word: str, results):
     for res in results:
         if res == word:
             return res
-    return online_translate(word) if Setting.Online else translate(word)
+    return onlineTranslate(word) if Setting.Online else translate(word)

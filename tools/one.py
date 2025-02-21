@@ -13,8 +13,6 @@ import time
 url = "https://apiv3.shanbay.com/weapps/dailyquote/quote/?date=%s"
 moons = "🌑🌒🌓🌔🌕🌖🌗🌘"
 foods = "🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍"
-# Emoji Just for Fun
-_flag = True
 pool = Pool()
 
 
@@ -31,38 +29,39 @@ def one(before):
 
 
 def main():
-    global msg, detail, _flag
-    _flag = True
+    global msg, detail, flag
+    flag = True
     msg = tool.message._msg(one(0))
     msg.setDetailedText(tool.tr("no_data"))
     detail = msg.buttons()[1]
-    _switch()
-    detail.clicked.connect(lambda: _switch())
+    switch()
+    detail.clicked.connect(switch)
     msg.showEvent = lambda e: msg.adjustPosition(tool.mw)
     msg.exec()
 
 
-def _switch():
-    global _flag
-    if _flag:
+def switch():
+    global flag
+    if flag:
         detail.setText("More...")
         msg.move(msg.x(), msg.y() + 150)
     else:
         for b in range(1, 10):
             pool.submit(one, b)
         detail.setText("Hide")
-        QuickSignal.connect("update", _update)
+        QuickSignal.connect("update", update)
         Thread(lambda: QuickSignal.emit("update", pool.wait()))
         area: QAbstractScrollArea = msg.findChild(QAbstractScrollArea)
         area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         msg.move(msg.x(), msg.y() - 150)
         area.setFixedHeight(300)
-    _flag = not _flag
+    flag = not flag
 
 
-def _update(results):
-    msg.setDetailedText("\n\n\n".join(results))
-    detail.setText("Hide")
+def update(results):
+    if flag:
+        msg.setDetailedText("\n\n\n".join(results))
+        detail.setText("Hide")
 
 
 tool = Tool()

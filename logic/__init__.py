@@ -1,12 +1,12 @@
 from __future__ import annotations
 from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QEvent
-from libs.debris import Ticker, Clean_Dir, Convert_Size, Explore
-from libs.translate.lexicons import LexiBox, load_lexis, csignal
+from libs.debris import Ticker, CleanDir, ConvertSize, Explore
+from libs.translate.lexicons import LexiBox, loadLexis, csignal
 from libs.translate import trans
 from libs.configs.settings import Setting
 from libs.ui import Theme
-from libs.ui.settings import Ui_Settings
+from libs.ui.settings import UISettings
 from libs.io.thread import Scheduler, Thread
 from libs.io.stdout import print
 from .main import LMain
@@ -23,19 +23,19 @@ class LMainWindow(QMainWindow):
         self.tmenu.addAction(self.ui.actionExit)
         self.tray.setContextMenu(self.tmenu)
         self.setting = QDialog(self)
-        self.setting_ui = Ui_Settings()
-        self.setting_ui.setupUi(self.setting)
+        self.settingUi = UISettings()
+        self.settingUi.setupUi(self.setting)
         self.connect_actions()
         self.lboxes = []  # type: list[LexiBox]
-        load_lexis()
+        loadLexis()
         Thread(self.ui.load, info.argv1)
-        Thread(self.auto_translate)
+        Thread(self.autoTranslate)
         self.saver = Scheduler(
-            lambda: self.ui.Files.save_all() if Setting.Auto_save else ...,
-            Setting.Auto_save_interval * 1000,
+            lambda: self.ui.Files.saveAll() if Setting.AutoSave else ...,
+            Setting.AutoSaveInterval * 1000,
         )
         Scheduler(self.check)
-        self.ui.restore_states()
+        self.ui.restoreStates()
         Theme.AddAcrylic(self)
         Theme.Set(Setting.Theme)
         self.show()
@@ -45,44 +45,43 @@ class LMainWindow(QMainWindow):
 
     def connect_actions(self):
         self.themes = [
-            self.setting_ui.themeAcrylic,
-            self.setting_ui.themeDark,
-            self.setting_ui.themeFusion,
-            self.setting_ui.themeDefault,
+            self.settingUi.themeAcrylic,
+            self.settingUi.themeDark,
+            self.settingUi.themeFusion,
+            self.settingUi.themeDefault,
         ]
-        self.tray.activated.connect(self.tray_activated)
-        self.ui.actionSetting.triggered.connect(self.setting_show)
-        self.setting_ui.Lang.currentIndexChanged.connect(
-            lambda: self.retrans(self.setting_ui.Lang.currentIndex())
+        self.tray.activated.connect(self.trayActivated)
+        self.ui.actionSetting.triggered.connect(self.settingShow)
+        self.settingUi.Lang.currentIndexChanged.connect(
+            lambda: self.retrans(self.settingUi.Lang.currentIndex())
         )
-        self.setting_ui.buttonBox.accepted.connect(self.accept)
-        self.setting_ui.buttonBox.rejected.connect(self.setting.hide)
-        self.setting_ui.Online.toggled.connect(self.set_online)
-        self.setting_ui.LReload.clicked.connect(load_lexis)
-        self.setting_ui.viewLexicons.clicked.connect(lambda: Explore(info.lexis_dir))
-        self.setting_ui.viewCache.clicked.connect(lambda: Explore(info.cache_dir))
-        self.setting_ui.CClear.clicked.connect(
+        self.settingUi.buttonBox.accepted.connect(self.accept)
+        self.settingUi.buttonBox.rejected.connect(self.setting.hide)
+        self.settingUi.Online.toggled.connect(self.setOnline)
+        self.settingUi.LReload.clicked.connect(loadLexis)
+        self.settingUi.viewLexicons.clicked.connect(lambda: Explore(info.lexis_dir))
+        self.settingUi.viewCache.clicked.connect(lambda: Explore(info.cache_dir))
+        self.settingUi.CClear.clicked.connect(
             lambda: QMessageBox.information(
                 self,
                 Setting.getTr("info"),
-                Setting.getTr("cache_cleared")
-                % Convert_Size(Clean_Dir(info.cache_dir)),
+                Setting.getTr("cache_cleared") % ConvertSize(CleanDir(info.cache_dir)),
             )
         )
-        self.setting_ui.Auto_Save.stateChanged.connect(
-            lambda: self.setting_ui.Interval.setEnabled(
-                self.setting_ui.Auto_Save.isChecked()
+        self.settingUi.AutoSave.stateChanged.connect(
+            lambda: self.settingUi.Interval.setEnabled(
+                self.settingUi.AutoSave.isChecked()
             )
         )
         self.themes[Setting.Theme].setChecked(True)
         for i in range(len(self.themes)):
             self.themes[i].toggled.connect(
-                lambda *x, i=i: Theme.Set(i)
+                lambda _, i=i: Theme.Set(i)
                 or setattr(Setting, "Theme", i)
                 or Setting.dump()
             )
-        csignal.sre.connect(self.setting_ui.LReload.setEnabled)
-        csignal.update.connect(self.show_lexicons)
+        csignal.sre.connect(self.settingUi.LReload.setEnabled)
+        csignal.update.connect(self.showLexicons)
         csignal.warn.connect(
             lambda msg: QMessageBox.warning(self, Setting.getTr("warning"), msg)
         )
@@ -96,37 +95,36 @@ class LMainWindow(QMainWindow):
             self.activateWindow()
             self.showNormal()
         open(info.running, "w").write("")
-        self.ui.set_add_locked(not len(self.ui.Files.items))
 
-    def tray_activated(self, reason):
+    def trayActivated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
             self.activateWindow()
             self.showNormal()
             self.tray.hide()
 
     def accept(self):
-        Setting.Auto_save = self.setting_ui.Auto_Save.isChecked()
-        Setting.Auto_save_interval = self.setting_ui.Interval.value()
-        self.saver.setInterval(Setting.Auto_save_interval * 1000)
-        Setting.Key_Add = self.setting_ui.Key_Add.keySequence().toString()
-        Setting.Key_Del = self.setting_ui.Key_Delete.keySequence().toString()
-        Setting.Key_Top = self.setting_ui.Key_Top.keySequence().toString()
+        Setting.AutoSave = self.settingUi.AutoSave.isChecked()
+        Setting.AutoSaveInterval = self.settingUi.Interval.value()
+        self.saver.setInterval(Setting.AutoSaveInterval * 1000)
+        Setting.KeyAdd = self.settingUi.KeyAdd.keySequence().toString()
+        Setting.KeyDel = self.settingUi.KeyDelete.keySequence().toString()
+        Setting.KeyTop = self.settingUi.KeyTop.keySequence().toString()
         self.ui.setShotcuts()
         Setting.dump()
 
-    def setting_show(self):
-        self.setting_ui.Lang.setCurrentIndex(Setting.Language)
-        self.setting_ui.Auto_Save.setChecked(Setting.Auto_save)
-        self.setting_ui.Interval.setEnabled(Setting.Auto_save)
-        self.setting_ui.Interval.setValue(Setting.Auto_save_interval)
-        self.setting_ui.Key_Add.setKeySequence(Setting.Key_Add)
-        self.setting_ui.Key_Delete.setKeySequence(Setting.Key_Del)
-        self.setting_ui.Key_Top.setKeySequence(Setting.Key_Top)
-        self.setting_ui.Online.setChecked(Setting.Online)
+    def settingShow(self):
+        self.settingUi.Lang.setCurrentIndex(Setting.Language)
+        self.settingUi.AutoSave.setChecked(Setting.AutoSave)
+        self.settingUi.Interval.setEnabled(Setting.AutoSave)
+        self.settingUi.Interval.setValue(Setting.AutoSaveInterval)
+        self.settingUi.KeyAdd.setKeySequence(Setting.KeyAdd)
+        self.settingUi.KeyDelete.setKeySequence(Setting.KeyDel)
+        self.settingUi.KeyTop.setKeySequence(Setting.KeyTop)
+        self.settingUi.Online.setChecked(Setting.Online)
         self.setting.show()
         Theme.AddAcrylic(self.setting)
 
-    def show_tools(self):
+    def showTools(self):
         from libs.tool import Tools
 
         for action in self.ui.menuTools.actions()[2:]:
@@ -139,9 +137,9 @@ class LMainWindow(QMainWindow):
             else:
                 self.ui.menuTools.addAction(action)
 
-    def show_lexicons(self):
+    def showLexicons(self):
         for a in self.lboxes:
-            self.setting_ui.verticalLayout.removeWidget(a)
+            self.settingUi.verticalLayout.removeWidget(a)
             a.deleteLater()
         self.lboxes.clear()
         from libs.translate.lexicons import lexicons
@@ -149,46 +147,47 @@ class LMainWindow(QMainWindow):
         for l in lexicons:
             lb = LexiBox(self.setting, l)
             self.lboxes.append(lb)
-            self.setting_ui.verticalLayout.addWidget(lb)
+            self.settingUi.verticalLayout.addWidget(lb)
 
     def retrans(self, lang=None):
         if lang is not None:
             Setting.Language = lang
-        self.setting_ui.retranslateUi(self.setting)
+        self.settingUi.retranslateUi(self.setting)
         self.ui.retranslateUi()
         for lb in self.lboxes:
             lb.update()
         title = f"{Setting.getTr('title')} {info.version}"
         self.setWindowTitle(title)
         self.tray.setToolTip(title)
-        self.show_tools()
+        self.showTools()
 
-    def auto_translate(self):
+    def autoTranslate(self):
         ticker = Ticker()
         while info.prog_running:
-            # Auto Translate
             if self.isActiveWindow() or self.setting.isActiveWindow():
                 ticking = bool(ticker)
                 if self.ui.tc or ticking:
                     self.ui.tc = False
-                    word = self.ui.Word_Entry.text().strip()
+                    word = self.ui.WordEntry.text().strip()
                     if word != "":
                         if (not ticking) and (word not in self.ui.Bank.words):
                             self.ui.Bank.roll(word)
-                        self.ui._result = trans(word, self.ui.Bank.results)
+                        self.ui.result = trans(word, self.ui.Bank.results)
                         if self.ui.tc:
                             continue
-                        self.ui.signal.set_result_singal.emit()
+                    else:
+                        self.ui.result = None
+                    self.ui.signal.setResult.emit()
                 sleep(0.05)
             else:
                 sleep(0.5)
 
-    def set_online(self, o):
+    def setOnline(self, o):
         if o:
             csignal.lock()
         else:
             csignal.unlock()
-        self.setting_ui.LexiconBox.setEnabled(not o)
+        self.settingUi.LexiconBox.setEnabled(not o)
         Setting.Online = o
         Setting.dump()
 
@@ -202,8 +201,8 @@ class LMainWindow(QMainWindow):
             print("Process Finished", "Green")
             info.app.exit()
 
-    def saveData(self, *e):
-        if Setting.Auto_save:
-            self.ui.Files.save_all(False)
-        self.ui.store_states()
+    def saveData(self, *_):
+        if Setting.AutoSave:
+            self.ui.Files.saveAll(False)
+        self.ui.storeStates()
         print("Data Saved", "Blue")

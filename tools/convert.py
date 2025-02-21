@@ -1,7 +1,7 @@
 from .base import *
 from PySide6.QtWidgets import QDialog
 from ._convert import ui
-from libs.io.stdout import _getstamp
+from libs.io.stdout import getstamp
 from libs.ui import Theme
 from docx import Document
 from docx.oxml.ns import qn
@@ -27,56 +27,47 @@ UITr = {
 }
 
 
-def load_settings():
+def loadSettings():
+    global columns, font, fontSize, stamp, stampFormat, wordCount, sectionWord, sectionPhon, sectionTrans
     data = tool.data.Get()
     if data:
         try:
             (
                 columns,
-                font_family,
-                font_size,
-                stamp_b,
-                stamp_format,
-                word_count_b,
-                word_b,
-                info_b,
-                trans_b,
+                font,
+                fontSize,
+                stamp,
+                stampFormat,
+                wordCount,
+                sectionWord,
+                sectionPhon,
+                sectionTrans,
             ) = data
             ui.Columns.setValue(columns)
-            ui.Font.setCurrentText(font_family)
-            ui.Font_Size.setValue(font_size)
-            ui.Stamp.setChecked(stamp_b)
-            ui.Stamp_Format.setCurrentText(stamp_format)
-            ui.Word_Count.setChecked(word_count_b)
-            ui.Word.setChecked(word_b)
-            ui.Informations.setChecked(info_b)
-            ui.Translations.setChecked(trans_b)
+            ui.Font.setCurrentText(font)
+            ui.FontSize.setValue(fontSize)
+            ui.Stamp.setChecked(stamp)
+            ui.StampFormat.setCurrentText(stampFormat)
+            ui.WordCount.setChecked(wordCount)
+            ui.Word.setChecked(sectionWord)
+            ui.Phonetic.setChecked(sectionPhon)
+            ui.Translations.setChecked(sectionTrans)
         except:
             ...
 
 
-def save_settings():
-    global columns, font, font_size, stamp_b, stamp_format, word_count_b, word_b, info_b, trans_b
-    columns = ui.Columns.value()
-    font = ui.Font.currentText()
-    font_size = ui.Font_Size.value()
-    stamp_b = ui.Stamp.isChecked()
-    stamp_format = ui.Stamp_Format.currentText()
-    word_count_b = ui.Word_Count.isChecked()
-    word_b = ui.Word.isChecked()
-    info_b = ui.Informations.isChecked()
-    trans_b = ui.Translations.isChecked()
+def saveSettings():
     tool.data.Set(
         [
-            columns,
-            font,
-            font_size,
-            stamp_b,
-            stamp_format,
-            word_count_b,
-            word_b,
-            info_b,
-            trans_b,
+            ui.Columns.value(),
+            ui.Font.currentText(),
+            ui.FontSize.value(),
+            ui.Stamp.isChecked(),
+            ui.StampFormat.currentText(),
+            ui.WordCount.isChecked(),
+            ui.Word.isChecked(),
+            ui.Phonetic.isChecked(),
+            ui.Translations.isChecked(),
         ]
     )
 
@@ -88,15 +79,15 @@ def uimain():
     dialog.setWindowTitle(tool.get_name())
     ui.setupUi(dialog, UITr)
     ui.Stamp.toggled.connect(
-        lambda b: ui.Stamp_Format.setEnabled(b) or ui.Word_Count.setEnabled(b)
+        lambda b: ui.StampFormat.setEnabled(b) or ui.WordCount.setEnabled(b)
     )
-    load_settings()
+    loadSettings()
     Theme.AddAcrylic(dialog)
     dialog.exec()
 
 
 def main():
-    save_settings()
+    saveSettings()
     file_name = tool.dialog.SaveFile(type="*.docx")
     if file_name:
         process().save(file_name)
@@ -118,22 +109,25 @@ def process():
     normal = document.styles["Normal"]
     normal.font.name = font
     normal._element.rPr.rFonts.set(qn("w:eastAsia"), font)
-    normal.font.size = Pt(font_size)
+    normal.font.size = Pt(fontSize)
     stamp = tool.tr("stamp") % (
         f"{info.prog_name} {info.version}",
-        _getstamp(stamp_format),
+        getstamp(stampFormat),
     )
-    if stamp_b:
+    if stamp:
         header = section.header.paragraphs[0]
-        header.add_run(stamp + f" ({tool.mw.ui.Bank.count()})" if word_count_b else "")
+        header.add_run(stamp + f" ({tool.mw.ui.Bank.count()})" if wordCount else "")
     for result in tool.mw.ui.Bank.results:
-        information = result.phonetic
-        word = "".join(["_" if not word_b and c.isalpha() else c for c in result.word])
-        head = word + (f" /{information}/" if info_b and information else "")
-        p = document.add_paragraph(
-            head + f"\n{result.get_translation()}" if trans_b else ""
+        phonetic = result.phonetic
+        word = "".join(
+            ["_" if not sectionWord and c.isalpha() else c for c in result.word]
         )
-        p.paragraph_format.line_spacing = Pt(font_size)
+        if sectionPhon and phonetic:
+            word += f" /{phonetic}/"
+        if sectionTrans:
+            word += f" ({result.getTranslation()})"
+        p = document.add_paragraph(word)
+        p.paragraph_format.line_spacing = Pt(fontSize)
         p.paragraph_format.space_after = Pt(5)
     document.core_properties.comments = stamp
     document.core_properties.author = info.prog_name

@@ -10,8 +10,8 @@ import info, logic
 
 
 class _Action:
-    tool = ...  # type: Tool
-    icon = None  # type: QIcon
+    tool: "Tool" = ...
+    icon: QIcon = None
     visible = True
     enabled = True
 
@@ -42,7 +42,7 @@ class Action(_Action):
 
 
 class Menu(_Action):
-    tools = []  # type: list[Tool]
+    tools: list["Tool"] = []
     _menu = None
 
     def __call__(self):
@@ -65,7 +65,7 @@ class Menu(_Action):
 
 
 class Message:
-    tool = ...  # type: Tool
+    tool: "Tool" = ...
     icons = QMessageBox.Icon
     buttons = QMessageBox.StandardButton
 
@@ -106,7 +106,7 @@ class Message:
 
 
 class Dialog:
-    tool = ...  # type: Tool
+    tool: "Tool" = ...
 
     def OpenDir(self, title=None, dir=None):
         if not title:
@@ -134,7 +134,7 @@ class Dialog:
 
 
 class Data:
-    tool = ...  # type: Tool
+    tool: "Tool" = ...
 
     @property
     def name(self):
@@ -172,7 +172,7 @@ class Data:
 
 
 class Tr:
-    tool = ...  # type: Tool
+    tool: "Tool" = ...
     Tr = {}
 
     def __call__(self, key):
@@ -180,7 +180,7 @@ class Tr:
 
 
 class Tool:
-    mw = ...  # type: logic.LMainWindow
+    mw: logic.LMainWindow = ...
     # Basic Infos
     name = "New Tool"
     name_zh = "新工具"
