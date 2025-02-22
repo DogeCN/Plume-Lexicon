@@ -29,7 +29,6 @@ Attr = {
 getstamp = lambda f: time.strftime(f, time.localtime())
 
 
-# Redefine the print function
 def print(rstr, *attr):
     rstr = str(rstr)
     if "\n" in rstr:

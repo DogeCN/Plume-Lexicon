@@ -1,4 +1,3 @@
-from libs.configs.settings import Setting
 from libs.translate import Result
 from libs.io.stdout import print
 from .base import load, dump
@@ -16,5 +15,5 @@ def saveVocabulary(results: list[Result], file_name):
     try:
         dump(file_name, results)
         print(f"Saved Vocabulary Flie: '{file_name}'", "Green")
-    except:
-        ...
+    except Exception as e:
+        print(f"Failed to Save Vocabulary Flie: {e}", "Red", "Bold")
