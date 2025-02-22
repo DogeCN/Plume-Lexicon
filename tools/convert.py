@@ -28,7 +28,6 @@ UITr = {
 
 
 def loadSettings():
-    global columns, font, fontSize, stamp, stampFormat, wordCount, sectionWord, sectionPhon, sectionTrans
     data = tool.data.Get()
     if data:
         try:
@@ -88,18 +87,21 @@ def uimain():
 
 def main():
     saveSettings()
-    file_name = tool.dialog.SaveFile(type="*.docx")
-    if file_name:
-        process().save(file_name)
-        if tool.message.Ask(tool.tr("view") % file_name):
-            tool.dialog.Pop(file_name)
+    fn = tool.dialog.SaveFile(type="*.docx")
+    if fn:
+        try:
+            process().save(fn)
+            if tool.message.Ask(tool.tr("view") % fn):
+                tool.dialog.Pop(fn)
+        except Exception as e:
+            tool.message.Error(tool.tr("error") % str(e))
 
 
 def process():
     document = Document()
     section = document.sections[0]
     path = section._sectPr.xpath("./w:cols")[0]
-    path.set(qn("w:num"), str(columns))
+    path.set(qn("w:num"), str(ui.Columns.value()))
     path.set(qn("w:space"), "20")
     section.top_margin = section.bottom_margin = section.left_margin = (
         section.right_margin
@@ -107,25 +109,29 @@ def process():
     section.page_width = Pt(595)
     section.page_height = Pt(842)
     normal = document.styles["Normal"]
+    font = ui.Font.currentText()
+    fontSize = ui.FontSize.value()
     normal.font.name = font
     normal._element.rPr.rFonts.set(qn("w:eastAsia"), font)
     normal.font.size = Pt(fontSize)
     stamp = tool.tr("stamp") % (
         f"{info.prog_name} {info.version}",
-        getstamp(stampFormat),
+        getstamp(ui.StampFormat.currentText()),
     )
-    if stamp:
+    if ui.Stamp.isChecked():
         header = section.header.paragraphs[0]
-        header.add_run(stamp + f" ({tool.mw.ui.Bank.count()})" if wordCount else "")
+        header.add_run(
+            stamp + f" ({tool.mw.ui.Bank.count()})" if ui.WordCount.isChecked() else ""
+        )
     for result in tool.mw.ui.Bank.results:
         phonetic = result.phonetic
         word = "".join(
-            ["_" if not sectionWord and c.isalpha() else c for c in result.word]
+            ["_" if not ui.Word.isChecked() and c.isalpha() else c for c in result.word]
         )
-        if sectionPhon and phonetic:
+        if ui.Phonetic.isChecked() and phonetic:
             word += f" /{phonetic}/"
-        if sectionTrans:
-            word += f" ({result.getTranslation()})"
+        if ui.Translations.isChecked():
+            word += f"\n{result.getTranslation()}"
         p = document.add_paragraph(word)
         p.paragraph_format.line_spacing = Pt(fontSize)
         p.paragraph_format.space_after = Pt(5)

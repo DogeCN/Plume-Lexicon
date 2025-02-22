@@ -8,7 +8,9 @@ def get(url, timeout=3):
     try:
         url = urlparse(url)
         conn = client.HTTPSConnection(url.netloc, timeout=timeout)
-        conn.request("GET", url.path + "?" + url.query)
+        conn.request(
+            "GET", url.path + "?" + url.query, headers={"User-Agent": "Mozilla/5.0"}
+        )
         res = conn.getresponse()
         if res.status != 200:
             return

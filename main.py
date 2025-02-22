@@ -1,9 +1,6 @@
 from libs.io.stdout import print, logInit
 from libs.configs.public import Publics
-import time, traceback, warnings, info
-
-warnings.filterwarnings("ignore")
-
+import time, traceback, info
 
 fr = info.running
 try:

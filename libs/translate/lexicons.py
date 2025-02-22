@@ -141,20 +141,15 @@ def initLexis(fp, e):
 
 
 def getLexis(ln):
-    data = None
     name = ln + info.ext_lexi
     print(f"Downloading {name}", "Black")
-    for url in (info.lurl_cn, info.lurl):
-        try:
-            data = get(url % name)
-        except:
-            continue
-    if data:
-        fp = info.lexis_dir + name
-        open(fp, "wb").write(data)
-        initLexis(fp, True)
-    else:
-        return ln
+    for url in (info.ghproxy % info.lurl, info.lurl):
+        data = get(url % name)
+        if data:
+            fp = info.lexis_dir + name
+            open(fp, "wb").write(data)
+            return initLexis(fp, True)
+    return ln
 
 
 def downLexis():

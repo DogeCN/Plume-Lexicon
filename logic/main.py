@@ -224,10 +224,7 @@ class LMain(Ui_MainWindow):
             self.WordEntry.setText(text)
 
     def checkUpdate(self, silent=False):
-        try:
-            latest = get(info.release_api)
-        except:
-            latest = None
+        latest = get(info.release_api)
         self.signal.showUpdate.emit(latest, silent)
 
     def showUpdate(self, latest, silent):

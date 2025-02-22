@@ -52,7 +52,7 @@ settings = data_dir + "settings" + ext_settings
 public = data_dir + "public.json"
 nontr = ("暂无翻译", "None Translations")
 lurl = f"https://raw.githubusercontent.com/{author}/{repo_name}/refs/heads/main/{lexis_dir_name}/%s"
-lurl_cn = "https://ghproxy.cn/" + lurl
+ghproxy = "https://ghproxy.cn/%s"
 
 default_lexis = {"Base", "Long", "Phrase", "Term"}
 seps = {" ", "-"}

@@ -8,25 +8,20 @@ def hash(b) -> str:
 
 
 def load_(file):
-    with open(file, "rb") as f:
-        return pickle.load(f)
+    return pickle.load(open(file, "rb"))
 
 
 def load(file):
-    with open(file, "rb") as f:
-        content = f.read()
+    content = open(file, "rb").read()
     cache = hash(content)
     if not info.os.path.exists(cache):
-        with open(cache, "wb") as f:
-            f.write(decompress(content))
+        open(cache, "wb").write(decompress(content))
     return load_(cache)
 
 
 def dump_(file, obj):
-    with open(file, "wb") as f:
-        pickle.dump(obj, f)
+    pickle.dump(obj, open(file, "wb"))
 
 
 def dump(file, obj):
-    with open(file, "wb") as f:
-        f.write(compress(pickle.dumps(obj)))
+    open(file, "wb").write(compress(pickle.dumps(obj)))
