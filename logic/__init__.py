@@ -61,10 +61,8 @@ class LMainWindow(QMainWindow):
         self.settingUi.viewLexicons.clicked.connect(lambda: Explore(info.lexis_dir))
         self.settingUi.viewCache.clicked.connect(lambda: Explore(info.cache_dir))
         self.settingUi.CClear.clicked.connect(
-            lambda: QMessageBox.information(
-                self,
-                Setting.getTr("info"),
-                Setting.getTr("cache_cleared") % ConvertSize(CleanDir(info.cache_dir)),
+            lambda: self.information(
+                Setting.getTr("cache_cleared") % ConvertSize(CleanDir(info.cache_dir))
             )
         )
         self.settingUi.AutoSave.stateChanged.connect(
@@ -81,9 +79,7 @@ class LMainWindow(QMainWindow):
             )
         csignal.sre.connect(self.settingUi.LReload.setEnabled)
         csignal.update.connect(self.showLexicons)
-        csignal.warn.connect(
-            lambda msg: QMessageBox.warning(self, Setting.getTr("warning"), msg)
-        )
+        csignal.warn.connect(self.warning)
         info.app.commitDataRequest.connect(self.saveData)
 
     def check(self):
@@ -193,6 +189,18 @@ class LMainWindow(QMainWindow):
         self.settingUi.LexiconBox.setEnabled(not o)
         Setting.Online = o
         Setting.dump()
+
+    def question(self, msg):
+        return (
+            QMessageBox.question(self, Setting.getTr("info"), msg)
+            == QMessageBox.StandardButton.Yes
+        )
+
+    def information(self, msg):
+        QMessageBox.information(self, Setting.getTr("info"), msg)
+
+    def warning(self, msg):
+        QMessageBox.warning(self, Setting.getTr("warning"), msg)
 
     def closeEvent(self, evt: QEvent):
         if info.prog_running:

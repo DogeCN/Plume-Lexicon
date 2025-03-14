@@ -1,4 +1,3 @@
-from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QDesktopServices
 from libs.ui.main import Ui_MainWindow
@@ -27,7 +26,6 @@ class LMain(Ui_MainWindow):
     signal = LSignal()
     exchanges = None
     expands = None
-    parent = None
     tc = False
     hc = False
 
@@ -87,7 +85,7 @@ class LMain(Ui_MainWindow):
         self.actionAbout.triggered.connect(
             lambda: QDesktopServices.openUrl(info.repo_url)
         )
-        self.actionAboutQt.triggered.connect(lambda: QMessageBox.aboutQt(self.parent))
+        self.actionAboutQt.triggered.connect(info.app.aboutQt)
         # Button Actions
         self.Add.clicked.connect(self.addCurrent)
         self.Delete.clicked.connect(self.Bank.remove)
@@ -231,26 +229,13 @@ class LMain(Ui_MainWindow):
         try:
             ver = latest["tag_name"]
             if ver > info.version:
-                if (
-                    QMessageBox.question(
-                        self.parent,
-                        Setting.getTr("info"),
-                        Setting.getTr("update_tip") % ver,
-                    )
-                    == QMessageBox.StandardButton.Yes
-                ):
+                if self.parent.question(Setting.getTr("update_tip") % ver):
                     QDesktopServices.openUrl(latest["html_url"])
             elif not silent:
-                QMessageBox.information(
-                    self.parent, Setting.getTr("info"), Setting.getTr("update_latest")
-                )
+                self.parent.information(Setting.getTr("update_latest"))
         except:
             if not silent:
-                QMessageBox.warning(
-                    self.parent,
-                    Setting.getTr("warning"),
-                    Setting.getTr("update_failed"),
-                )
+                self.parent.warning(Setting.getTr("update_failed"))
 
     def showRecent(self):
         for action in self.menuRecent.actions()[2:]:
