@@ -1,7 +1,7 @@
 from difflib import SequenceMatcher
 from .api import apiTranslate
 from .lexicons import lexicons
-from libs.configs.settings import Setting
+from libs.configs import Setting
 import info, time
 
 
@@ -72,7 +72,7 @@ class Result:
         return self.value[0]
 
     def __bool__(self):
-        return not self.match and bool(self.value[1 if Setting.Language else 2])
+        return not self.match
 
     def __eq__(self, value):
         return self.word == value

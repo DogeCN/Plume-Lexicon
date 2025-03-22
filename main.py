@@ -1,5 +1,5 @@
 from libs.io.stdout import print, logInit
-from libs.configs.public import Publics
+from libs.configs import Publics
 import time, traceback, info
 
 fr = info.running

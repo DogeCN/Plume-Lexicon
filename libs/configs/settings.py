@@ -1,5 +1,5 @@
-from ..io.base import load, dump
-from ..debris import GetLanguage
+from libs.debris import GetLanguage
+from libs.io.base import load, dump
 from libs.io.stdout import print
 import info
 

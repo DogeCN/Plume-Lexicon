@@ -1,8 +1,7 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from libs.debris import GetNewFileName, Explore
-from libs.configs.settings import Setting
-from libs.configs.public import Publics
 from libs.translate import Result
+from libs.configs import *
 from libs.io import files
 from libs.io.stdout import print
 import info, pickle
@@ -310,7 +309,7 @@ class FItem(BaseListWidgetItem):
         recent.insert(0, self.file)
         if len(recent) > info.max_recent:
             recent.pop()
-        Publics["recent"] = recent
+        Publics.dump()
 
 
 class Files(BaseListWidget):

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
-from libs.configs.settings import Setting
-from libs.io.base import load, hash, load_, dump_
+from libs.configs import *
+from libs.io.base import load
 from libs.io.stdout import print
 from libs.io.requests import get
 from libs.io.thread import Thread, Pool
@@ -51,10 +51,10 @@ class Lexicon(dict[str, list[str, list[str]]]):
             self.fp = fp
             self.enabled = self.loaded = self.failed = False
             self.signal = LSignal()
-            if self.hashExists:
-                self.update(load_(self.hashFile))
+            if self.filename in Publics["lexis"]:
+                self.name, self.name_zh = Publics["lexis"][self.filename]
             else:
-                self.name = self.name_zh = fp.split("\\")[-1].strip(info.ext_disabled)
+                self.name = self.name_zh = self.filename
 
     @property
     def text(self):
@@ -68,23 +68,20 @@ class Lexicon(dict[str, list[str, list[str]]]):
         return f"{name} ({hint})"
 
     @property
-    def hashFile(self):
-        return hash(self.fp.strip(info.ext_disabled).encode())
-
-    @property
-    def hashExists(self):
-        return info.os.path.exists(self.hashFile)
+    def filename(self):
+        return self.fp.split("\\")[-1].strip(info.ext_disabled)
 
     def setEnabled(self, e):
         if e and not self.loaded:
             csignal.begin()
             try:
-                self.update(load(self.fp))
-                if not self.hashExists:
-                    header = Lexicon()
-                    header.name = self.name
-                    header.name_zh = self.name_zh
-                    dump_(self.hashFile, header)
+                l = load(self.fp)
+                self.name = getattr(l, "name")
+                self.name_zh = getattr(l, "name_zh")
+                self.update(l)
+                if self.fp not in Publics["lexis"]:
+                    Publics["lexis"][self.filename] = self.name, self.name_zh
+                    Publics.dump()
                 self.loaded = True
                 self.failed = False
             except Exception as ex:
@@ -104,11 +101,6 @@ class Lexicon(dict[str, list[str, list[str]]]):
             except OSError:
                 print(f"Failed to rename {self.fp} to {fp}", "Red")
             self.fp = fp
-
-    def update(self, l):
-        self.name = getattr(l, "name")
-        self.name_zh = getattr(l, "name_zh")
-        super().update(l)
 
 
 class LexiBox(QCheckBox):

@@ -21,7 +21,6 @@ exe = argv0.endswith(".exe")
 prog_running = True
 data_dir = check_dir(os.getenv("AppData") + os.sep + prog_name + os.sep)
 temp_dir = check_dir(os.getenv("Temp") + os.sep + prog_name + os.sep)
-cache_dir = check_dir(temp_dir + "cache" + os.sep)
 lexis_dir_name = "lexicons"
 lexis_dir = check_dir(data_dir + lexis_dir_name + os.sep)
 ext_lexi = ".plf"
@@ -29,13 +28,6 @@ ext_disabled = ".disabled"
 ext_voca = ".pvf"
 ext_settings = ".psf"
 ext_all_voca = "*" + ext_voca
-temp = temp_dir + "temp"
-max_recent = 5
-min_similarity = 0.5
-item_tbg = (255, 100, 100)
-item_obg = (100, 255, 255)
-item_fbg = (255, 100, 255, 30)
-fade = lambda c: round(max(255 - log10(c + 1) * 100, 1) / 5)
 running = temp_dir + ".running"
 running_sign = " "
 tools = "tools"
@@ -50,10 +42,17 @@ speech_hint = "<html><body style=\" font-family:'Microsoft YaHei UI'; font-size:
 log = data_dir + "latest.log"
 settings = data_dir + "settings" + ext_settings
 public = data_dir + "public.json"
-nontr = ("暂无翻译", "None Translations")
 lurl = f"https://raw.githubusercontent.com/{author}/{repo_name}/refs/heads/main/{lexis_dir_name}/%s"
 ghproxy = "https://ghproxy.cn/%s"
 
+max_recent = 5
+min_similarity = 0.5
+item_tbg = (255, 100, 100)
+item_obg = (100, 255, 255)
+item_fbg = (255, 100, 255, 30)
+fade = lambda c: round(max(255 - log10(c + 1) * 100, 1) / 5)
+
+nontr = ("暂无翻译", "None Translations")
 default_lexis = {"Base", "Long", "Phrase", "Term"}
 seps = {" ", "-"}
 
@@ -86,7 +85,6 @@ You can read existed vocabularies though.
     "update_latest": ("已是最新版本", "Already the Latest Version"),
     "update_failed": ("检查更新失败", "Failed to Check Update"),
     "htip": ("你是否在找 %s: ", "Do you mean %s: "),
-    "cache_cleared": ("已清除 %s 缓存", "A total of %s caches cleared"),
 }
 
 StlSheets = {
@@ -105,7 +103,6 @@ UITr = {
     "Auto Save": "自动保存",
     "Top": "置顶",
     "Files": "文件",
-    "Cache": "缓存",
     "Delete": "删除",
     "Vocabulary": "词汇表",
     "Copy": "复制",

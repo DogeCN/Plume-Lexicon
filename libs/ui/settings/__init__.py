@@ -1,7 +1,7 @@
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from libs.configs.settings import Setting
+from libs.configs import Setting
 from . import res
 
 
@@ -97,23 +97,6 @@ class UISettings(object):
         self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 2)
 
         self.horizontalLayout_3 = QHBoxLayout()
-        self.lCache = QLabel(Settings)
-        self.lCache.setMaximumSize(QSize(58, 16777215))
-
-        self.horizontalLayout_3.addWidget(self.lCache)
-
-        self.CClear = QPushButton(Settings)
-        icon4 = QIcon(QIcon.fromTheme("user-trash"))
-        self.CClear.setIcon(icon4)
-
-        self.horizontalLayout_3.addWidget(self.CClear)
-
-        self.viewCache = QToolButton(Settings)
-        icon5 = QIcon(QIcon.fromTheme("folder-open"))
-        self.viewCache.setIcon(icon5)
-        self.viewCache.setIconSize(QSize(30, 16))
-
-        self.horizontalLayout_3.addWidget(self.viewCache)
 
         self.gridLayout.addLayout(self.horizontalLayout_3, 5, 0, 1, 2)
 
@@ -156,19 +139,21 @@ class UISettings(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.Online = QCheckBox(Settings)
-        icon6 = QIcon(QIcon.fromTheme("applications-internet"))
-        self.Online.setIcon(icon6)
+        icon4 = QIcon(QIcon.fromTheme("applications-internet"))
+        self.Online.setIcon(icon4)
 
         self.horizontalLayout.addWidget(self.Online)
 
         self.LReload = QPushButton(Settings)
-        icon7 = QIcon(QIcon.fromTheme("view-refresh"))
-        self.LReload.setIcon(icon7)
+        icon5 = QIcon(QIcon.fromTheme("view-refresh"))
+        self.LReload.setIcon(icon5)
 
         self.horizontalLayout.addWidget(self.LReload)
 
+        icon6 = QIcon(QIcon.fromTheme("folder-open"))
+
         self.viewLexicons = QToolButton(Settings)
-        self.viewLexicons.setIcon(icon5)
+        self.viewLexicons.setIcon(icon6)
         self.viewLexicons.setIconSize(QSize(30, 16))
 
         self.horizontalLayout.addWidget(self.viewLexicons)
@@ -216,5 +201,3 @@ class UISettings(object):
         self.LexiconBox.setTitle(Setting.translateUI("Lexicons"))
         self.lHot.setText(Setting.translateUI("Hotkeys"))
         self.lTranslate.setText(Setting.translateUI("Translate"))
-        self.CClear.setText(Setting.translateUI("Clear"))
-        self.lCache.setText(Setting.translateUI("Cache"))

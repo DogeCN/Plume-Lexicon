@@ -1,3 +1,4 @@
+from itertools import count
 from subprocess import Popen
 from ctypes import WinDLL
 import os, winreg
@@ -29,54 +30,20 @@ def Register(ext: str, command: str):
 
 
 def Explore(path: str):
-    if not os.path.exists(path):
-        return
-    path = path.replace("/", "\\")
-    cmd = "select" if os.path.isfile(path) else "e"
-    Popen(f'explorer /{cmd},"{path}"')
+    if os.path.exists(path):
+        path = path.replace("/", "\\")
+        cmd = "select" if os.path.isfile(path) else "e"
+        Popen(f'explorer /{cmd},"{path}"')
 
 
 def GetNewFileName(fn: str, ext: str = "", exclusions: list[str] = []):
-    fn = fn + "%s" + ext
-    efn = lambda fn: fn in exclusions or os.path.exists(fn)
-    if efn(fn % ""):
-        i = 2
-        while efn(fn % f"({i})"):
-            i += 1
-        fn = fn % f"({i})"
-    else:
-        fn = fn % ""
-    return fn
-
-
-def ConvertSize(byte: int):
-    units = ["B", "KB", "MB", "GB", "TB", "PB"]
-    size = 1024
-    for u in units:
-        _ = byte // size
-        if _ < 1:
-            return f"{byte}{u}"
-        byte = _
-    return f"{byte}{units[-1]}"
-
-
-def CleanDir(path: str):
-    total = 0
-    for root, dir, files in os.walk(path, topdown=False):
-        for name in files:
-            try:
-                fn = os.path.join(root, name)
-                size = os.path.getsize(fn)
-                os.remove(fn)
-                total += size
-            except:
-                ...
-        for name in dir:
-            try:
-                os.rmdir(os.path.join(root, name))
-            except:
-                ...
-    return total
+    base = f"{fn}{ext}"
+    if base not in exclusions:
+        return base
+    for i in count(2):
+        candidate = f"{fn}({i}){ext}"
+        if candidate not in exclusions:
+            return candidate
 
 
 class Ticker:

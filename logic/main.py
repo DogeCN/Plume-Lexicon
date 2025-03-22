@@ -3,8 +3,7 @@ from PySide6.QtGui import QDesktopServices
 from libs.ui.main import Ui_MainWindow
 from libs.debris import Ticker, Speak
 from libs.translate import Result
-from libs.configs.settings import Setting
-from libs.configs.public import Publics
+from libs.configs import *
 from libs.io.thread import Thread
 from libs.io.requests import get
 from time import sleep
@@ -224,9 +223,10 @@ class LMain(Ui_MainWindow):
             self.menuRecent.removeAction(action)
         recent: list[str] = Publics["recent"]
         for f in recent:
-            action = self.menuRecent.addAction(f.split("/")[-1])
-            action.setStatusTip(f)
-            action.triggered.connect(lambda _, f=f: self.Files.loads(f))
+            if info.os.path.exists(f):
+                action = self.menuRecent.addAction(f.split("/")[-1])
+                action.setStatusTip(f)
+                action.triggered.connect(lambda _, f=f: self.Files.loads(f))
 
     def displaySelection(self):
         items = self.Bank.selections

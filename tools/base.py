@@ -1,8 +1,7 @@
 from PySide6.QtWidgets import QMessageBox, QInputDialog, QMenu
 from PySide6.QtGui import QAction, QIcon
 from libs.io.stdout import print
-from libs.configs.public import Publics
-from libs.configs.settings import Setting
+from libs.configs import *
 from libs.io import files
 from subprocess import Popen
 from libs.ui import Dialog as DG
@@ -142,33 +141,25 @@ class Data:
 
     def Set(self, value):
         Publics[self.name] = value
+        Publics.dump()
 
     def Get(self):
-        try:
-            return Publics[self.name]
-        except:
-            ...
+        return Publics[self.name]
 
     def Remove(self):
-        try:
-            del Publics[self.name]
-        except:
-            ...
+        del Publics[self.name]
+        Publics.dump()
 
     def SetItem(self, key, value):
         Publics[self.name][key] = value
+        Publics.dump()
 
     def GetItem(self, key):
-        try:
-            return Publics[self.name][key]
-        except:
-            ...
+        return Publics[self.name][key]
 
     def RemoveItem(self, key):
-        try:
-            del Publics[self.name][key]
-        except:
-            ...
+        del Publics[self.name][key]
+        Publics.dump()
 
 
 class Tr:
@@ -223,4 +214,4 @@ class Tool:
         return self._get("doc")
 
 
-__all__ = ["Tool", "print", "files", "info"]
+__all__ = ["Tool", "print", "info"]

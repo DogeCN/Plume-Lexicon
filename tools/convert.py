@@ -28,31 +28,29 @@ UITr = {
 
 
 def loadSettings():
-    data = tool.data.Get()
-    if data:
-        try:
-            (
-                columns,
-                font,
-                fontSize,
-                stamp,
-                stampFormat,
-                wordCount,
-                sectionWord,
-                sectionPhon,
-                sectionTrans,
-            ) = data
-            ui.Columns.setValue(columns)
-            ui.Font.setCurrentText(font)
-            ui.FontSize.setValue(fontSize)
-            ui.Stamp.setChecked(stamp)
-            ui.StampFormat.setCurrentText(stampFormat)
-            ui.WordCount.setChecked(wordCount)
-            ui.Word.setChecked(sectionWord)
-            ui.Phonetic.setChecked(sectionPhon)
-            ui.Translations.setChecked(sectionTrans)
-        except:
-            ...
+    try:
+        (
+            columns,
+            font,
+            fontSize,
+            stamp,
+            stampFormat,
+            wordCount,
+            sectionWord,
+            sectionPhon,
+            sectionTrans,
+        ) = tool.data.Get()
+        ui.Columns.setValue(columns)
+        ui.Font.setCurrentText(font)
+        ui.FontSize.setValue(fontSize)
+        ui.Stamp.setChecked(stamp)
+        ui.StampFormat.setCurrentText(stampFormat)
+        ui.WordCount.setChecked(wordCount)
+        ui.Word.setChecked(sectionWord)
+        ui.Phonetic.setChecked(sectionPhon)
+        ui.Translations.setChecked(sectionTrans)
+    except:
+        ...
 
 
 def saveSettings():

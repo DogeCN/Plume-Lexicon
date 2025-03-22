@@ -1,10 +1,10 @@
 from __future__ import annotations
 from PySide6.QtWidgets import QMessageBox, QDialog, QMenu, QMainWindow, QSystemTrayIcon
 from PySide6.QtCore import QEvent
-from libs.debris import Ticker, CleanDir, ConvertSize, Explore, Register
+from libs.debris import Ticker, Explore, Register
 from libs.translate.lexicons import LexiBox, loadLexis, csignal
 from libs.translate import trans
-from libs.configs.settings import Setting
+from libs.configs import Setting
 from libs.ui import Theme
 from libs.ui.settings import UISettings
 from libs.io.thread import Scheduler, Thread
@@ -59,12 +59,6 @@ class LMainWindow(QMainWindow):
         self.settingUi.Online.toggled.connect(self.setOnline)
         self.settingUi.LReload.clicked.connect(loadLexis)
         self.settingUi.viewLexicons.clicked.connect(lambda: Explore(info.lexis_dir))
-        self.settingUi.viewCache.clicked.connect(lambda: Explore(info.cache_dir))
-        self.settingUi.CClear.clicked.connect(
-            lambda: self.information(
-                Setting.getTr("cache_cleared") % ConvertSize(CleanDir(info.cache_dir))
-            )
-        )
         self.settingUi.AutoSave.stateChanged.connect(
             lambda: self.settingUi.Interval.setEnabled(
                 self.settingUi.AutoSave.isChecked()
