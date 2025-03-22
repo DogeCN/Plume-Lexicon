@@ -337,7 +337,7 @@ class Files(BaseListWidget):
     def open(self):
         f = Dialog.OpenFiles(self.parent(), Setting.getTr("load"), info.ext_all_voca)
         if f:
-            self.current = self.load(f)[0]
+            self.loads(*f)
 
     def save(self):
         self.current.save()
@@ -365,18 +365,19 @@ class Files(BaseListWidget):
             self.bank.results = []
         self.displayChanged.emit()
 
-    def load(self, file: str | list[str]):
-        if isinstance(file, list):
-            return [self.load(f) for f in file]
-        elif file.endswith(info.ext_voca):
-            file = info.os.path.abspath(file).replace("\\", "/")
-            for item in self.items:
-                if item.file == file:
-                    self.current = item
-                    return item
-            item = FItem(file)
-            self.addItem(item)
-            return item
+    def loads(self, *file: str, index=0):
+        self.current = [self.loadFile(f) for f in file if f.endswith(info.ext_voca)][
+            index
+        ]
+
+    def loadFile(self, file: str):
+        file = info.os.path.abspath(file).replace("\\", "/")
+        for item in self.items:
+            if item.file == file:
+                return item
+        item = FItem(file)
+        self.addItem(item)
+        return item
 
     def remove(self):
         self.takeItem(self.row(self.current))
@@ -415,8 +416,7 @@ class Files(BaseListWidget):
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
-            for url in event.mimeData().urls():
-                self.load(url.toLocalFile())
+            self.loads(*(url.toLocalFile() for url in event.mimeData().urls()))
         else:
             event.ignore()
 
@@ -439,8 +439,9 @@ class Files(BaseListWidget):
 
     @current.setter
     def current(self, item: FItem):
-        self.setCurrentItem(item)
-        item.setSelected(True)
+        if item:
+            self.setCurrentItem(item)
+            item.setSelected(True)
 
     def clear(self):
         super().clear()

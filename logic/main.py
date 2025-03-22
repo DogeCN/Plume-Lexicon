@@ -175,30 +175,12 @@ class LMain(Ui_MainWindow):
 
     def loadWithState(self, file):
         states = Publics["ui_states"]
-        current = None
         if file:
-            self.load(file)
+            self.Files.loads(file)
         else:
             files = states["files"] if "files" in states else [info.default_voca]
-            cIndex = states["current"] if "current" in states else None
-            for i in range(len(files)):
-                item = self.Files.load(files[i])
-                if cIndex == i:
-                    current = item
-        if current:
-            current.load()
-            self.Files.current = current
-        else:
-            items = self.Files.items
-            if items:
-                self.Files.current = items[0]
-
-    def load(self, files: str | list[str]):
-        self.Files.current = (
-            self.Files.load(files)
-            if isinstance(files, str)
-            else [self.Files.load(f) for f in files][0]
-        )
+            current = states["current"] if "current" in states else 0
+            self.Files.loads(*files, index=current)
 
     def storeStates(self):
         states = Publics["ui_states"]
@@ -244,7 +226,7 @@ class LMain(Ui_MainWindow):
         for f in recent:
             action = self.menuRecent.addAction(f.split("/")[-1])
             action.setStatusTip(f)
-            action.triggered.connect(lambda _, f=f: self.load(f))
+            action.triggered.connect(lambda _, f=f: self.Files.loads(f))
 
     def displaySelection(self):
         items = self.Bank.selections
@@ -258,7 +240,8 @@ class LMain(Ui_MainWindow):
                 item = items[0]
             else:
                 item = self.Bank.current
-            self.WordEntry.setText(item.word)
+            if item:
+                self.WordEntry.setText(item.word)
         else:
             self.Delete.setEnabled(False)
             self.Top.setEnabled(False)

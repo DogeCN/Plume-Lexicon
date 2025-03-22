@@ -86,7 +86,7 @@ class LMainWindow(QMainWindow):
         action = open(info.running).readline().strip("\n")
         if action:
             if action != info.running_sign and info.os.path.exists(action):
-                self.ui.load(action)
+                self.ui.Files.loads(action)
             self.activateWindow()
             self.showNormal()
         open(info.running, "w").write("")
