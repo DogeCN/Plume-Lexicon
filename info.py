@@ -12,7 +12,7 @@ def check_dir(dir):
 prog_name = "Plume Lexicon"
 prog_name_cn = "羽词"
 author = "DogeCN"
-version = "v1.15.2"
+version = "v1.15.3"
 app = QApplication()
 clipboard = app.clipboard()
 argv0 = sys.argv[0]
