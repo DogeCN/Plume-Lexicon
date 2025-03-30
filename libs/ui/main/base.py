@@ -280,12 +280,13 @@ class FItem(BaseListWidgetItem):
         self.loaded = True
 
     def save(self, silent=False):
-        if self.exists():
-            files.saveVocabulary(self.results, self.file)
-            self.saved = True
-        else:
-            if not silent:
-                self.saveAs(self.file)
+        if self.loaded:
+            if self.exists():
+                files.saveVocabulary(self.results, self.file)
+                self.saved = True
+            else:
+                if not silent:
+                    self.saveAs(self.file)
 
     def saveAs(self, file=None):
         if file:
@@ -325,6 +326,7 @@ class Files(BaseListWidget):
         self.menu.addAction(self.explorer)
         self.menu.addSeparator()
         bank.onEdit.connect(self.keep)
+        self.dragMoveEvent = self.handleEvent
         self.itemSelectionChanged.connect(self.display)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.showMenu)
@@ -344,7 +346,7 @@ class Files(BaseListWidget):
     def saveAs(self):
         self.current.saveAs()
 
-    def saveAll(self, silent=True):
+    def saveAll(self, silent=False):
         for item in self.items:
             item.save(silent)
 
@@ -386,13 +388,10 @@ class Files(BaseListWidget):
         if self.current:
             self.current.results = self.bank.results
 
-    def new(self, fn=None):
-        if not fn:
-            fn = GetNewFileName("untitled", info.ext_voca, self.names)
-        item = FItem(fn)
+    def new(self):
+        item = FItem(GetNewFileName("untitled", info.ext_voca, self.names))
         self.addItem(item)
         self.current = item
-        return item
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
@@ -404,20 +403,16 @@ class Files(BaseListWidget):
         else:
             event.ignore()
 
-    def dragMoveEvent(self, event: QtGui.QDropEvent):
-        if event.mimeData().hasUrls:
-            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
-            event.accept()
-        else:
-            event.ignore()
-
     def dropEvent(self, event):
+        if self.handleEvent(event):
+            self.loads(*(url.toLocalFile() for url in event.mimeData().urls()))
+
+    def handleEvent(self, event: QtGui.QDropEvent):
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
-            self.loads(*(url.toLocalFile() for url in event.mimeData().urls()))
-        else:
-            event.ignore()
+            return True
+        event.ignore()
 
     @property
     def items(self) -> list[FItem]:
@@ -438,9 +433,8 @@ class Files(BaseListWidget):
 
     @current.setter
     def current(self, item: FItem):
-        if item:
-            self.setCurrentItem(item)
-            item.setSelected(True)
+        self.setCurrentItem(item)
+        item.setSelected(True)
 
     def clear(self):
         super().clear()

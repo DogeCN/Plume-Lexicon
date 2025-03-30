@@ -72,7 +72,7 @@ class LMain(Ui_MainWindow):
         self.actionReload.triggered.connect(self.Files.reload)
         self.actionLoad.triggered.connect(self.Files.open)
         self.actionSave.triggered.connect(self.Files.save)
-        self.actionSaveAll.triggered.connect(lambda: self.Files.saveAll(False))
+        self.actionSaveAll.triggered.connect(self.Files.saveAll)
         self.actionSaveAs.triggered.connect(self.Files.saveAs)
         self.actionRemove.triggered.connect(self.Files.remove)
         self.actionClear.triggered.connect(self.Files.clear)

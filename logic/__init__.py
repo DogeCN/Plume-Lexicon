@@ -39,7 +39,7 @@ class LMainWindow(QMainWindow):
         self.show()
         Thread(self.autoTranslate)
         self.saver = Scheduler(
-            lambda: self.ui.Files.saveAll() if Setting.AutoSave else ...,
+            lambda: self.ui.Files.saveAll(True) if Setting.AutoSave else ...,
             Setting.AutoSaveInterval * 1000,
         )
         Scheduler(self.check)
@@ -208,6 +208,6 @@ class LMainWindow(QMainWindow):
 
     def saveData(self, *_):
         if Setting.AutoSave:
-            self.ui.Files.saveAll(False)
+            self.ui.Files.saveAll()
         self.ui.storeStates()
         print("Data Saved", "Blue")
