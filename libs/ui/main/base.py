@@ -123,7 +123,9 @@ class Bank(BaseListWidget):
             items = self.selections
             if items:
                 datas = [pickle.dumps(item.result) for item in items]
-                info.clipboard.setText(pickle.dumps(datas).decode("latin1"))
+                mime = QtCore.QMimeData()
+                mime.setData(info.mime, pickle.dumps(datas))
+                info.clipboard.setMimeData(mime)
         except Exception as e:
             print(f"Copy Failed: {e}", "Red")
 
@@ -133,9 +135,9 @@ class Bank(BaseListWidget):
 
     def paste(self):
         try:
-            text = info.clipboard.text()
-            if text:
-                datas = pickle.loads(text.encode("latin1"))
+            mime = info.clipboard.mimeData()
+            if mime.hasFormat(info.mime):
+                datas = pickle.loads(mime.data(info.mime))
                 for data in datas:
                     self.append(pickle.loads(data))
         except Exception as e:

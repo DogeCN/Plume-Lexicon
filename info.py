@@ -33,6 +33,7 @@ running_sign = " "
 tools = "tools"
 default_voca = data_dir + "default" + ext_voca
 cmd = f'"{os.path.abspath(argv0)}" "%1"'
+mime = "application/octet-stream"
 repo_name = "Plume-Lexicon"
 repo_url = f"https://github.com/{author}/{repo_name}"
 release_api = f"https://api.github.com/repos/{author}/{repo_name}/releases/latest"
