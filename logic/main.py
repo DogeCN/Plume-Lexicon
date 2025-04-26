@@ -87,6 +87,7 @@ class LMain(Ui_MainWindow):
         self.Top.clicked.connect(self.Bank.top)
         # Text
         self.WordEntry.textChanged.connect(self.textChanged)
+        self.WordEntry.installEventFilter(self.TranslatedText)
         self.TranslatedText.douleClicked.connect(self.copyOrCorrect)
         self.Phonetic.douleClicked.connect(
             lambda: Speak(self.result.word if self.result else ...)

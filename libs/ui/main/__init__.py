@@ -188,7 +188,6 @@ class Ui_MainWindow:
         self.verticalLayout = QVBoxLayout()
         self.TranslatedText = TranslatedText(self.centralwidget)
         self.TranslatedText.setMinimumSize(QSize(0, 117))
-        self.TranslatedText.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.TranslatedText.setStyleSheet(
             "QLabel{font: 75 12pt;color: rgb(0, 170, 255);}QToolTip{background-color: rgba(30,30,30,100);color: rgb(0, 170, 255);}"
         )

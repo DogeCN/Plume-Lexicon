@@ -461,6 +461,11 @@ class TranslatedText(BaseTextLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
+    def eventFilter(self, _, e: QtCore.QEvent):
+        if e.type() == QtCore.QEvent.Type.KeyPress:
+            self.keyPressEvent(e)
+        return False
+
     def keyPressEvent(self, e: QtGui.QKeyEvent):
         if e.key() == QtCore.Qt.Key.Key_Tab:
             self.douleClicked.emit()
