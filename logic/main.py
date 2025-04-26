@@ -47,10 +47,6 @@ class LMain(Ui_MainWindow):
         info.prog_running = False
         self.parent.close()
 
-    def speak(self, _):
-        if self.result:
-            Speak(self.WordEntry.text())
-
     def textChanged(self):
         self.tc = True
 
@@ -91,8 +87,10 @@ class LMain(Ui_MainWindow):
         self.Top.clicked.connect(self.Bank.top)
         # Text
         self.WordEntry.textChanged.connect(self.textChanged)
-        self.TranslatedText.mouseDoubleClickEvent = self.copyOrCorrect
-        self.Phonetic.mouseDoubleClickEvent = self.speak
+        self.TranslatedText.douleClicked.connect(self.copyOrCorrect)
+        self.Phonetic.douleClicked.connect(
+            lambda: Speak(self.result.word if self.result else ...)
+        )
         # List Widgets
         self.Files.displayChanged.connect(self.checkAdd)
         self.Bank.itemSelectionChanged.connect(self.displaySelection)
@@ -111,7 +109,7 @@ class LMain(Ui_MainWindow):
         self.Delete.setShortcut(Setting.KeyDel)
         self.Top.setShortcut(Setting.KeyTop)
 
-    def copyOrCorrect(self, _):
+    def copyOrCorrect(self):
         result = self.result
         if result.match:
             self.WordEntry.setText(result.word)
@@ -121,10 +119,10 @@ class LMain(Ui_MainWindow):
     def setResult(self):
         result = self.result
         if result:
-            self.TranslatedText.setText(result.getTranslation())
-            self.TranslatedText.setToolTip(result.getDefinition())
-            self.Phonetic.setText(result.phonetic)
-            self.Phonetic.setToolTip(info.speech_hint % Setting.getTr("speech_hint"))
+            self.TranslatedText.set(result.getTranslation(), result.getDefinition())
+            self.Phonetic.set(
+                result.phonetic, info.speech_hint % Setting.getTr("speech_hint")
+            )
             self.exchanges = result.exchanges
             self.expands = result.expands
         else:
@@ -132,13 +130,10 @@ class LMain(Ui_MainWindow):
             self.Expand.clear()
             self.exchanges = self.expands = None
             if result is None:
-                self.TranslatedText.setText("")
-                self.TranslatedText.setToolTip("")
-                self.Phonetic.setText("")
-                self.Phonetic.setToolTip("")
+                self.TranslatedText.set()
+                self.Phonetic.set()
             elif result.match:
-                self.TranslatedText.setText(result.getTip())
-                self.TranslatedText.setToolTip(Setting.getTr("correct_hint"))
+                self.TranslatedText.set(result.getTip(), Setting.getTr("correct_hint"))
         self.hc = True
 
     def _handle(self, generator, emit):

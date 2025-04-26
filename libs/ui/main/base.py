@@ -441,3 +441,29 @@ class Files(BaseListWidget):
     def clear(self):
         super().clear()
         self.bank.clear()
+
+
+class BaseTextLabel(QtWidgets.QLabel):
+    douleClicked = QtCore.Signal()
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def set(self, text: str = "", tooltip: str = ""):
+        self.setText(text)
+        self.setToolTip(tooltip)
+
+    def mouseDoubleClickEvent(self, _):
+        self.douleClicked.emit()
+
+
+class TranslatedText(BaseTextLabel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def keyPressEvent(self, e: QtGui.QKeyEvent):
+        if e.key() == QtCore.Qt.Key.Key_Tab:
+            self.douleClicked.emit()
+
+
+class Phonetic(BaseTextLabel): ...

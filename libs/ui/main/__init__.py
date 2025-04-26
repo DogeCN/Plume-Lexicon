@@ -2,7 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from libs.configs import Setting
-from .base import Bank, Files
+from .base import Bank, Files, TranslatedText, Phonetic
 from . import res
 
 
@@ -186,8 +186,9 @@ class Ui_MainWindow:
         self.gridLayout.addWidget(self.Expand, 0, 3, 2, 1)
 
         self.verticalLayout = QVBoxLayout()
-        self.TranslatedText = QLabel(self.centralwidget)
+        self.TranslatedText = TranslatedText(self.centralwidget)
         self.TranslatedText.setMinimumSize(QSize(0, 117))
+        self.TranslatedText.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.TranslatedText.setStyleSheet(
             "QLabel{font: 75 12pt;color: rgb(0, 170, 255);}QToolTip{background-color: rgba(30,30,30,100);color: rgb(0, 170, 255);}"
         )
@@ -196,7 +197,7 @@ class Ui_MainWindow:
 
         self.verticalLayout.addWidget(self.TranslatedText)
 
-        self.Phonetic = QLabel(self.centralwidget)
+        self.Phonetic = Phonetic(self.centralwidget)
         self.Phonetic.setMinimumSize(QSize(172, 42))
         self.Phonetic.setMaximumSize(QSize(16777215, 42))
         self.Phonetic.setStyleSheet(
