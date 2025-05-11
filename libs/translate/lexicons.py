@@ -122,7 +122,7 @@ class LexiBox(QCheckBox):
             self.setStyleSheet("")
 
 
-lexicons = []  # type: list[Lexicon]
+lexicons: list[Lexicon] = []
 
 
 def initLexis(fp, e):
