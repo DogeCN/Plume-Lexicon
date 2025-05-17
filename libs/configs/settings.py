@@ -11,7 +11,7 @@ class Settings:
         try:
             self.__dict__ = load(file).__dict__
         except:
-            self.Language = GetLanguage()  # 0:zh, 1:en
+            self.Language = GetLanguage()
             self.Theme = 3
             self.Online = False
             self.AutoSave = True
