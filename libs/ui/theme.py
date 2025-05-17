@@ -169,8 +169,11 @@ class Theme:
             QSplitter::handle {{
                 border: 0px;
             }}
-            QMessageBox, QMessageBox QLabel {{
+            QMessageBox {{
                 background-color: {cls.default_bg_color};
                 color: {cls.text_color};
+            }}
+            QMessageBox QLabel {{
+                background-color: transparent;
             }}
         """
