@@ -127,60 +127,39 @@ class Theme:
                 background-color: {cls.main_bg_color};
                 color: {cls.text_color};
             }}
-            QMenuBar {{
+            QMenuBar, QMenu {{
                 border-radius: 5px;
                 padding: {cls.padding};
             }}
-            QMenuBar::item {{
+            QMenuBar::item, QMenu::item {{
                 border-radius: 5px;
                 padding: {cls.padding} {cls.padding_right};
             }}
-            QMenuBar::item:selected {{
+            QMenuBar::item:selected, QMenu::item:selected {{
                 background-color: {cls.selected_bg_color};
                 border-radius: 5px;
             }}
             QMenu {{
                 background-color: {cls.default_bg_color};
-                border-radius: 5px;
-                padding: {cls.padding};
             }}
             QMenu::item {{
                 background-color: {cls.default_bg_color};
-                border-radius: 5px;
-                padding: {cls.padding} {cls.padding_right};
             }}
-            QMenu::item:selected {{
-                background-color: {cls.selected_bg_color};
-                border-radius: 5px;
-            }}
-            QPushButton {{
+            QPushButton, QToolButton, QLineEdit, QListWidget, QKeySequenceEdit {{
                 background-color: {cls.selected_bg_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
+            }}
+            QLineEdit {{
+                padding: {cls.padding};
+            }}
+            QPushButton {{
                 min-width: 70px;
             }}
             QPushButton:disabled {{
                 color: rgb(150, 150, 150);
             }}
-            QPushButton:hover {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.hover_border_color};
-            }}
-            QLineEdit {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.border_color};
-                border-radius: 5px;
-                padding: {cls.padding};
-            }}
-            QLineEdit:hover {{
-                border: 1px solid {cls.hover_border_color};
-            }}
-            QListWidget {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.border_color};
-                border-radius: 5px;
-            }}
-            QListWidget:hover {{
+            QPushButton:hover, QToolButton:hover, QLineEdit:hover, QListWidget:hover, QKeySequenceEdit:hover {{
                 border: 1px solid {cls.hover_border_color};
             }}
             QToolTip {{
@@ -190,25 +169,8 @@ class Theme:
             QSplitter::handle {{
                 border: 0px;
             }}
-            QToolButton {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.border_color};
-                border-radius: 5px;
-            }}
-            QToolButton:hover {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.hover_border_color};
-            }}
-            QKeySequenceEdit {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.border_color};
-                border-radius: 5px;
-            }}
-            QKeySequenceEdit:hover {{
-                background-color: {cls.selected_bg_color};
-                border: 1px solid {cls.hover_border_color};
-            }}
-            QMessageBox, QInputDialog {{
+            QMessageBox, QMessageBox QLabel {{
                 background-color: {cls.default_bg_color};
+                color: {cls.text_color};
             }}
         """
