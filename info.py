@@ -3,7 +3,7 @@ from math import log10
 import os, sys
 
 
-def check_dir(dir):
+def check_dir(dir: str):
     if not os.path.exists(dir):
         os.mkdir(dir)
     return dir
