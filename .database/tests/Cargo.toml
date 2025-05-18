@@ -1,0 +1,13 @@
+[package]
+name = "tests"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies.db]
+path = "../db"
+
+[dependencies.serialization]
+path = "../serialization"
+
+[dev-dependencies]
+rand = "0.9"

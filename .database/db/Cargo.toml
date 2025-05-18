@@ -1,0 +1,10 @@
+[package]
+name = "db"
+version = "0.2.0"
+edition = "2024"
+
+[dependencies]
+xz2 = "0.1"
+
+[dependencies.serialization]
+path = "../serialization"
