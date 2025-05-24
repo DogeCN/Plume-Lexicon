@@ -176,4 +176,22 @@ class Theme:
             QMessageBox QLabel {{
                 background-color: transparent;
             }}
+            QComboBox {{
+                background-color: {cls.selected_bg_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+                padding: {cls.padding};
+            }}
+            QComboBox:hover {{
+                border: 1px solid {cls.hover_border_color};
+            }}
+            QComboBox::drop-down {{
+                width: 0;
+            }}
+            QComboBox QAbstractItemView {{
+                background-color: {cls.default_bg_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+                selection-background-color: {cls.selected_bg_color};
+            }}
         """

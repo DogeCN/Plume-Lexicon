@@ -112,7 +112,7 @@ class LexiBox(QCheckBox):
         self.update()
 
     def update(self):
-        super().setText(self.lexicon.text)
+        self.setText(self.lexicon.text)
         self.setChecked(self.lexicon.enabled)
         if self.lexicon.failed:
             self.setStyleSheet(info.StlSheets["red"])
