@@ -1,11 +1,7 @@
+from libs.windll import Kernel, Shell
 from itertools import count
 from subprocess import Popen
-from ctypes import WinDLL
 import os, winreg
-
-
-Kernel = WinDLL("kernel32")
-Shell = WinDLL("shell32")
 
 
 def GetLanguage():
