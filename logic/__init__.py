@@ -7,7 +7,7 @@ from libs.translate import trans
 from libs.configs import Setting
 from libs.ui import Theme
 from libs.ui.settings import UISettings
-from libs.io.thread import Scheduler, Thread
+from libs.io.thread import Scheduler, Thread, Worker
 from libs.io.stdout import print
 from .main import LMain
 from time import sleep
@@ -28,8 +28,8 @@ class LMainWindow(QMainWindow):
         self.connectActions()
         self.lboxes: list[LexiBox] = []
         loadLexis()
-        Thread(lambda: Register(info.ext_voca, info.cmd) if info.exe else ...)
-        Thread(self.ui.loadWithState, info.argv1)
+        Worker(lambda: Register(info.ext_voca, info.cmd) if info.exe else ...)
+        Worker(self.ui.loadWithState, info.argv1)
         Theme.AddAcrylic(self)
         Theme.Set(Setting.Theme)
         self.ui.restoreStates()

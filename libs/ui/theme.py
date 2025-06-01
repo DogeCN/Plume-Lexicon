@@ -127,6 +127,9 @@ class Theme:
                 background-color: {cls.main_bg_color};
                 color: {cls.text_color};
             }}
+            QScrollBar {{
+                width: 0;
+            }}
             QMenuBar, QMenu {{
                 border-radius: 5px;
                 padding: {cls.padding};
@@ -159,19 +162,18 @@ class Theme:
             QPushButton:disabled {{
                 color: rgb(150, 150, 150);
             }}
-            QPushButton:hover, QToolButton:hover, QLineEdit:hover, QListWidget:hover, QKeySequenceEdit:hover {{
+            QPushButton:hover, QToolButton:hover, QLineEdit:hover, QListWidget:hover, QKeySequenceEdit:hover, QComboBox:hover {{
                 border: 1px solid {cls.hover_border_color};
             }}
             QToolTip {{
                 background-color: {cls.selected_bg_color};
-                border: 0px;
+                border: 0;
             }}
             QSplitter::handle {{
-                border: 0px;
+                border: 0;
             }}
             QMessageBox {{
                 background-color: {cls.default_bg_color};
-                color: {cls.text_color};
             }}
             QMessageBox QLabel {{
                 background-color: transparent;
@@ -182,16 +184,20 @@ class Theme:
                 border-radius: 5px;
                 padding: {cls.padding};
             }}
-            QComboBox:hover {{
-                border: 1px solid {cls.hover_border_color};
-            }}
             QComboBox::drop-down {{
-                width: 0;
+                background-color: transparent;
+                border: 0;
             }}
             QComboBox QAbstractItemView {{
                 background-color: {cls.default_bg_color};
                 border: 1px solid {cls.border_color};
                 border-radius: 5px;
                 selection-background-color: {cls.selected_bg_color};
+            }}
+            QFontComboBox::drop-down {{
+                background-color: {cls.border_color};
+                border: 0;
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
             }}
         """

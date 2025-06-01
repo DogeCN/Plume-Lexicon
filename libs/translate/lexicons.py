@@ -4,7 +4,7 @@ from libs.configs import *
 from libs.io.base import load
 from libs.io.stdout import print
 from libs.io.requests import get
-from libs.io.thread import Thread, Pool
+from libs.io.thread import Worker, Pool
 import info
 
 
@@ -107,7 +107,7 @@ class LexiBox(QCheckBox):
     def __init__(self, parent, lexicon: Lexicon):
         super().__init__(parent)
         lexicon.signal.update.connect(self.update)
-        self.toggled.connect(lambda e: Thread(lexicon.setEnabled, e))
+        self.toggled.connect(lambda e: Worker(lexicon.setEnabled, e))
         self.lexicon = lexicon
         self.update()
 
@@ -127,7 +127,7 @@ lexicons: list[Lexicon] = []
 
 def initLexis(fp, e):
     l = Lexicon(fp)
-    Thread(l.setEnabled, e)
+    Worker(l.setEnabled, e)
     lexicons.append(l)
     csignal.update.emit()
 
@@ -169,4 +169,4 @@ def loadLexis():
             fp = info.lexis_dir + f
             initLexis(fp, enabled)
     if not lexicons:
-        Thread(downLexis)
+        Worker(downLexis)
