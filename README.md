@@ -3,7 +3,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/DogeCN/Plume-Lexicon/pulls)
 
 > [!NOTE]
-> I'm developing a safer and faster database for this project in order to replance pickle,
+> I'm developing a safer and faster lexicon database for this project,
 > 
 > See my repo [**Lexi-DB**](https://github.com/DogeCN/Lexi-DB)
 
