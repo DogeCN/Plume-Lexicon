@@ -85,7 +85,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
                 self.loaded = True
                 self.failed = False
             except Exception as ex:
-                print(f"Failed to load {self.fp}: {ex}", "Red")
+                print(f'Failed to load "{self.fp}": {ex}', "Red")
                 self.failed = True
             csignal.final()
         self.enabled = e
