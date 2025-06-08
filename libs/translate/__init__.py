@@ -1,6 +1,6 @@
 from difflib import SequenceMatcher
 from .api import apiTranslate
-from .lexicons import lexicons
+from .lexicons import lexicons, matcher
 from libs.configs import Setting
 import info, time
 
@@ -61,11 +61,8 @@ class Result:
             for lexicon in lexicons:
                 if not lexicon.enabled:
                     continue
-                for wp in lexicon:
-                    if (sep in self.word and self.word != wp and self.word in wp) or (
-                        sep in wp and self.word in wp.split(sep)
-                    ):
-                        yield Result(wp, lexicon[wp])
+                matcher.find(wp)
+                yield Result(wp, lexicon[wp])
 
     @property
     def phonetic(self):
