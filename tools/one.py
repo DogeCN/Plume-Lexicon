@@ -5,7 +5,7 @@
 from .base import *
 from PySide6.QtWidgets import QAbstractScrollArea
 from PySide6.QtCore import Qt
-from libs.io.thread import Pool, Thread, QuickSignal
+from libs.io.thread import Pool, Worker, QuickSignal
 from libs.io.requests import get
 from random import choice
 import time
@@ -49,12 +49,11 @@ def switch():
         for b in range(1, 10):
             pool.submit(one, b)
         detail.setText("Hide")
-        QuickSignal.connect("update", update)
-        Thread(lambda: QuickSignal.emit("update", pool.wait()))
+        QuickSignal.add(update)
+        Worker(lambda: QuickSignal.call("update", pool.wait()))
         area: QAbstractScrollArea = msg.findChild(QAbstractScrollArea)
-        area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        msg.move(msg.x(), msg.y() - 150)
         area.setFixedHeight(300)
+        msg.move(msg.x(), msg.y() - 150)
     flag = not flag
 
 

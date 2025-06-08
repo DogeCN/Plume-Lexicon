@@ -1,62 +1,5 @@
-from ctypes import POINTER, Structure, byref, c_int, pointer, sizeof, windll, wintypes
+from libs.debris import HWND
 import info
-
-
-class ACCENT_POLICY(Structure):
-    _fields_ = [
-        ("AccentState", wintypes.DWORD),
-        ("AccentFlags", wintypes.DWORD),
-        ("GradientColor", wintypes.DWORD),
-        ("AnimationId", wintypes.DWORD),
-    ]
-
-
-class WINDOW_COMPOSITION_ATTRIBUTES(Structure):
-    _fields_ = [
-        ("Attribute", wintypes.DWORD),
-        ("Data", POINTER(ACCENT_POLICY)),
-        ("SizeOfData", wintypes.ULONG),
-    ]
-
-
-class MARGINS(Structure):
-    _fields_ = [
-        ("cxLeftWidth", c_int),
-        ("cxRightWidth", c_int),
-        ("cyTopHeight", c_int),
-        ("cyBottomHeight", c_int),
-    ]
-
-
-def ChangeDWMAttrib(hWnd: int, attrib: int, color) -> None:
-    windll.dwmapi.DwmSetWindowAttribute(
-        hWnd, attrib, byref(c_int(color)), sizeof(c_int)
-    )
-
-
-def ChangeDWMAccent(hWnd: int, attrib: int, state: int, color=None) -> None:
-    accentPolicy = ACCENT_POLICY()
-
-    winCompAttrData = WINDOW_COMPOSITION_ATTRIBUTES()
-    winCompAttrData.Attribute = attrib
-    winCompAttrData.SizeOfData = sizeof(accentPolicy)
-    winCompAttrData.Data = pointer(accentPolicy)
-
-    accentPolicy.AccentState = state
-    if color:
-        accentPolicy.GradientColor = color
-
-    windll.user32.SetWindowCompositionAttribute(hWnd, pointer(winCompAttrData))
-
-
-def ExtendFrameIntoClientArea(HWND: int) -> None:
-    margins = MARGINS(-1, -1, -1, -1)
-    windll.dwmapi.DwmExtendFrameIntoClientArea(HWND, byref(margins))
-
-
-def DisableFrameIntoClientArea(HWND: int) -> None:
-    margins = MARGINS(0, 0, 0, 0)
-    windll.dwmapi.DwmExtendFrameIntoClientArea(HWND, byref(margins))
 
 
 class Theme:
@@ -87,10 +30,10 @@ class Theme:
         info.app.setStyleSheet(cls.Get())
         aws = [win] if win else cls.acrylic_wins
         for win in aws:
-            hWnd = win.winId()
-            ChangeDWMAttrib(hWnd, 20, 1)
-            ChangeDWMAccent(hWnd, 30, 3, 0x292929)
-            ExtendFrameIntoClientArea(hWnd)
+            handle = HWND(win.winId())
+            handle.ChangeDWMAttrib(20, 1)
+            handle.ChangeDWMAccent(30, 3, 0x292929)
+            handle.ExtendFrameIntoClientArea()
 
     @classmethod
     def DiscardAcrylic(cls):
@@ -102,10 +45,10 @@ class Theme:
         cls.selected_bg_color = "rgb(60, 60, 60)"
         cls.border_color = "rgb(90, 90, 90)"
         for win in cls.acrylic_wins:
-            hWnd = win.winId()
-            ChangeDWMAttrib(hWnd, 20, 0)
-            ChangeDWMAccent(hWnd, 30, 0)
-            DisableFrameIntoClientArea(hWnd)
+            handle = HWND(win.winId())
+            handle.ChangeDWMAttrib(20, 0)
+            handle.ChangeDWMAccent(30, 0)
+            handle.DisableFrameIntoClientArea()
 
     @classmethod
     def Set(cls, theme=None):
@@ -126,6 +69,9 @@ class Theme:
             * {{
                 background-color: {cls.main_bg_color};
                 color: {cls.text_color};
+            }}
+            QScrollBar {{
+                width: 0;
             }}
             QMenuBar, QMenu {{
                 border-radius: 5px;
@@ -159,18 +105,42 @@ class Theme:
             QPushButton:disabled {{
                 color: rgb(150, 150, 150);
             }}
-            QPushButton:hover, QToolButton:hover, QLineEdit:hover, QListWidget:hover, QKeySequenceEdit:hover {{
+            QPushButton:hover, QToolButton:hover, QLineEdit:hover, QListWidget:hover, QKeySequenceEdit:hover, QComboBox:hover {{
                 border: 1px solid {cls.hover_border_color};
             }}
             QToolTip {{
                 background-color: {cls.selected_bg_color};
-                border: 0px;
+                border: 0;
             }}
             QSplitter::handle {{
-                border: 0px;
+                border: 0;
             }}
-            QMessageBox, QMessageBox QLabel {{
+            QMessageBox {{
                 background-color: {cls.default_bg_color};
-                color: {cls.text_color};
+            }}
+            QMessageBox QLabel {{
+                background-color: transparent;
+            }}
+            QComboBox {{
+                background-color: {cls.selected_bg_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+                padding: {cls.padding};
+            }}
+            QComboBox::drop-down {{
+                background-color: transparent;
+                border: 0;
+            }}
+            QComboBox QAbstractItemView {{
+                background-color: {cls.default_bg_color};
+                border: 1px solid {cls.border_color};
+                border-radius: 5px;
+                selection-background-color: {cls.selected_bg_color};
+            }}
+            QFontComboBox::drop-down {{
+                background-color: {cls.default_bg_color};
+                border: 0;
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
             }}
         """

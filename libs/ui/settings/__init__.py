@@ -165,10 +165,6 @@ class UISettings(object):
         self.verticalLayout_3.setContentsMargins(-1, 0, -1, -1)
         self.Lexicons = QScrollArea(self.LexiconBox)
         self.Lexicons.setFrameShape(QFrame.Shape.NoFrame)
-        self.Lexicons.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Lexicons.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
         self.Lexicons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 401, 64))

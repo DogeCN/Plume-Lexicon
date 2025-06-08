@@ -4,7 +4,7 @@ from libs.ui.main import Ui_MainWindow
 from libs.debris import Ticker, Speak
 from libs.translate import Result
 from libs.configs import *
-from libs.io.thread import Thread
+from libs.io.thread import Thread, Worker
 from libs.io.requests import get
 from time import sleep
 import logic, info
@@ -32,7 +32,7 @@ class LMain(Ui_MainWindow):
         super().__init__()
         self.setupUi(parent)
         self.parent: logic.LMainWindow = parent
-        Thread(self.checkUpdate, True)
+        Worker(self.checkUpdate, True)
         Thread(self.handle)
         self.connectActions()
 
@@ -76,7 +76,7 @@ class LMain(Ui_MainWindow):
         actions = self.menuFile.actions()
         self.Files.menu.addActions(actions[:4] + actions[5:12])
         self.actionExit.triggered.connect(self.close)
-        self.actionCheck.triggered.connect(lambda: Thread(self.checkUpdate))
+        self.actionCheck.triggered.connect(lambda: Worker(self.checkUpdate))
         self.actionAbout.triggered.connect(
             lambda: QDesktopServices.openUrl(info.repo_url)
         )

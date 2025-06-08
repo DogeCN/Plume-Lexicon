@@ -126,8 +126,6 @@ class Ui_MainWindow:
         self.Bank.setStyleSheet(
             "QToolTip{background-color: rgba(30,30,30,100);color: rgb(85, 255, 255);}QListWidget{font: 10pt;color: rgb(85, 255, 255);}"
         )
-        self.Bank.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Bank.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.Bank.setAutoScroll(False)
         self.Bank.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.Bank.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
@@ -144,10 +142,6 @@ class Ui_MainWindow:
         self.Exchanges.setStyleSheet(
             "QToolTip{background-color: rgba(30,30,30,100);color: rgb(170, 255, 127);}QListWidget{font: 10pt;color: rgb(170, 255, 127);}"
         )
-        self.Exchanges.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Exchanges.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
         self.Exchanges.setAutoScroll(False)
         self.Exchanges.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.Exchanges.setSortingEnabled(True)
@@ -159,8 +153,6 @@ class Ui_MainWindow:
         self.Files.setStyleSheet(
             "QToolTip{background-color: rgba(30,30,30,100);color: rgb(255, 85, 255);}QListWidget{font: 10pt;color: rgb(255, 85, 255);}"
         )
-        self.Files.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Files.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.Files.setAutoScroll(False)
         self.Files.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.Files.setDragDropMode(QAbstractItemView.DragDropMode.DropOnly)
@@ -177,8 +169,6 @@ class Ui_MainWindow:
         self.Expand.setStyleSheet(
             "QToolTip{background-color: rgba(30,30,30,100);color: rgb(200, 200, 25);}QListWidget{font: 10pt;color: rgb(200, 200, 25);}"
         )
-        self.Expand.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Expand.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.Expand.setAutoScroll(False)
         self.Expand.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.Expand.setSortingEnabled(True)
