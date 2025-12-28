@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtCore import Signal, QObject
-from libs.configs import *
-from libs.io.base import load
+from libs.configs import Setting
 from libs.io.stdout import print
 from libs.io.requests import get
 from libs.io.thread import Worker, Pool
+from .db import *
 import info
 
 
@@ -16,8 +16,11 @@ class CSignal(QObject):
     sre = Signal(bool)
     warn = Signal(str)
     update = Signal()
-    count = 0
-    locked = False
+
+    def __init__(self):
+        super().__init__()
+        self.count = 0
+        self.locked = False
 
     def begin(self):
         self.count += 1
@@ -42,19 +45,14 @@ class CSignal(QObject):
 csignal = CSignal()
 
 
-class Lexicon(dict[str, list[str, list[str]]]):
-    name = ""
-    name_zh = ""
+class Lexicon:
 
-    def __init__(self, fp: str = None):
-        if fp:
-            self.fp = fp
-            self.enabled = self.loaded = self.failed = False
-            self.signal = LSignal()
-            if self.filename in Publics["lexis"]:
-                self.name, self.name_zh = Publics["lexis"][self.filename]
-            else:
-                self.name = self.name_zh = self.filename
+    def __init__(self, fp: str):
+        self.fp = fp
+        self.enabled = self.loaded = self.failed = False
+        self.signal = LSignal()
+        self.reader = Reader(fp, info.temp_dir + self.filename)
+        self.name, self.name_zh = self.reader.name, self.reader.name_zh
 
     @property
     def text(self):
@@ -71,23 +69,31 @@ class Lexicon(dict[str, list[str, list[str]]]):
     def filename(self):
         return self.fp.split("\\")[-1].strip(info.ext_disabled)
 
+    def filter(self, word: str) -> list[str]:
+        return self.reader.filter(word, info.seps)
+
+    def __getitem__(self, key: str):
+        return self.reader[key]
+
+    def __len__(self) -> int:
+        return len(self.reader)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.reader
+
     def setEnabled(self, e):
         if e and not self.loaded:
             csignal.begin()
             try:
-                l = load(self.fp)
-                self.name = getattr(l, "name")
-                self.name_zh = getattr(l, "name_zh")
-                self.update(l)
-                if self.fp not in Publics["lexis"]:
-                    Publics["lexis"][self.filename] = self.name, self.name_zh
-                    Publics.dump()
+                self.reader.load()
+                matcher.combine(self.reader)
                 self.loaded = True
                 self.failed = False
             except Exception as ex:
                 print(f'Failed to load "{self.fp}": {ex}', "Red")
                 self.failed = True
             csignal.final()
+        self.reader.set_enabled(e)
         self.enabled = e
         self.signal.update.emit()
         if self.failed:
@@ -99,7 +105,7 @@ class Lexicon(dict[str, list[str, list[str]]]):
             try:
                 info.os.rename(self.fp, fp)
             except OSError:
-                print(f"Failed to rename {self.fp} to {fp}", "Red")
+                print(f'Failed to rename "{self.fp}" to "{fp}"', "Red")
             self.fp = fp
 
 
@@ -123,13 +129,17 @@ class LexiBox(QCheckBox):
 
 
 lexicons: list[Lexicon] = []
+matcher = Matcher()
 
 
 def initLexis(fp, e):
-    l = Lexicon(fp)
-    Worker(l.setEnabled, e)
-    lexicons.append(l)
-    csignal.update.emit()
+    try:
+        l = Lexicon(fp)
+        Worker(l.setEnabled, e)
+        lexicons.append(l)
+        csignal.update.emit()
+    except OSError as e:
+        print(f'Failed to initialize reader for "{fp}": {e}', "Red")
 
 
 def getLexis(ln):

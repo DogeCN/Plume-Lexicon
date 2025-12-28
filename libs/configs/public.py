@@ -12,7 +12,6 @@ class Public(dict):
             self["default_path"] = None
             self["ui_states"] = {}
             self["recent"] = []
-            self["lexis"] = {}
             self["debug"] = False
 
     def dump(self):

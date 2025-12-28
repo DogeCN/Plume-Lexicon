@@ -8,17 +8,21 @@ data = info.settings
 
 class Settings:
     def __init__(self, file):
+        config = {
+            "Language": GetLanguage(),
+            "Theme": 3,
+            "Online": False,
+            "AutoSave": True,
+            "AutoSaveInterval": 60,
+            "KeyAdd": "Ctrl+E",
+            "KeyDel": "Del",
+            "KeyTop": "Ctrl+T",
+        }
         try:
-            self.__dict__ = load(file).__dict__
+            config.update(load(file).__dict__)
         except:
-            self.Language = GetLanguage()
-            self.Theme = 3
-            self.Online = False
-            self.AutoSave = True
-            self.AutoSaveInterval = 60
-            self.KeyAdd = "Ctrl+E"
-            self.KeyDel = "Del"
-            self.KeyTop = "Ctrl+T"
+            ...
+        self.__dict__ = config
 
     def getTr(self, key: str):
         return info.Tr[key][self.Language]

@@ -81,15 +81,21 @@ class LMainWindow(QMainWindow):
         if action:
             if action != info.running_sign and info.os.path.exists(action):
                 self.ui.Files.loads(action)
-            self.activateWindow()
-            self.showNormal()
+            self.show()
         open(info.running, "w").write("")
 
     def trayActivated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
-            self.activateWindow()
-            self.showNormal()
-            self.tray.hide()
+            self.show()
+
+    def show(self):
+        self.activateWindow()
+        self.showNormal()
+        self.tray.hide()
+
+    def hide(self):
+        super().hide()
+        self.tray.show()
 
     def accept(self):
         Setting.AutoSave = self.settingUi.AutoSave.isChecked()
@@ -199,7 +205,6 @@ class LMainWindow(QMainWindow):
     def closeEvent(self, evt: QEvent):
         if info.prog_running:
             self.hide()
-            self.tray.show()
             evt.ignore()
         else:
             self.saveData()
