@@ -1,6 +1,5 @@
-from difflib import SequenceMatcher
 from .api import apiTranslate
-from .lexicons import lexicons, matcher
+from .lexicons import Entry, lexicons, matcher
 from libs.configs import Setting
 import info, time
 
@@ -10,10 +9,10 @@ class Result:
     match = False
     online = False
 
-    def __init__(self, word: str = "", value: list[str, list[str]] = [*[""] * 3, []]):
+    def __init__(self, word: str = "", entry: Entry = None):
         self.time = time.time()
         self.word = word
-        self.value = value
+        self.entry = entry if entry else Entry("", "", "", [])
 
     @property
     def past(self):
@@ -21,31 +20,31 @@ class Result:
 
     @property
     def translation(self):
-        translation = self.value[2]
+        translation = self.entry.translation
         return translation if translation else info.nontr[0]
 
     @translation.setter
     def translation(self, translation):
-        self.value[2] = translation
+        self.entry.translation = translation
 
     def getTranslation(self):
         return self.definition if Setting.Language else self.translation
 
     @property
     def definition(self):
-        definition = self.value[1]
+        definition = self.entry.definition
         return definition if definition else info.nontr[1]
 
     @definition.setter
     def definition(self, definition):
-        self.value[1] = definition
+        self.entry.definition = definition
 
     def getDefinition(self):
         return self.translation if Setting.Language else self.definition
 
     @property
     def exchanges(self):
-        for form in self.value[3]:
+        for form in self.entry.exchanges:
             result = translate(form)
             if result:
                 yield result
@@ -59,20 +58,19 @@ class Result:
                     if result:
                         yield result
             for lexicon in lexicons:
-                if not lexicon.enabled:
-                    continue
-                matcher.find(wp)
-                yield Result(wp, lexicon[wp])
+                if lexicon.enabled:
+                    for wp in lexicon.filter(self.word):
+                        yield translate(wp)
 
     @property
     def phonetic(self):
-        return self.value[0]
+        return self.entry.phonetic
 
     def __bool__(self):
         return not self.match
 
     def __eq__(self, value):
-        return self.word == value
+        return value == self.word
 
     def getTip(self):
         trans_html = self.getTranslation().replace("\n", "<br>")
@@ -83,37 +81,24 @@ def onlineTranslate(word: str) -> Result:
     result = Result(word)
     try:
         result.translation = apiTranslate(word, Setting.Language)
+        result.online = True
     except:
         ...
-    else:
-        result.online = True
     return result
 
 
 def translate(word: str) -> Result:
     if word:
         for lexicon in lexicons:
-            if not lexicon.enabled:
-                continue
-            for wp in [word, word.lower(), word.capitalize()]:
-                if wp in lexicon:
-                    return Result(word, lexicon[wp])
+            if lexicon.enabled:
+                for wp in [word, word.lower(), word.capitalize()]:
+                    if wp in lexicon:
+                        return Result(word, lexicon[wp])
 
-        max = info.min_similarity
-        s = SequenceMatcher()
-        s.set_seq2(word)
-        result = None
-        for lexicon in lexicons:
-            for wm in lexicon:
-                if wm[0] == word[0]:
-                    s.set_seq1(wm)
-                    if s.real_quick_ratio() > max and s.quick_ratio() > max:
-                        ratio = s.ratio()
-                        if ratio > max:
-                            result = Result(wm, lexicon[wm])
-                            max = ratio
+        wp = matcher.find(word)
 
-        if result is not None:
+        if wp:
+            result = translate(wp)
             result.match = True
             return result
 

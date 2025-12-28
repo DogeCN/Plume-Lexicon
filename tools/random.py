@@ -1,18 +1,12 @@
 from .base import *
 from random import choice, randint
+from libs.translate.lexicons import matcher
 
 
 def all():
-    global lexicons
-    from libs.translate.lexicons import lexicons
-
-    while True:
-        try:
-            retry()
-        except:
-            continue
-        else:
-            break
+    word = matcher.random()
+    if word:
+        tool.mw.ui.WordEntry.setText(word)
 
 
 def inbank():
@@ -20,13 +14,6 @@ def inbank():
     items = Bank.items
     if items:
         Bank.current = choice(items)
-
-
-def retry():
-    dicts = [d for d in lexicons if d.enabled]
-    dict = choice(dicts)
-    word = choose(dict)
-    tool.mw.ui.WordEntry.setText(word)
 
 
 def choose(dict: dict):

@@ -16,8 +16,11 @@ class CSignal(QObject):
     sre = Signal(bool)
     warn = Signal(str)
     update = Signal()
-    count = 0
-    locked = False
+
+    def __init__(self):
+        super().__init__()
+        self.count = 0
+        self.locked = False
 
     def begin(self):
         self.count += 1
@@ -66,14 +69,11 @@ class Lexicon:
     def filename(self):
         return self.fp.split("\\")[-1].strip(info.ext_disabled)
 
-    def filter(self, word: str) -> list[Entry]:
-        return self.reader.filter(word)
+    def filter(self, word: str) -> list[str]:
+        return self.reader.filter(word, info.seps)
 
-    def __getitem__(self, key: str) -> Entry:
-        res = self.reader[key]
-        if res:
-            return Entry(res)
-        raise KeyError(f'"{key}" not found in lexicon "{self.name}"')
+    def __getitem__(self, key: str):
+        return self.reader[key]
 
     def __len__(self) -> int:
         return len(self.reader)
@@ -93,6 +93,7 @@ class Lexicon:
                 print(f'Failed to load "{self.fp}": {ex}', "Red")
                 self.failed = True
             csignal.final()
+        self.reader.set_enabled(e)
         self.enabled = e
         self.signal.update.emit()
         if self.failed:

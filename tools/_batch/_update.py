@@ -7,7 +7,7 @@ def main():
     for result in tool.mw.ui.Bank.results:
         new = translate(result.word)
         if new:
-            result.value = new.value
+            result.entry = new.entry
             count += 1
     tool.message.Show(tool.tr("updated") % count)
 
